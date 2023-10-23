@@ -25,6 +25,6 @@ Pour répondre à ces besoins, nous devons développer l'application en utilisan
 
 ## Analyse
 
-Pour préparer notre travail nous avons créer des MCD, des diagrammes UML et les maquettes des differentes pages
+Pour préparer notre travail nous avons créé des MCD, des diagrammes UML et les maquettes des differentes pages de notre futur site web.
 
 Maquettes : https://www.figma.com/file/bprrFkqEQiETvMDBpIOfln/Maquette-Site?type=design&node-id=0%3A1&mode=design&t=O1pJoYRndBjRSCHQ-1

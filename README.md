@@ -21,3 +21,10 @@ L'application à développer vise à simplifier et centraliser la gestion de ces
 ### Nos Choix 
 
 Pour répondre à ces besoins, nous devons développer l'application en utilisant Flask pour le framework web, SQLite comme système de gestion de base de données, et Python comme langage de programmation.
+
+
+## Analyse
+
+Pour préparer notre travail nous avons créer des MCD, des diagrammes UML et les maquettes des differentes pages
+
+Maquettes : https://www.figma.com/file/bprrFkqEQiETvMDBpIOfln/Maquette-Site?type=design&node-id=0%3A1&mode=design&t=O1pJoYRndBjRSCHQ-1

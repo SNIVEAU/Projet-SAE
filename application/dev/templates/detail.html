@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h1>{{title}}</h1>
+<div class="sample">
+    <img src="{{url_for('static', filename='images/'+book.img)}}" alt="image du livre {{book.title}}"
+        title="{{book.title}}">
+    <p>
+        {{book.price}} $
+        <a href="{{book.url}}">{{book.url}}</a>
+    </p>
+    <p>
+        Auteur : {{book.author}}
+    </p>
+    {% if current_user.is_authenticated %}
+    <a href="{{url_for('edit_author', id=book.author.id)}}" class="btn btn-primary">Modifier l'auteur</a>
+    {% else %}
+    <a href="{{url_for('login')}}" class="btn btn-primary">Se connecter pour modifier l'auteur</a>
+    {% endif %}
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('rate_book', id=book.id) }}" method="post">
+        <label for="rating">Note (entre 0 et 20) :</label>
+        <input type="number" name="rating" id="rating" min="0" max="20" required>
+        <button type="submit" class="btn btn-primary">Noter le livre</button>
+    </form>
+    {% if user_rating %}
+    <p>NOTE: {{ user_rating.note }}/20</p>
+    {% endif %}
+    {% else %}
+    <a href="{{ url_for('login') }}" class="btn btn-primary">Se connecter pour noter le livre</a>
+    {% endif %}
+
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('comment_book', id=book.id) }}" method="post">
+        <label for="comment">Commentaire :</label>
+        <textarea name="comment" id="comment" cols="30" rows="10" required></textarea>
+        <button type="submit" class="btn btn-primary">Commenter le livre</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('login') }}" class="btn btn-primary">Se connecter pour commenter le livre</a>
+    {% endif %}
+
+    <h2>Notes des utilisateurs :</h2>
+    <ul>
+        {% for evaluation in evaluations %}
+        <li class="note">{{ evaluation.user_id }} a noté ce livre avec {{ evaluation.note }}/20</li>
+        {% endfor %}
+    </ul>
+    <h2>Commentaires des utilisateurs :</h2>
+    <ul>
+        {% for comment in commentaires %}
+        <li class="comment">{{ comment.user_id }}: {{ comment.commentaire }}</li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+</div>

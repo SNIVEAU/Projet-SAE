@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block styles %}
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h1>Edit L'auteur : {{ author.name }}</h1>
+<form method="POST" action="{{ url_for('save_author')}}">
+    {{ form.hidden_tag() }}
+    <div class={% if form.name.errors %} "form-group has-error" {% else %} "form-group" {% endif %}>
+        {{ form.name.label }} {{ form.name(size=50, class_="form-control") }}
+    </div>
+    {% if form.name.errors %}
+    <ul class="list-group">
+        {% for e in form.name.errors %}
+        <li class="list-group-item list-group-item-danger">{{ e }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {{ form.name.label }} {{ form.name(size=50) }}
+    <input type="hidden" name="id" value="{{ author.id }}">
+    <input type="submit" value="Enregistrer" class="btn btn-primary">
+</form>
+{% endblock %}

@@ -1,6 +1,6 @@
 {
   "width": 460,
-  "height": 542,
+  "height": 551,
   "cx": [
     [ "REPETITION", 63 ],
     [ "PARTICIPER2", 63 ],
@@ -16,12 +16,12 @@
     [ "REPETITION", 60 ],
     [ "PARTICIPER2", 178 ],
     [ "SONDAGE", 178 ],
-    [ "MUSICIEN", 304 ],
-    [ "RELIER", 304 ],
-    [ "JOURNAL_SORTIE", 304 ],
-    [ "PARTICIPER1", 465 ],
-    [ "SORTIE", 465 ],
-    [ "JOURNAL_REPETITION", 465 ]
+    [ "MUSICIEN", 313 ],
+    [ "RELIER", 313 ],
+    [ "JOURNAL_SORTIE", 313 ],
+    [ "PARTICIPER1", 474 ],
+    [ "SORTIE", 474 ],
+    [ "JOURNAL_REPETITION", 474 ]
   ],
   "shift": [
     [ "PARTICIPER2,REPETITION,0", 0 ],

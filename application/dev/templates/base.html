@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block styles %}
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='css/home.css')}}">
+    {% endblock %}
+    <title>Union Musicale</title>
+    {% endblock %}
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Accueil</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Sondages</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page"
+                                    href="{{ url_for('home') }}">Calendrier</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page"
+                                    href="{{ url_for('home') }}">Statistiques</a>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            {% if current_user.is_authenticated %}
+                            <li>
+                                <a>{{ current_user.username }}</a>
+                            </li>
+                            <li class="nav-item2">
+                                <a class="nav-link active btn btn-danger rounded" aria-current="page"
+                                    href="{{ url_for('logout') }}">Déconnexion</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item2">
+                                <a class="nav-link active btn btn-danger rounded" aria-current="page"
+                                    href="{{ url_for('login') }}">Connexion</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+            </div>
+        </nav>
+    </header>
+    <!-- Your page content -->
+    <main class="flex-shrink-0">
+        <div class="container">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+    <footer class="footer mt-auto py-3 text-center">
+        <div class="container">
+            <span class="font-weight-bold">Copyright © 2023 Tous droits Réservés</span>
+        </div>
+    </footer>
+
+    {% block scripts %}
+    {{ bootstrap.load_js() }}
+    {% endblock %}
+</body>
+
+</html>

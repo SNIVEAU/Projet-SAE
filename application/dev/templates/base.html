@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% block styles %}
     {{ bootstrap.load_css() }}
-    <link rel="stylesheet" href="{{url_for('static',filename='css/home.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
     {% endblock %}
     <title>Union Musicale</title>
     {% endblock %}
@@ -39,14 +39,20 @@
                             </li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
+                            {% if current_user.is_authenticated %}
+                            <li>
+                                <a>{{ current_user.username }}</a>
+                            </li>
                             <li class="nav-item2">
                                 <a class="nav-link active btn btn-danger rounded" aria-current="page"
                                     href="">Déconnexion</a>
                             </li>
+                            {% else %}
                             <li class="nav-item2">
                                 <a class="nav-link active btn btn-danger rounded" aria-current="page"
-                                    href="">Connexion</a>
+                                    href="{{ url_for('login') }}">Connexion</a>
                             </li>
+                            {% endif %}
                         </ul>
                     </div>
             </div>

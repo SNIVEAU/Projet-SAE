@@ -25,6 +25,7 @@ def admin(filename:str) -> None:
         m=Musicien(idMusicien=int(musicien["idMusicien"]),
                    nomMusicien=musicien["nomMusicien"],
                    prenomMusicien=musicien["prenomMusicien"],
+                   password=musicien["password"],
                    ageMusicien=int(musicien["ageMusicien"]),
                    adresseMail=musicien["adresseMail"],
                    telephone=musicien["telephone"],

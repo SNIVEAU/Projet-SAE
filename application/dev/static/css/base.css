@@ -1,11 +1,5 @@
-h1 {
-    color: black;
-}
-
 div.sample {
     text-align: center;
-    margin-left: 25%;
-    margin-right: 25%;
     margin-bottom: 10%;
 }
 
@@ -26,11 +20,18 @@ div.sample {
 
 }
 
-footer{ 
+footer {
     background-color: #444750;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
 }
 
 span{
     color: white;
 }
+
 

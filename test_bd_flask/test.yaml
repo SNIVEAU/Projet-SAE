@@ -1,0 +1,12 @@
+- idMusicien: 1
+  nomMusicien: "John"
+  prenomMusicien: "Doe"
+  passwordMusicien: "test"
+  ageMusicien: 25
+  adresseMail: test@gmail.com
+  telephone: "0606060606"
+  admin: true
+  image: ".\ressource\test_img.jpg"
+
+
+

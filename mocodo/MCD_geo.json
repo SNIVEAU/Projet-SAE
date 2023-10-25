@@ -1,0 +1,35 @@
+{
+  "width": 460,
+  "height": 551,
+  "cx": [
+    [ "REPETITION", 63 ],
+    [ "PARTICIPER2", 63 ],
+    [ "SONDAGE", 188 ],
+    [ "MUSICIEN", 63 ],
+    [ "RELIER", 188 ],
+    [ "JOURNAL_SORTIE", 376 ],
+    [ "PARTICIPER1", 63 ],
+    [ "SORTIE", 188 ],
+    [ "JOURNAL_REPETITION", 376 ]
+  ],
+  "cy": [
+    [ "REPETITION", 60 ],
+    [ "PARTICIPER2", 178 ],
+    [ "SONDAGE", 178 ],
+    [ "MUSICIEN", 313 ],
+    [ "RELIER", 313 ],
+    [ "JOURNAL_SORTIE", 313 ],
+    [ "PARTICIPER1", 474 ],
+    [ "SORTIE", 474 ],
+    [ "JOURNAL_REPETITION", 474 ]
+  ],
+  "shift": [
+    [ "PARTICIPER2,REPETITION,0", 0 ],
+    [ "PARTICIPER2,MUSICIEN,0", 0 ],
+    [ "RELIER,SORTIE,0", 0 ],
+    [ "RELIER,SONDAGE,0", 0 ],
+    [ "PARTICIPER1,SORTIE,0", 0 ],
+    [ "PARTICIPER1,MUSICIEN,0", 0 ]
+  ],
+  "ratio": []
+}

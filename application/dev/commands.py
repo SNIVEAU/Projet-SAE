@@ -1,62 +1,34 @@
 import click
-from.app import app, db
-
-@app.cli.command()
-@click.argument('filename')
-
-
-def loaddb(filename):
-    """ Creates the tables and populates them with data."""
-    # création de toutes les tables
-    db.create_all()
-
-    # chargement de notre jeu de données
-    import yaml
-    books = yaml.safe_load(open(filename))
-
-    # import des modèles
-    from.models import Author, Book
-
-    # première passe: création de tous les auteurs
-    authors = {}
-    for b in books:
-        a = b["author"]
-        if a not in authors :
-            o = Author(name=a)
-            db.session.add(o)
-            authors[a] = o
-    db.session.commit()
-
-    # deuxième passe: création de tous les livres
-    for b in books:
-        a = authors[b["author"]]
-        o = Book(price = b["price"],
-                 title = b["title"],
-                 url = b["url"],
-                 img = b["img"],
-                 author_id = a.id)
-        db.session.add(o)
-    db.session.commit()
+from .app import app,db
+import yaml
+from .models import Musicien
+# voir pour inserer des image en sql alchemy
 
 
 @app.cli.command()
-    
+def destroydb():
+    """Destroys the current database."""
+    db.drop_all()
+
+@app.cli.command()
 def syncdb():
     """Creates all missing tables."""
     db.create_all()
 
 @app.cli.command()
-@click.argument("username")
-@click.argument("password")
-def newuser(username, password):
-    """Adds a new user."""
-    from.models import User
-    from hashlib import sha256
-    m = sha256()
-    m.update(password.encode())
-    u = User(username=username, password=m.hexdigest())
-    db.session.add(u)
-    db.session.commit()
-
-
-
+@click.argument('filename')
+def admin(filename:str) -> None:
+    """ permet la creation dde la base de donnée"""
+    f=yaml.safe_load(open(filename))
+    for musicien in f:
+        print(musicien)
+        m=Musicien(idMusicien=int(musicien["idMusicien"]),
+                   nomMusicien=musicien["nomMusicien"],
+                   prenomMusicien=musicien["prenomMusicien"],
+                   ageMusicien=int(musicien["ageMusicien"]),
+                   adresseMail=musicien["adresseMail"],
+                   telephone=musicien["telephone"],
+                   admin=musicien["admin"],
+                   img=None)
+        db.session.add(m)
+        db.session.commit()

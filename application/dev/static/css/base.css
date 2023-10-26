@@ -35,3 +35,10 @@ span{
 }
 
 
+
+.nom {
+    color: white;
+    font-weight: bold;
+    margin-right: 30px;
+
+}

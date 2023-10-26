@@ -41,3 +41,8 @@ footer {
     margin-top: 3%;
     max-width: 500px; /* Ajout d'une largeur maximale */
 }
+.center-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

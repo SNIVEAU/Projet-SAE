@@ -14,9 +14,14 @@ class Musicien(db.Model, UserMixin):
 
     def __repr__(self) -> str:
         return self.nomMusicien + " " + self.prenomMusicien
-    
+    def get_id(self):
+        return self.idMusicien
     def generate_username(self):
         return f"{self.nomMusicien}.{self.prenomMusicien}"
+
+def get_max_idMusicient():
+    return Musicien.query.order_by(Musicien.idMusicien.desc()).first().idMusicien
+    
 
 @login_manager.user_loader
 def load_user(user_id):

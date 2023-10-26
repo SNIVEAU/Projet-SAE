@@ -40,12 +40,12 @@
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             {% if current_user.is_authenticated %}
-                            <li>
-                                <a>{{ current_user.username }}</a>
+                            <li class =nom>
+                                <a>{{ current_user.nomMusicien }} {{ current_user.prenomMusicien }}</a>
                             </li>
                             <li class="nav-item2">
                                 <a class="nav-link active btn btn-danger rounded" aria-current="page"
-                                    href="">Déconnexion</a>
+                                    href="{{ url_for('logout') }}">Déconnexion</a>
                             </li>
                             {% else %}
                             <li class="nav-item2">

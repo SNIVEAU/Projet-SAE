@@ -18,7 +18,7 @@ from .app import app, db
 from flask import render_template, url_for, redirect, request
 from .models import *
 from flask_wtf import FlaskForm
-from wtforms import StringField , HiddenField, PasswordField
+from wtforms import BooleanField, StringField , HiddenField, PasswordField
 from wtforms.validators import DataRequired
 
 from hashlib import sha256
@@ -50,17 +50,13 @@ class LoginForm(FlaskForm):
         username = f"{nom}.{prenom}"  # Utiliser le username généré
 
         musicien = Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first()
-
         if musicien is None:
             return None
-
-        # Hashage
+        # Vérifier si le mot de passe est correct
         m = sha256()
         m.update(self.password.data.encode())
         passwd = m.hexdigest()
-
         return musicien if passwd == musicien.password else None
-
 
 
 # Création du login
@@ -79,7 +75,10 @@ def login():
         if user:
             login_user(user)
             return redirect(url_for("home"))
+        else:
+            print("Identifiants incorrects. Veuillez réessayer.", "danger")
     return render_template("login.html", form=f)
+
 
 class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')
@@ -88,43 +87,61 @@ class RegistrationForm(FlaskForm):
     adresseMail = StringField('Email')
     password = PasswordField('Mot de passe')
     confirm_password = PasswordField('Confirmer le mot de passe')
+    isAdmin = BooleanField('Admin')  # Ajout du champ pour la case à cocher
     next = HiddenField()
 
     def validate(self):
-        if not super().validate():
-            return False
+        """Vérifie si le formulaire est valide
 
-        # Vérifier si l'utilisateur n'est pas déjà inscrit
+        Returns:
+            bool: True si le formulaire est valide
+        """
+        # Vérifier si le mot de passe est correct
+        if self.password.data != self.confirm_password.data:
+            self.password.errors.append("Les mots de passe ne correspondent pas")
+            return False
+        # Vérifier si l'utilisateur existe déjà
         nom = self.nomMusicien.data
         prenom = self.prenomMusicien.data
+        username = f"{nom}.{prenom}"
 
-        musicien = Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first()
-
-        if musicien:
-            self.nomMusicien.errors.append('Cet utilisateur est déjà inscrit. Veuillez vous connecter.')
-            return False
-
-        # Vérifier si les mots de passe correspondent
-        if self.password.data != self.confirm_password.data:
-            self.confirm_password.errors.append('Les mots de passe ne correspondent pas.')
-            return False
+        # Vérifier si isAdmin est coché
+        admin = self.isAdmin.data  # Récupère la valeur de la case à cocher
 
         return True
+
+
+
 
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
     form = RegistrationForm()
 
-    if request.method == "POST" and form.validate_on_submit():
+    if request.method == "POST" and form.validate():
+        # Récupérer les données du formulaire
         nom = form.nomMusicien.data
         prenom = form.prenomMusicien.data
         telephone = form.telephone.data
         adresseMail = form.adresseMail.data
         password = form.password.data
+        admin = form.isAdmin.data 
 
+
+        # Hasher le mot de passe
+        m = sha256()
+        m.update(password.encode())
+        hashed_password = m.hexdigest()
         # Ajouter l'utilisateur à la base de données
-        user = Musicien(nomMusicien=nom, prenomMusicien=prenom, telephone=telephone, adresseMail=adresseMail, password=password)
+        user = Musicien(
+            idMusicien=get_max_idMusicient() + 1,
+            nomMusicien=nom,
+            prenomMusicien=prenom,
+            password=hashed_password,
+            telephone=telephone,
+            adresseMail=adresseMail,
+            admin=admin
+        )
         db.session.add(user)
         db.session.commit()
 
@@ -135,14 +152,13 @@ def register():
 
 
 
-
-# @app.route("/logout/")
-# def logout():
-#     """Logout
-#     Returns:
-#         html: page de home
-#     """
-#     logout_user()
-#     return redirect(url_for("home"))
+@app.route("/logout/")
+def logout():
+    """Logout
+    Returns:
+        html: page de home
+    """
+    logout_user()
+    return redirect(url_for("home"))
 
 

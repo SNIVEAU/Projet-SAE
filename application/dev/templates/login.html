@@ -2,7 +2,7 @@
 
 {% block styles %}
     {{ super() }}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login_register.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -34,6 +34,7 @@
             </div>
         </div>
     </form>
+
     <p>Pas encore inscrit ? <a href="{{ url_for('register') }}">Inscrivez-vous ici</a></p>
 </div>
 {% endblock %}

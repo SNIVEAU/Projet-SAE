@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block styles %}
+{{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="{{url_for('static',filename='css/stat.css')}}">
+{{ super() }}
+{% endblock %}
+{% block content %}
+<h1> Statistiques des musiciens </h1>
+{% for musicien in musiciens %}
+    <p class="nommusicien">{{ musicien.nomMusicien }}, {{ musicien.prenomMusicien }} :</p>
+{% endfor %}
+{% endblock %}

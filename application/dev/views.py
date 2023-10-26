@@ -29,10 +29,20 @@ from flask import request
 def home():
     """home page
 
-    Returns:
+    Returns:    {% endblock %}
+    {% block content%}
         html: home page
     """
     return render_template("home.html", musiciens=get_musicien(), sorties=get_sorties(), repetitions=get_repetitions())
+
+@app.route("/stat/")
+def stat():
+    """home page
+
+    Returns:
+        html: home page
+    """
+    return render_template("stat.html",musiciens=get_musicien(), sorties=get_sorties(), repetitions=get_repetitions(),participe=get_participer_repetitions())
 
 
 

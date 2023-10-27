@@ -4,7 +4,7 @@
 """
 
 from .app import *
-from flask import render_template, url_for, redirect, request
+from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
 from flask_wtf import FlaskForm
 from wtforms import StringField , HiddenField, PasswordField
@@ -33,11 +33,11 @@ def page_sondage():
     participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
     return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
 
-@app.route("/log/")
-
-def page_log():
-
-    return render_template("home.html")
+@app.route('/update_temps<idSondage>')
+def update_temps(idSondage:Sondage.idSondage):
+    # Code to update the content
+    new_content = get_sondage_by_id(idSondage).temps_restant()
+    return jsonify({'content': new_content})
 
 # class AuthorForm(FlaskForm):
 #     id = HiddenField('id')

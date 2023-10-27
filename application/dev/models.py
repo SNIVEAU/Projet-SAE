@@ -70,10 +70,12 @@ class Sondage(db.Model):
     
     def temps_restant(self)->(int,int,int):
         """Retourne le temps restant avant la fin du sondage"""
-        heure = self.dureeSondage - (datetime.now() - self.dateSondage).seconds//3600
-        minute = (self.dureeSondage - (datetime.now() - self.dateSondage).seconds//60)%60
-        seconde = (self.dureeSondage - (datetime.now() - self.dateSondage).seconds)%60
-        return heure,minute,seconde
+        temps_second=self.dureeSondage*3600*24
+        jour = (self.dureeSondage - (datetime.now() - self.dateSondage).days)
+        heure = (temps_second - (datetime.now() - self.dateSondage).seconds)//3600%24
+        minute = (temps_second - (datetime.now() - self.dateSondage).seconds)//60%60
+        seconde = (temps_second - (datetime.now() - self.dateSondage).seconds)%60
+        return jour,heure,minute,seconde
 
     def __repr__(self) -> str:
         return str(self.dateSondage)+" "+str(self.dureeSondage)+" "+str(self.idSondage)

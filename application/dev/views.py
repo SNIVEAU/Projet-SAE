@@ -1,29 +1,22 @@
 
 """
-This module contains the views for the Flask application. It defines the routes and functions for rendering the HTML templates and handling user input. 
 
-The routes include:
-- home: renders the home page and displays all books in the database
-- detail: renders the detail page for a specific book and displays its information, user rating, user comment, and all evaluations and comments for the book
-- edit_author: renders the edit author page for a specific author and allows the user to edit the author's name
-- save_author: saves the edited author's name to the database
-- login: renders the login page and allows the user to log in with their username and password
-- logout: logs the user out and redirects them to the home page
-- rate_book: allows the user to rate a book and saves the rating to the database
-- public_book_details: renders the public book details page for a specific book and displays all evaluations for the book
-- comment_book: allows the user to comment on a book and saves the comment to the database
 """
 
-from .app import app, db
+from .app import *
 from flask import render_template, url_for, redirect, request
 from .models import *
 from flask_wtf import FlaskForm
 from wtforms import StringField , HiddenField, PasswordField
 from wtforms.validators import DataRequired
 from hashlib import sha256
-# from flask_login import login_user, current_user, login_required, logout_user
+from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
 
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Musicien.query.get(user_id)
 
 @app.route("/")
 def home():
@@ -34,12 +27,22 @@ def home():
     """
     return render_template("home.html", musiciens=get_musicien(), sorties=get_sorties(), repetitions=get_repetitions())
 
+@app.route("/sondage/")
+def page_sondage():
+    print("test")
+    participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
+    return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
 
+@app.route("/log/")
+
+def page_log():
+
+    return render_template("home.html")
 
 # class AuthorForm(FlaskForm):
 #     id = HiddenField('id')
 #     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
-
+ 
 
 
 

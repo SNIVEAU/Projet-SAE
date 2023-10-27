@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/sondage.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Sondage</h1>
+<h2>Sondage en cours</h2>
+<table>
+    <tr>
+        <th>sujet sondage</th>
+        <th>date</th>
+        <th>temps restant</th>
+        <th>vote</th>
+        <th>valider</th>
+    </tr>
+    {% for s in sondages %}
+    <tr>
+        <td>{{ s.message }}</td>
+        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
+        <td id="temps">
+            {{s.temps_restant()}}
+        </td>
+        <td>
+            <input type="button" value="oui">
+            <input type="button" value="non">
+        </td>
+        <td>
+            <input class="valid" type="button" value="✔️">
+        </td>
+    </tr>
+    <script>
+        setInterval(function() {
+            var tempsRestant = {{s.temps_restant()}};
+            document.getElementById("temps").innerHTML = tempsRestant;
+        }, 100);
+    </script>
+    {% endfor %}
+</table>
+<h2>sondage répondu</h2>
+<table>
+    <tr>
+        <th>sujet sondage</th>
+        <th>date</th>
+        <th>choix vote</th>
+        <th>date vote</th>
+        <th>annuler</th>
+    </tr>
+    {% for ps in participer_sortie %}
+    <tr>
+        <td>{{ ps.get_sortie().message }}</td>
+        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
+        <td>temps</td>
+        <td>
+            
+        </td>
+        <td>
+            <input type="button" value="✖️" class="annul">
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

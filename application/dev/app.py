@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import *
 from flask import Flask
 from flask_bootstrap import Bootstrap5
 import os.path
@@ -18,5 +19,6 @@ db = SQLAlchemy(app)
 
 app.config['SECRET_KEY'] = "7d49295c-541c-4db7-8e5a-230a49389189"
 
-# login_manager = LoginManager(app)
-# login_manager.login_view = "login"
+login_manager = LoginManager(app)
+login_manager.login_view = "login"
+

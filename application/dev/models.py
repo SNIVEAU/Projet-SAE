@@ -1,30 +1,22 @@
-<<<<<<< HEAD
 from .app import db
 from flask_login import UserMixin
+from .app import db, login_manager
 from datetime import *
 
-class Musicien(db.Model,UserMixin):
-=======
-from .app import db, login_manager
-from flask_login import UserMixin
 
 class Musicien(db.Model, UserMixin):
->>>>>>> origin/develop
     idMusicien = db.Column(db.Integer, primary_key=True)
     nomMusicien = db.Column(db.String(50))
     prenomMusicien = db.Column(db.String(50))
     password = db.Column(db.String(50))
     ageMusicien = db.Column(db.Integer)
-    adresseMail = db.Column(db.String(50))
+    adressseMail = db.Column(db.String(50))
     telephone = db.Column(db.String(50))
     admin = db.Column(db.Boolean)
     img = db.Column(db.String(50))
 
-<<<<<<< HEAD
     def get_id(self):
         return self.idMusicien
-=======
->>>>>>> origin/develop
 
     def __repr__(self) -> str:
         return self.nomMusicien + " " + self.prenomMusicien
@@ -91,7 +83,6 @@ class Sondage(db.Model):
     
     def temps_restant(self)->(int,int,int):
         """Retourne le temps restant avant la fin du sondage"""
-        print(self)
         temps_second=self.dureeSondage*3600*24
         jour = (self.dureeSondage - (datetime.now() - self.dateSondage).days)
         heure = (temps_second - (datetime.now() - self.dateSondage).seconds)//3600%24

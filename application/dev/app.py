@@ -17,14 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = ('sqlite:///'+mkpath('../myapp.db'))
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = "7d49295c-541c-4db7-8e5a-230a49389189"
 
-<<<<<<< HEAD
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
-=======
 
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
->>>>>>> origin/develop
 

@@ -9,17 +9,10 @@ from .models import *
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField , HiddenField, PasswordField
 from wtforms.validators import DataRequired
-<<<<<<< HEAD
 from hashlib import sha256
 from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
-=======
->>>>>>> origin/develop
-
 from hashlib import sha256
-
-from flask_login import login_user, current_user, login_required, logout_user
-from flask import request
 import plotly.graph_objs as go
 from flask import Flask, render_template
 
@@ -112,7 +105,6 @@ def page_sondage():
     participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
     return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
 
-<<<<<<< HEAD
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
     # Code to update the content
@@ -142,7 +134,6 @@ def ajoute_sortie():
 #     id = HiddenField('id')
 #     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
  
-=======
 class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')
@@ -173,7 +164,6 @@ class RegistrationForm(FlaskForm):
 
         return True
 
->>>>>>> origin/develop
 
 
 

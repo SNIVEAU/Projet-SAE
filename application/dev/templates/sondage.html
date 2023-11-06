@@ -72,5 +72,15 @@
     {% endfor %}
 </table>
 
+<form action="{{url_for('sondage_ajoute')}}">
+    <input type="submit" name="message" value="test">
+</form>
+
+<form method="POST" action="{{url_for('ajoute_sortie')}}">
+    <date>
+        <input type="date" name="date">
+    </date>
+    <input type="submit" value="test2">
+</form>
 
 {% endblock %}

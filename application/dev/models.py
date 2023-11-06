@@ -70,6 +70,7 @@ class Sondage(db.Model):
     
     def temps_restant(self)->(int,int,int):
         """Retourne le temps restant avant la fin du sondage"""
+        print(self)
         temps_second=self.dureeSondage*3600*24
         jour = (self.dureeSondage - (datetime.now() - self.dateSondage).days)
         heure = (temps_second - (datetime.now() - self.dateSondage).seconds)//3600%24
@@ -84,6 +85,8 @@ def get_sondages()->list:
     return Sondage.query.all()
 
 def get_max_id_sondage()->int:
+    if Sondage.query.count()==0:
+        return 0
     return Sondage.query.order_by(Sondage.idSondage.desc()).first().idSondage
 
 def get_sondage_by_id(id)->Sondage:

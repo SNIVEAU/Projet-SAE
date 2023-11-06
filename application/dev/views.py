@@ -29,7 +29,6 @@ def home():
 
 @app.route("/sondage/")
 def page_sondage():
-    print("test")
     participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
     return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
 
@@ -38,6 +37,25 @@ def update_temps(idSondage:Sondage.idSondage):
     # Code to update the content
     new_content = get_sondage_by_id(idSondage).temps_restant()
     return jsonify({'content': new_content})
+
+@app.route("/sondage_ajout")
+def sondage_ajoute():
+    s=Sondage(idSondage=get_max_id_sondage()+1,
+                idSortie=1,
+                message="test",
+                dateSondage=datetime.now(),
+                dureeSondage=1)
+    db.session.add(s)
+    db.session.commit()
+    return page_sondage()
+
+@app.route("/sortie_ajoute/" , methods=["GET", "POST"])
+def ajoute_sortie():
+    print(request.form)
+    #date_str=request.form["date"]
+    #print(date_str)
+    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    return page_sondage()
 
 # class AuthorForm(FlaskForm):
 #     id = HiddenField('id')

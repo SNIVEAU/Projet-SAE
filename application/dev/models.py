@@ -12,6 +12,7 @@ class Musicien(db.Model, UserMixin):
     admin = db.Column(db.Boolean)
     img = db.Column(db.String(50))
 
+
     def __repr__(self) -> str:
         return self.nomMusicien + " " + self.prenomMusicien
     def get_id(self):
@@ -55,7 +56,6 @@ class Sortie(db.Model):
     lieu = db.Column(db.String(50))
     type= db.Column(db.String(50))
     tenue = db.Column(db.String(50))
-
     def __repr__(self) -> str:
         return self.dateSortie+" "+self.dureeSortie+" "+self.idSortie
     
@@ -81,21 +81,22 @@ def get_sondage_by_id(id)->Sondage:
     return Sondage.query.filter_by(idSondage=id).first()
 
 class participer_repetition(db.Model):
-    idMusicien = db.Column(db.Integer,db.ForeignKey('musicien.idMusicien'),primary_key=True)
-    idRepetition = db.Column(db.Integer,db.ForeignKey('repetition.idRepetition'),primary_key=True)
+    idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'), primary_key=True)
+    
 
     def __repr__(self) -> str:
         return self.idMusicien+" "+self.idRepetition
-    
 def get_participer_repetitions()->list:
     return participer_repetition.query.all()
 
 def get_musicien_by_repetition(id)->list:
     return participer_repetition.query.filter_by(idRepetition=id).all()
-
+def get_repetition_by_musicien(id)->list:
+    return participer_repetition.query.filter_by(idMusicien=id)
 class participer_sortie(db.Model):
-    idMusicien = db.Column(db.Integer,db.ForeignKey('musicien.idMusicien'),primary_key=True)
-    idSortie = db.Column(db.Integer,db.ForeignKey('sortie.idSortie'),primary_key=True)
+    idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'), primary_key=True)
 
     def __repr__(self) -> str:
         return self.idMusicien+" "+self.idSortie
@@ -121,4 +122,3 @@ def get_disponibilites()->list:
 
 def get_disponibilite_by_musicien(id)->list:
     return disponibilite.query.filter_by(idMusicien=id).all()
-    

@@ -2,3 +2,10 @@
     font-size: 150%;
     padding-left: 10vh;
 }
+h1{
+    font-size: 200%;
+    padding-right: 60%;
+}
+.hidden {
+    display: none;
+}

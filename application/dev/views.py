@@ -18,23 +18,68 @@ from .app import app, db
 from flask import render_template, url_for, redirect, request
 from .models import *
 from flask_wtf import FlaskForm
-from wtforms import StringField , HiddenField, PasswordField
+from wtforms import BooleanField, StringField , HiddenField, PasswordField
 from wtforms.validators import DataRequired
+
 from hashlib import sha256
-# from flask_login import login_user, current_user, login_required, logout_user
+
+from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
 import plotly.graph_objs as go
 from flask import Flask, render_template
 
 @app.route("/")
 def home():
-    """home page
+    musiciens = Musicien.query.all()
+    return render_template("home.html", musiciens=musiciens)
+
+class LoginForm(FlaskForm):
+    # Création des deux formulaires
+    nomMusicien = StringField('Nom')
+    prenomMusicien = StringField('Prénom')
+    password = PasswordField('Password')
+    next = HiddenField()
+
+    def get_authenticated_user(self):
+        """Vérifie si l'utilisateur existe et si le mot de passe est correct
+
+        Returns:
+            user: l'utilisateur
+        """
+        nom = self.nomMusicien.data
+        prenom = self.prenomMusicien.data
+        username = f"{nom}.{prenom}"  # Utiliser le username généré
+
+        musicien = Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first()
+        if musicien is None:
+            return None
+        # Vérifier si le mot de passe est correct
+        m = sha256()
+        m.update(self.password.data.encode())
+        passwd = m.hexdigest()
+        return musicien if passwd == musicien.password else None
+
+
+# Création du login
+@app.route("/login/", methods=["GET", "POST"])
+def login():
+    """Login
 
     Returns:    {% endblock %}
     {% block content%}
         html: home page
     """
-    return render_template("home.html", musiciens=get_musicien(), sorties=get_sorties(), repetitions=get_repetitions())
+    f = LoginForm()
+    if not f.is_submitted():
+        f.next.data = request.args.get("next")
+    elif f.validate_on_submit():
+        user = f.get_authenticated_user()
+        if user:
+            login_user(user)
+            return redirect(url_for("home"))
+        else:
+            print("Identifiants incorrects. Veuillez réessayer.", "danger")
+    return render_template("login.html", form=f)
 
 @app.route("/stat/")
 def stat():
@@ -64,88 +109,85 @@ def stat():
     return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
 
 
+class RegistrationForm(FlaskForm):
+    nomMusicien = StringField('Nom')
+    prenomMusicien = StringField('Prénom')
+    telephone = StringField('Télephone')
+    adresseMail = StringField('Email')
+    password = PasswordField('Mot de passe')
+    confirm_password = PasswordField('Confirmer le mot de passe')
+    isAdmin = BooleanField('Admin')  # Ajout du champ pour la case à cocher
+    next = HiddenField()
 
-# class AuthorForm(FlaskForm):
-#     id = HiddenField('id')
-#     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
+    def validate(self):
+        """Vérifie si le formulaire est valide
 
+        Returns:
+            bool: True si le formulaire est valide
+        """
+        # Vérifier si le mot de passe est correct
+        if self.password.data != self.confirm_password.data:
+            self.password.errors.append("Les mots de passe ne correspondent pas")
+            return False
+        # Vérifier si l'utilisateur existe déjà
+        nom = self.nomMusicien.data
+        prenom = self.prenomMusicien.data
+        username = f"{nom}.{prenom}"
 
+        # Vérifier si isAdmin est coché
+        admin = self.isAdmin.data  # Récupère la valeur de la case à cocher
 
-
-
-# class LoginForm(FlaskForm):
-#     # Création des deux formulaires
-#     username = StringField('Username')
-#     password = PasswordField('Password')
-#     next = HiddenField()
-
-#     def get_authenticated_user(self):
-#         """Vérifie si l'utilisateur existe et si le mot de passe est correct
-
-#         Returns:
-#             user: l'utilisateur
-#         """
-#         user = User.query.get(self.username.data) # Récupérer l'utilisateur entré dans le formulaire
-#         if user is None:
-#             return None
-        
-#         # Hashage
-#         m = sha256()
-#         m.update(self.password.data.encode())
-#         passwd = m.hexdigest()
-
-#         return user if passwd == user.password else None # Vérifier si le mot de passe de l'utilisateur entré est le bon
+        return True
 
 
-# # Création du login
-# @app.route("/login/", methods=["GET", "POST" ,])
-# def login():
-#     """Login
-
-#     Returns:
-#         html: page de login
-#     """
-#     f = LoginForm()
-#     if not f.is_submitted():
-#         f.next.data = request.args.get("next")
-#     elif f.validate_on_submit():
-#         user = f.get_authenticated_user()
-#         if user:
-#             login_user(user)
-#             return redirect(url_for("home"))
-#     return render_template("login.html",form=f)
 
 
-# @app.route("/register/", methods=["GET", "POST"])
-# def register():
-#     """s'inscrire"""
-#     f = LoginForm()
-#     if not f.is_submitted():
-#         f.next.data = request.args.get("next")
-#     elif f.validate_on_submit():
-#         user = User.query.get(f.username.data)
-#         if user:
-#             f.next.data = request.args.get("hidden")
-#             print("L'utilisateur existe déjà.", "error")
-#         else:
-#             m = sha256()
-#             m.update(f.password.data.encode())
-#             passwd = m.hexdigest()
-#             user = User(username=f.username.data, password=passwd)
-#             db.session.add(user)
-#             db.session.commit()
-#             login_user(user)
-#             return redirect(url_for("home"))
-#     return render_template("register.html", form=f)
+
+@app.route("/register/", methods=["GET", "POST"])
+def register():
+    form = RegistrationForm()
+
+    if request.method == "POST" and form.validate():
+        # Récupérer les données du formulaire
+        nom = form.nomMusicien.data
+        prenom = form.prenomMusicien.data
+        telephone = form.telephone.data
+        adresseMail = form.adresseMail.data
+        password = form.password.data
+        admin = form.isAdmin.data 
 
 
-# @app.route("/logout/")
-# def logout():
-#     """Logout
-#     Returns:
-#         html: page de home
-#     """
-#     logout_user()
-#     return redirect(url_for("home"))
+        # Hasher le mot de passe
+        m = sha256()
+        m.update(password.encode())
+        hashed_password = m.hexdigest()
+        # Ajouter l'utilisateur à la base de données
+        user = Musicien(
+            idMusicien=get_max_idMusicient() + 1,
+            nomMusicien=nom,
+            prenomMusicien=prenom,
+            password=hashed_password,
+            telephone=telephone,
+            adresseMail=adresseMail,
+            admin=admin
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        # Rediriger l'utilisateur vers une page de confirmation ou de connexion
+        return redirect(url_for("login"))
+
+    return render_template("register.html", form=form)
+
+
+
+@app.route("/logout/")
+def logout():
+    """Logout
+    Returns:
+        html: page de home
+    """
+    logout_user()
+    return redirect(url_for("home"))
 
 

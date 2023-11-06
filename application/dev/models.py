@@ -1,6 +1,7 @@
-from .app import db
+from .app import db, login_manager
+from flask_login import UserMixin
 
-class Musicien(db.Model):
+class Musicien(db.Model, UserMixin):
     idMusicien = db.Column(db.Integer, primary_key=True)
     nomMusicien = db.Column(db.String(50))
     prenomMusicien = db.Column(db.String(50))
@@ -14,7 +15,19 @@ class Musicien(db.Model):
 
     def __repr__(self) -> str:
         return self.nomMusicien + " " + self.prenomMusicien
+    def get_id(self):
+        return self.idMusicien
+    def generate_username(self):
+        return f"{self.nomMusicien}.{self.prenomMusicien}"
+
+def get_max_idMusicient():
+    return Musicien.query.order_by(Musicien.idMusicien.desc()).first().idMusicien
     
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Musicien.query.get(int(user_id))
+
 def get_musicien()->list:
     return Musicien.query.all()
 

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/sondage.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Sondage</h1>
+<h2>Sondage en cours</h2>
+<table>
+    <tr>
+        <th>sujet sondage</th>
+        <th>date</th>
+        <th>temps restant</th>
+        <th>vote</th>
+        <th>valider</th>
+    </tr>
+    {% for s in sondages %}
+    <tr>
+        <td>{{ s.message }}</td>
+        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
+        <td id="temps{{s.idSondage}}">
+            {{s.temps_restant()}}
+        </td>
+        <td>
+            <input type="button" value="oui">
+            <input type="button" value="non">
+        </td>
+        <td>
+            <input class="valid" type="button" value="✔️">
+        </td>
+    </tr>
+    
+    <script>
+        function updateContent(idSondage) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/update_temps'+idSondage);
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('temps'+idSondage).innerHTML = response.content;
+                }
+            };
+            xhr.send();
+        }
+    
+        setInterval(function(){updateContent({{s.idSondage}})}, 1000);
+    </script>
+    {% endfor %}
+</table>
+<h2>sondage répondu</h2>
+<table>
+    <tr>
+        <th>sujet sondage</th>
+        <th>date</th>
+        <th>choix vote</th>
+        <th>date vote</th>
+        <th>annuler</th>
+    </tr>
+    {% for ps in participer_sortie %}
+    <tr>
+        <td>{{ ps.get_sortie().message }}</td>
+        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
+        <td>temps</td>
+        <td>
+            
+        </td>
+        <td>
+            <input type="button" value="✖️" class="annul">
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<form action="{{url_for('sondage_ajoute')}}">
+    <input type="submit" name="message" value="test">
+</form>
+
+<form method="POST" action="{{url_for('ajoute_sortie')}}">
+    <date>
+        <input type="date" name="date">
+    </date>
+    <input type="submit" value="test2">
+</form>
+
+{% endblock %}

@@ -1,32 +1,24 @@
 
 """
-This module contains the views for the Flask application. It defines the routes and functions for rendering the HTML templates and handling user input. 
 
-The routes include:
-- home: renders the home page and displays all books in the database
-- detail: renders the detail page for a specific book and displays its information, user rating, user comment, and all evaluations and comments for the book
-- edit_author: renders the edit author page for a specific author and allows the user to edit the author's name
-- save_author: saves the edited author's name to the database
-- login: renders the login page and allows the user to log in with their username and password
-- logout: logs the user out and redirects them to the home page
-- rate_book: allows the user to rate a book and saves the rating to the database
-- public_book_details: renders the public book details page for a specific book and displays all evaluations for the book
-- comment_book: allows the user to comment on a book and saves the comment to the database
 """
 
-from .app import app, db
-from flask import render_template, url_for, redirect, request
+from .app import *
+from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField , HiddenField, PasswordField
 from wtforms.validators import DataRequired
-
 from hashlib import sha256
-
 from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
+from hashlib import sha256
 import plotly.graph_objs as go
 from flask import Flask, render_template
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Musicien.query.get(user_id)
 
 @app.route("/")
 def home():
@@ -108,7 +100,40 @@ def stat():
     #pourceentage h/f
     return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
 
+@app.route("/sondage/")
+def page_sondage():
+    participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
+    return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
 
+@app.route('/update_temps<idSondage>')
+def update_temps(idSondage:Sondage.idSondage):
+    # Code to update the content
+    new_content = get_sondage_by_id(idSondage).temps_restant()
+    return jsonify({'content': new_content})
+
+@app.route("/sondage_ajout")
+def sondage_ajoute():
+    s=Sondage(idSondage=get_max_id_sondage()+1,
+                idSortie=1,
+                message="test",
+                dateSondage=datetime.now(),
+                dureeSondage=1)
+    db.session.add(s)
+    db.session.commit()
+    return page_sondage()
+
+@app.route("/sortie_ajoute/" , methods=["GET", "POST"])
+def ajoute_sortie():
+    print(request.form)
+    #date_str=request.form["date"]
+    #print(date_str)
+    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    return page_sondage()
+
+# class AuthorForm(FlaskForm):
+#     id = HiddenField('id')
+#     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
+ 
 class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')

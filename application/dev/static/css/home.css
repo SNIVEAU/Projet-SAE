@@ -1,5 +1,8 @@
 h1 {
     color: black;
+    text-align: center;
+    margin-top: 10%;
+
 }
 
 div.sample {
@@ -32,5 +35,9 @@ footer{
 
 span{
     color: white;
+}
+
+.container{
+    margin: 5em 1em 0;
 }
 

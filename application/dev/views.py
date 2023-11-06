@@ -23,16 +23,45 @@ from wtforms.validators import DataRequired
 from hashlib import sha256
 # from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
-
+import plotly.graph_objs as go
+from flask import Flask, render_template
 
 @app.route("/")
 def home():
     """home page
 
-    Returns:
+    Returns:    {% endblock %}
+    {% block content%}
         html: home page
     """
     return render_template("home.html", musiciens=get_musicien(), sorties=get_sorties(), repetitions=get_repetitions())
+
+@app.route("/stat/")
+def stat():
+    """home page
+
+    Returns:
+        html: home page
+    """
+    
+    data = [go.Bar(x=[], y=[])]
+    data2 = [go.Bar(x=[1,2,3,4,5], y=[1,2,8])]
+    data_jour_dispo = [go.Bar(x=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"], y=["Feur"])]
+    mus=get_musicien()
+    for musicien in mus:
+        data.append(go.Bar(x=[musicien.nomMusicien], y=[musicien.ageMusicien]))
+    layout = go.Layout(title='Nombre de participation par musicien')
+    layout2 = go.Layout(title='Pourcentage de participation par activité')
+    layout_jour_dispo = go.Layout(title='Jour de disponibilité')
+    fig = go.Figure(data=data, layout=layout)
+    fig2 = go.Figure(data=data2, layout=layout2)
+    fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
+    #  catégorie de personne présente
+    #pourcentage de personne présente à une activité
+    #vérifier le pourcentage de réponse à un sondage
+    # graphique affichatn les jours avec le plus de disponibilité
+    #pourceentage h/f
+    return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
 
 
 

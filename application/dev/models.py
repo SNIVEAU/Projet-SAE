@@ -10,7 +10,7 @@ class Musicien(db.Model, UserMixin):
     prenomMusicien = db.Column(db.String(50))
     password = db.Column(db.String(50))
     ageMusicien = db.Column(db.Integer)
-    adressseMail = db.Column(db.String(50))
+    adresseMail = db.Column(db.String(50))
     telephone = db.Column(db.String(50))
     admin = db.Column(db.Boolean)
     img = db.Column(db.String(50))
@@ -26,6 +26,8 @@ class Musicien(db.Model, UserMixin):
         return f"{self.nomMusicien}.{self.prenomMusicien}"
 
 def get_max_idMusicient():
+    if Musicien.query.count()==0:
+        return 0
     return Musicien.query.order_by(Musicien.idMusicien.desc()).first().idMusicien
     
 

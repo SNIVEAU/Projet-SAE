@@ -139,6 +139,7 @@ class RegistrationForm(FlaskForm):
     adresseMail = StringField('Email')
     password = PasswordField('Mot de passe')
     confirm_password = PasswordField('Confirmer le mot de passe')
+    ageMusicien = StringField('Age')
     isAdmin = BooleanField('Admin')  # Ajout du champ pour la case à cocher
     next = HiddenField()
 
@@ -180,7 +181,8 @@ def register():
         telephone = form.telephone.data
         adresseMail = form.adresseMail.data
         password = form.password.data
-        admin = form.isAdmin.data 
+        ageMusicien = request.form.get('age')
+        admin = form.isAdmin.data
 
 
         # Hasher le mot de passe
@@ -193,9 +195,11 @@ def register():
             nomMusicien=nom,
             prenomMusicien=prenom,
             password=hashed_password,
-            telephone=telephone,
+            ageMusicien=int(ageMusicien),
             adresseMail=adresseMail,
-            admin=admin
+            telephone=telephone,
+            admin=admin,
+            img=None
         )
         db.session.add(user)
         db.session.commit()
@@ -225,38 +229,53 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
-@app.route("/update_profil/", methods=["GET", "POST"])
-def update_profil():
-    """Update profil
 
-    Returns:
-        html: page de profil
-    """
-    if not current_user.is_authenticated:
-        return redirect(url_for("login"))
-    if request.method == "POST":
+class maj_profile(FlaskForm):
+    nomMusicien = StringField('Nom')
+    prenomMusicien = StringField('Prénom')
+    telephone = StringField('Télephone')
+    adresseMail = StringField('Email')
+    ageMusicien = StringField('Age')
+    isAdmin = BooleanField('Admin')  # Ajout du champ pour la case à cocher
+    next = HiddenField()
+
+    def validate(self):
+        """Vérifie si le formulaire est valide"""
+        # Vérifier si l'utilisateur existe déjà
+        nom = self.nomMusicien.data
+        prenom = self.prenomMusicien.data
+        username = f"{nom}.{prenom}"
+
+        # Vérifier si isAdmin est coché
+        admin = self.isAdmin.data  # Récupère la valeur de la case à cocher
+
+        return True
+
+@app.route("/maj_profil/", methods=["GET", "POST"])
+@login_required  # Assurez-vous que l'utilisateur est authentifié
+def maj_profil():
+    form = maj_profile()
+
+    if request.method == "POST" and form.validate():
         # Récupérer les données du formulaire
-        nom = request.form["nom"]
-        prenom = request.form["prenom"]
-        telephone = request.form["telephone"]
-        adresseMail = request.form["adresseMail"]
-        password = request.form["password"]
-        # Hasher le mot de passe
-        m = sha256()
-        m.update(password.encode())
-        hashed_password = m.hexdigest()
-        # Ajouter l'utilisateur à la base de données
-        user = Musicien(
-            idMusicien=current_user.idMusicien,
-            nomMusicien=nom,
-            prenomMusicien=prenom,
-            password=hashed_password,
-            telephone=telephone,
-            adresseMail=adresseMail,
-            admin=current_user.admin
-        )
-        db.session.merge(user)
+        nom = form.nomMusicien.data
+        prenom = form.prenomMusicien.data
+        telephone = form.telephone.data
+        adresseMail = form.adresseMail.data
+        age = form.ageMusicien.data  # Ajout de l'âge
+        admin = form.isAdmin.data 
+
+        # Mettez à jour l'utilisateur actuel
+        current_user.nomMusicien = nom
+        current_user.prenomMusicien = prenom
+        current_user.telephone = telephone
+        current_user.adresseMail = adresseMail
+        current_user.ageMusicien = age  # Mettez à jour l'âge
+        current_user.admin = admin
+
+        # Enregistrez les modifications dans la base de données
         db.session.commit()
-        # Rediriger l'utilisateur vers une page de confirmation ou de connexion
-        return redirect(url_for("profil"))
-    return render_template("update_profil.html")
+
+        return redirect(url_for("home"))
+
+    return render_template("maj_profil.html", form=form)

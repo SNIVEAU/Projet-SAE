@@ -43,8 +43,7 @@
             };
             xhr.send();
         }
-    
-        setInterval(function(){updateContent({{s.idSondage}})}, 1000);
+        setInterval(updateContent({{s.idSondage}}), 1000);
     </script>
     {% endfor %}
 </table>

@@ -58,6 +58,11 @@ def get_sorties()->list:
 def get_sortie_by_id(id)->Sortie:
     return Sortie.query.filter_by(idSortie=id).first()
 
+def get_max_id_sortie()->int:
+    if Sortie.query.count()==0:
+        return 0
+    return Sortie.query.order_by(Sortie.idSortie.desc()).first().idSortie
+
 class Sondage(db.Model):
     idSondage = db.Column(db.Integer, primary_key=True)
     idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'))
@@ -70,7 +75,6 @@ class Sondage(db.Model):
     
     def temps_restant(self)->(int,int,int):
         """Retourne le temps restant avant la fin du sondage"""
-        print(self)
         temps_second=self.dureeSondage*3600*24
         jour = (self.dureeSondage - (datetime.now() - self.dateSondage).days)
         heure = (temps_second - (datetime.now() - self.dateSondage).seconds)//3600%24
@@ -91,6 +95,19 @@ def get_max_id_sondage()->int:
 
 def get_sondage_by_id(id)->Sondage:
     return Sondage.query.filter_by(idSondage=id).first()
+
+def get_sondage_by_sortie(id)->Sondage:
+    return Sondage.query.filter_by(idSortie=id).first()
+
+def get_sondage_by_musicien(id)->Sondage:
+    participation=[]
+    sondages=[]
+    for sorti in get_sortie_by_musicien(id):
+        participation.append(get_sondage_by_id(sorti.idSortie))
+    for part in participation:
+        for sondage in get_sondage_by_sortie(part.idSortie):
+            sondages.append(sondage)
+    return sondages
 
 class participer_repetition(db.Model):
     idMusicien = db.Column(db.Integer,db.ForeignKey('musicien.idMusicien'),primary_key=True)

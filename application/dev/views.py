@@ -1,8 +1,3 @@
-
-"""
-
-"""
-
 from .app import *
 from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
@@ -28,9 +23,9 @@ def home():
     return render_template("home.html", musiciens=get_musicien(), sorties=get_sorties(), repetitions=get_repetitions())
 
 @app.route("/sondage/")
-def page_sondage():
+def page_sondage(erreur=False):
     participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
-    return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
+    return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
 
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
@@ -41,7 +36,7 @@ def update_temps(idSondage:Sondage.idSondage):
 @app.route("/sondage_ajout")
 def sondage_ajoute():
     s=Sondage(idSondage=get_max_id_sondage()+1,
-                idSortie=1,
+                idSortie=get_max_id_sortie(),
                 message="test",
                 dateSondage=datetime.now(),
                 dureeSondage=1)
@@ -51,10 +46,19 @@ def sondage_ajoute():
 
 @app.route("/sortie_ajoute/" , methods=["GET", "POST"])
 def ajoute_sortie():
-    print(request.form)
-    #date_str=request.form["date"]
-    #print(date_str)
-    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    date_str=request.form.get("date")
+    if date_str=="":
+        return page_sondage(erreur=True)
+    date=date_str
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    s=Sortie(idSortie=get_max_id_sortie()+1,
+                dateSortie=date,
+                dureeSortie=1,
+                lieu="test",
+                type="test",  
+                tenue="test")
+    db.session.add(s)
+    db.session.commit()
     return page_sondage()
 
 # class AuthorForm(FlaskForm):

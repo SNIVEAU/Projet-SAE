@@ -80,6 +80,9 @@
     <date>
         <input type="date" name="date">
     </date>
+    {% if erreur %}
+    <p>champs non rempli</p>
+    {%endif%}
     <input type="submit" value="test2">
 </form>
 

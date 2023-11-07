@@ -33,4 +33,10 @@ footer{
 span{
     color: white;
 }
+header{
+    margin-bottom: 10px;
+}
 
+main>.container {
+    padding: 5em 1em 0;
+}

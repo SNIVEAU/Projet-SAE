@@ -25,6 +25,7 @@ def home():
     musiciens = Musicien.query.all()
     return render_template("home.html", musiciens=musiciens)
 
+
 class LoginForm(FlaskForm):
     # Création des deux formulaires
     nomMusicien = StringField('Nom')
@@ -130,9 +131,6 @@ def ajoute_sortie():
     #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
     return page_sondage()
 
-# class AuthorForm(FlaskForm):
-#     id = HiddenField('id')
-#     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
  
 class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')
@@ -165,11 +163,14 @@ class RegistrationForm(FlaskForm):
         return True
 
 
-
-
-
 @app.route("/register/", methods=["GET", "POST"])
 def register():
+    if not current_user.is_authenticated:
+        return redirect(url_for("login"))
+
+    if not current_user.admin:
+        return render_template('error_pages.html'), 403
+    
     form = RegistrationForm()
 
     if request.method == "POST" and form.validate():
@@ -200,7 +201,7 @@ def register():
         db.session.commit()
 
         # Rediriger l'utilisateur vers une page de confirmation ou de connexion
-        return redirect(url_for("login"))
+        return redirect(url_for("home"))
 
     return render_template("register.html", form=form)
 

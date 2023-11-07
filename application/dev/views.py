@@ -206,6 +206,15 @@ def register():
     return render_template("register.html", form=form)
 
 
+@app.route("/profil/")
+@login_required
+def profil():
+    """Profil
+
+    Returns:
+        html: page de profile
+    """
+    return render_template("profil.html")
 
 @app.route("/logout/")
 def logout():
@@ -216,4 +225,38 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
+@app.route("/update_profil/", methods=["GET", "POST"])
+def update_profil():
+    """Update profil
 
+    Returns:
+        html: page de profil
+    """
+    if not current_user.is_authenticated:
+        return redirect(url_for("login"))
+    if request.method == "POST":
+        # Récupérer les données du formulaire
+        nom = request.form["nom"]
+        prenom = request.form["prenom"]
+        telephone = request.form["telephone"]
+        adresseMail = request.form["adresseMail"]
+        password = request.form["password"]
+        # Hasher le mot de passe
+        m = sha256()
+        m.update(password.encode())
+        hashed_password = m.hexdigest()
+        # Ajouter l'utilisateur à la base de données
+        user = Musicien(
+            idMusicien=current_user.idMusicien,
+            nomMusicien=nom,
+            prenomMusicien=prenom,
+            password=hashed_password,
+            telephone=telephone,
+            adresseMail=adresseMail,
+            admin=current_user.admin
+        )
+        db.session.merge(user)
+        db.session.commit()
+        # Rediriger l'utilisateur vers une page de confirmation ou de connexion
+        return redirect(url_for("profil"))
+    return render_template("update_profil.html")

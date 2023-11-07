@@ -1,14 +1,16 @@
 from .app import db
 from flask_login import UserMixin
+from .app import db, login_manager
 from datetime import *
 
-class Musicien(db.Model,UserMixin):
+
+class Musicien(db.Model, UserMixin):
     idMusicien = db.Column(db.Integer, primary_key=True)
     nomMusicien = db.Column(db.String(50))
     prenomMusicien = db.Column(db.String(50))
     password = db.Column(db.String(50))
     ageMusicien = db.Column(db.Integer)
-    adresseMail = db.Column(db.String(50))
+    adressseMail = db.Column(db.String(50))
     telephone = db.Column(db.String(50))
     admin = db.Column(db.Boolean)
     img = db.Column(db.String(50))
@@ -18,7 +20,19 @@ class Musicien(db.Model,UserMixin):
 
     def __repr__(self) -> str:
         return self.nomMusicien + " " + self.prenomMusicien
+    def get_id(self):
+        return self.idMusicien
+    def generate_username(self):
+        return f"{self.nomMusicien}.{self.prenomMusicien}"
+
+def get_max_idMusicient():
+    return Musicien.query.order_by(Musicien.idMusicien.desc()).first().idMusicien
     
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Musicien.query.get(int(user_id))
+
 def get_musicien()->list:
     return Musicien.query.all()
 
@@ -48,7 +62,6 @@ class Sortie(db.Model):
     lieu = db.Column(db.String(50))
     type= db.Column(db.String(50))
     tenue = db.Column(db.String(50))
-
     def __repr__(self) -> str:
         return str(self.dateSortie)+" "+str(self.dureeSortie)+" "+str(self.idSortie)
     
@@ -110,21 +123,22 @@ def get_sondage_by_musicien(id)->Sondage:
     return sondages
 
 class participer_repetition(db.Model):
-    idMusicien = db.Column(db.Integer,db.ForeignKey('musicien.idMusicien'),primary_key=True)
-    idRepetition = db.Column(db.Integer,db.ForeignKey('repetition.idRepetition'),primary_key=True)
+    idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'), primary_key=True)
+    
 
     def __repr__(self) -> str:
         return self.idMusicien+" "+self.idRepetition
-    
 def get_participer_repetitions()->list:
     return participer_repetition.query.all()
 
 def get_musicien_by_repetition(id)->list:
     return participer_repetition.query.filter_by(idRepetition=id).all()
-
+def get_repetition_by_musicien(id)->list:
+    return participer_repetition.query.filter_by(idMusicien=id)
 class participer_sortie(db.Model):
-    idMusicien = db.Column(db.Integer,db.ForeignKey('musicien.idMusicien'),primary_key=True)
-    idSortie = db.Column(db.Integer,db.ForeignKey('sortie.idSortie'),primary_key=True)
+    idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'), primary_key=True)
 
     def get_sortie(self)->Sortie:
         return Sortie.query.filter_by(idSortie=self.idSortie).first()
@@ -156,4 +170,3 @@ def get_disponibilites()->list:
 
 def get_disponibilite_by_musicien(id)->list:
     return disponibilite.query.filter_by(idMusicien=id).all()
-    

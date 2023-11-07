@@ -1,0 +1,18 @@
+- idMusicien: 1
+  nomMusicien : "John"
+  prenomMusicien : "Doe"
+  password : "123456"
+  ageMusicien : 25
+  adresseMail : "feur@gmail.com"
+  telephone : "0606060606"
+  admin : true
+  
+
+- idMusicien: 2
+  nomMusicien : "depont"
+  prenomMusicien : "samuel"
+  password : "sam"
+  ageMusicien : 19
+  adresseMail : "sam@gmail.com"
+  telephone : "0606060606"
+  admin : true

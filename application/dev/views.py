@@ -82,22 +82,32 @@ def stat():
     """
     
     data = [go.Bar(x=[], y=[])]
-    data2 = [go.Bar(x=[1,2,3,4,5], y=[1,2,8])]
-    data_jour_dispo = [go.Bar(x=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"], y=["Feur"])]
+    data2 = [go.Bar(x=[], y=[])]
+    data_jour_dispo = [go.Bar(x=[], y=[])]
     mus=get_musicien()
-    for musicien in mus:
-        data.append(go.Bar(x=[musicien.nomMusicien], y=[musicien.ageMusicien]))
     layout = go.Layout(title='Nombre de participation par musicien')
     layout2 = go.Layout(title='Pourcentage de participation par activité')
     layout_jour_dispo = go.Layout(title='Jour de disponibilité')
-    fig = go.Figure(data=data, layout=layout)
-    fig2 = go.Figure(data=data2, layout=layout2)
-    fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
+    
+    for musicien in mus:
+        data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
+    for sort in get_sorties():
+        print(sort.description)
+        pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
+        data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
+    deja_parcouru = []
+    for dispo in get_disponibilites():
+        if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
+            deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
+            data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
     #  catégorie de personne présente
     #pourcentage de personne présente à une activité
     #vérifier le pourcentage de réponse à un sondage
     # graphique affichatn les jours avec le plus de disponibilité
     #pourceentage h/f
+    fig = go.Figure(data=data, layout=layout)
+    fig2 = go.Figure(data=data2, layout=layout2)
+    fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
     return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
 
 @app.route("/sondage/")

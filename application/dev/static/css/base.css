@@ -28,6 +28,8 @@ div.sample {
 
 footer{ 
     background-color: #444750;
+    position: sticky;
+    bottom: 0;
 }
 
 span{

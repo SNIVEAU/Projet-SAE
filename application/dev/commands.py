@@ -1,7 +1,7 @@
 import click
 from .app import app,db
 import yaml
-from .models import Musicien,Sondage,Sortie
+from .models import Musicien,Sondage,Sortie,participer_sortie,participer_repetition
 from datetime import *
 
 # voir pour inserer des image en sql alchemy
@@ -84,3 +84,15 @@ def toute_sortie():
 @app.cli.command()
 def tout_sondage():
     print(Sondage.query.all())
+
+@app.cli.command()
+def sup_srt_sdg_part():
+    db.session.query(Sondage).delete()
+    db.session.query(Sortie).delete()
+    db.session.query(participer_sortie).delete()
+    db.session.commit()
+
+@app.cli.command()
+def clean_sondage():
+    db.session.query(Sondage).delete()
+    db.session.commit()

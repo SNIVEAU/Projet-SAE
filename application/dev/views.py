@@ -1,8 +1,3 @@
-
-"""
-
-"""
-
 from .app import *
 from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
@@ -102,35 +97,84 @@ def stat():
     return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
 
 @app.route("/sondage/")
-def page_sondage():
+def page_sondage(erreur=False):
     participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
-    return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
+    s=get_sondage_non_rep(current_user.idMusicien)
+    if s is None:
+        s=[]
+    return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
 
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
-    # Code to update the content
     new_content = get_sondage_by_id(idSondage).temps_restant()
     return jsonify({'content': new_content})
 
 @app.route("/sondage_ajout")
 def sondage_ajoute():
     s=Sondage(idSondage=get_max_id_sondage()+1,
-                idSortie=1,
+                idSortie=get_max_id_sortie(),
                 message="test",
                 dateSondage=datetime.now(),
                 dureeSondage=1)
     db.session.add(s)
     db.session.commit()
-    return page_sondage()
+    return redirect(url_for("page_sondage"))
 
 @app.route("/sortie_ajoute/" , methods=["GET", "POST"])
 def ajoute_sortie():
-    print(request.form)
-    #date_str=request.form["date"]
-    #print(date_str)
-    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    date_str=request.form.get("date")
+    if date_str=="":
+        return page_sondage(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    s=Sortie(idSortie=get_max_id_sortie()+1,
+                dateSortie=date,
+                dureeSortie=1,
+                lieu="test",
+                type="test",  
+                tenue="test")
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
+
+
+@app.route("/valid_sondage/", methods=["POST","GET"])
+def validation_sondage():
+    print(datetime.now())
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    print(request.form.get("choix"+str(id)))
+    if request.form.get("choix"+str(id))=="True":
+        reponse=True
+    else:
+        reponse=False
+    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
+                         idMusicien=current_user.idMusicien,
+                         dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
+                         presence=reponse)
+    db.session.add(rs)
+    db.session.commit()
     return page_sondage()
 
+@app.route("/annuler_sondage/", methods=["POST","GET"])
+def annuler_sondage():
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+    db.session.delete(rs)
+    db.session.commit()
+    return page_sondage()
+
+
+
+# class AuthorForm(FlaskForm):
+#     id = HiddenField('id')
+#     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
  
 class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')

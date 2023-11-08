@@ -1,20 +1,17 @@
-
-"""
-
-"""
-
 from .app import *
 from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField , HiddenField, PasswordField
-from wtforms.validators import DataRequired
+from wtforms import BooleanField, StringField , HiddenField, PasswordField,EmailField, IntegerField
+from wtforms.validators import DataRequired, Email, NumberRange
 from hashlib import sha256
 from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
 from hashlib import sha256
 import plotly.graph_objs as go
 from flask import Flask, render_template
+import email_validator
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -125,21 +122,37 @@ def sondage_ajoute():
 
 @app.route("/sortie_ajoute/" , methods=["GET", "POST"])
 def ajoute_sortie():
-    print(request.form)
     #date_str=request.form["date"]
     #print(date_str)
     #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
     return page_sondage()
+
+
+def is_valid_email(email):
+    try:
+        # Vérifie si l'adresse e-mail a le bon format
+        email_validator.validate_email(email)
+        return True
+    except email_validator.EmailNotValidError:
+        return False
+
+def is_valid_age(age):
+    try:
+        # Vérifie si l'âge est un nombre entre 18 et 100
+        age = int(age)
+        return 18 <= age <= 100
+    except ValueError:
+        return False
 
  
 class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')
     telephone = StringField('Télephone')
-    adresseMail = StringField('Email')
+    adresseMail = EmailField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Mot de passe')
     confirm_password = PasswordField('Confirmer le mot de passe')
-    ageMusicien = StringField('Age')
+    ageMusicien = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=100)])    
     isAdmin = BooleanField('Admin')  # Ajout du champ pour la case à cocher
     next = HiddenField()
 
@@ -151,16 +164,24 @@ class RegistrationForm(FlaskForm):
         """
         # Vérifier si le mot de passe est correct
         if self.password.data != self.confirm_password.data:
-            self.password.errors.append("Les mots de passe ne correspondent pas")
+            self.password.errors += ("Les mots de passe ne correspondent pas.",)
             return False
+        
+        if not is_valid_email(self.adresseMail.data):
+            self.adresseMail.errors += ("adresse mail non valide.",)
+            return False
+
+        if not is_valid_age(request.form.get('age')):
+            self.ageMusicien.errors += ("L\'âge doit être un nombre entre 18 et 100 ans.",)
+            return False
+
         # Vérifier si l'utilisateur existe déjà
         nom = self.nomMusicien.data
         prenom = self.prenomMusicien.data
         username = f"{nom}.{prenom}"
-
-        # Vérifier si isAdmin est coché
-        admin = self.isAdmin.data  # Récupère la valeur de la case à cocher
-
+        if Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first() is not None:
+            self.nomMusicien.errors += ("Un utilisateur avec ce nom et prénom existe déjà.",)
+            return False
         return True
 
 
@@ -183,6 +204,7 @@ def register():
         password = form.password.data
         ageMusicien = request.form.get('age')
         admin = form.isAdmin.data
+
 
 
         # Hasher le mot de passe
@@ -218,7 +240,8 @@ def profil():
     Returns:
         html: page de profile
     """
-    return render_template("profil.html")
+    form = maj_profile()
+    return render_template("profil.html", form=form)
 
 @app.route("/logout/")
 def logout():
@@ -234,36 +257,53 @@ class maj_profile(FlaskForm):
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')
     telephone = StringField('Télephone')
-    adresseMail = StringField('Email')
-    ageMusicien = StringField('Age')
-    isAdmin = BooleanField('Admin')  # Ajout du champ pour la case à cocher
-    next = HiddenField()
+    adresseMail = EmailField('Email', validators=[DataRequired(), Email()])
+    ageMusicien = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=100)])    
+    isAdmin = BooleanField('Admin')  
 
     def validate(self):
-        """Vérifie si le formulaire est valide"""
+        """Vérifie si le formulaire est valide
+
+        Returns:
+            bool: True si le formulaire est valide
+        """
+        if not is_valid_email(self.adresseMail.data):
+            self.adresseMail.errors += ("adresse mail non valide.",)
+            return False
+
+        if not is_valid_age(request.form.get('ageMusicien')):
+            self.ageMusicien.errors += ("L\'âge doit être un nombre entre 18 et 100 ans.",)
+            return False
+
         # Vérifier si l'utilisateur existe déjà
         nom = self.nomMusicien.data
         prenom = self.prenomMusicien.data
+        id  = current_user.idMusicien
         username = f"{nom}.{prenom}"
-
-        # Vérifier si isAdmin est coché
-        admin = self.isAdmin.data  # Récupère la valeur de la case à cocher
-
+        # verifie si le nom et le prenom existe deja
+        m=Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first()
+        if m is not None and id != m.idMusicien  :
+            self.nomMusicien.errors += ("Un utilisateur avec ce nom et prénom existe déjà.",)
+            return False
         return True
+
+
+
 
 @app.route("/maj_profil/", methods=["GET", "POST"])
 @login_required  # Assurez-vous que l'utilisateur est authentifié
 def maj_profil():
     form = maj_profile()
-
+    print("test")
     if request.method == "POST" and form.validate():
+        print(request.form)
         # Récupérer les données du formulaire
         nom = form.nomMusicien.data
         prenom = form.prenomMusicien.data
         telephone = form.telephone.data
         adresseMail = form.adresseMail.data
-        age = form.ageMusicien.data  # Ajout de l'âge
-        admin = form.isAdmin.data 
+        age = request.form.get('ageMusicien') # Ajout de l'âge
+        admin = current_user.admin
 
         # Mettez à jour l'utilisateur actuel
         current_user.nomMusicien = nom
@@ -273,9 +313,10 @@ def maj_profil():
         current_user.ageMusicien = age  # Mettez à jour l'âge
         current_user.admin = admin
 
+
         # Enregistrez les modifications dans la base de données
         db.session.commit()
 
         return redirect(url_for("home"))
 
-    return render_template("maj_profil.html", form=form)
+    return render_template("profil.html", form=form)

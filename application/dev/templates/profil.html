@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-
 {% block styles %}
+{{ bootstrap.load_css() }}
+
 {{ super() }}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/profil.css') }}">
 {% endblock %}
@@ -17,6 +18,10 @@
                     <label for="nomMusicien" class="control-label">Nom</label>
                     <input type="text" id="nomMusicien" name="nomMusicien" class="form-control"
                         value="{{ current_user.nomMusicien }}" readonly>
+                    {% for error in form.nomMusicien.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
+
                 </div>
                 <div class="col-sm-6">
                     <label for="prenomMusicien" class="control-label">Prénom</label>
@@ -33,18 +38,23 @@
 
         <div class="form-group">
             <label for="adresseMail" class="control-label">Email</label>
-            <input type="email" id="adresseMail" name="adresseMail" class="form-control"
-                value="{{ current_user.adresseMail }}" readonly>
+            <input type="text" id="adresseMail" name="adresseMail" class="form-control"
+            value="{{ current_user.adresseMail }}" readonly>
+            {% for error in form.adresseMail.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
-
         <div class="form-group">
             <label for="password" class="control-label">Mot de passe</label>
             <input type="password" id="password" name="password" class="form-control" placeholder="**********" readonly>
         </div>
         <div class="form-group">
-            <label for="age" class="control-label">Âge</label>
-            <input type="number" id="age" name="age" class="form-control" value="{{ current_user.ageMusicien }}"
-                required readonly>
+            <label for="ageMusicien" class="control-label">Âge</label>
+            <input type="text" id="ageMusicien" name="ageMusicien" class="form-control"
+            value="{{ current_user.ageMusicien }}" readonly>
+            {% for error in form.ageMusicien.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
         <div class="form-group">
             <div>

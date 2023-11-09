@@ -106,4 +106,14 @@
     <input type="submit" value="ajoute sortie">
 </form>
 
-{% endblock %}
+<form method="POST" action="{{url_for('ajoute_rep')}}">
+    <date>
+        <input type="datetime-local" name="date">
+    </date>
+    {% if erreur %}
+    <p>champs non rempli</p>
+    {%endif%}
+    <input type="submit" value="ajoute rep">
+</form>
+
+{% endblock %} 

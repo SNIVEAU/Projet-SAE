@@ -9,6 +9,9 @@ from flask import request
 from hashlib import sha256
 import plotly.graph_objs as go
 from flask import Flask, render_template
+import calendar
+
+MOIS=['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre']
 import email_validator
 
 
@@ -21,6 +24,42 @@ def home():
     musiciens = Musicien.query.all()
     return render_template("home.html", musiciens=musiciens)
 
+@app.route("/calendrier/")
+def calendrier():
+    c=calendar.HTMLCalendar(firstweekday=0)
+    c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
+    c.cssclass_month_head="mois"
+    num_day=datetime.now().day
+    num_mois=datetime.now().month
+    mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
+    return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois)
+
+
+@app.route('/get_val_dico_mois/<day>')
+def get_val_dico_mois_route(day):
+    result = get_val_dico_mois(day)
+    print(result)
+    if result is None:
+        return jsonify({})
+    dict={}
+    for i in range(len(result)):
+        if i==0 and result[i] is not None:
+            dict["sortie"]=result[i]
+        if i==1 and result[i] is not None:
+            dict["repetition"]=result[i]
+    print(dict)
+    return jsonify(dict)
+
+
+@app.route("/sortie/<idSortie>")
+def sortie(idSortie):
+    sortie = get_sortie_by_id(idSortie)
+    return render_template("sortie.html", sortie=sortie)
+
+@app.route("/repetition/<idRepetition>")
+def repetition(idRepetition):
+    rep = get_repetition_by_idRep(idRepetition)
+    return render_template("repetition.html", rep=rep)
 
 class LoginForm(FlaskForm):
     # Création des deux formulaires
@@ -169,6 +208,24 @@ def is_valid_age(age):
                 type="test",  
                 tenue="test")
     db.session.add(s)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
+
+@app.route("/rep_ajoute/" , methods=["GET", "POST"])
+def ajoute_rep():
+    date_str=request.form.get("date")
+    if date_str=="":
+        return page_sondage(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    r=Repetition(idRepetition=get_max_id_repetition()+1,
+                dateRepetition=date,
+                dureeRepetition=1,
+                lieu="test",
+                tenue="test")
+    db.session.add(r)
     db.session.commit()
     return redirect(url_for("page_sondage"))
 

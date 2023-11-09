@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block styles %}
 {{ bootstrap.load_css() }}
-    
+
 {{ super() }}
 <link rel="stylesheet" href="{{url_for('static',filename='css/stat.css')}}">
 {% endblock %}
@@ -9,8 +9,8 @@
 
 <h1> Statistiques des musiciens </h1>
 {% for musicien in musiciens %}
-    <p class="nommusicien">{{ musicien.nomMusicien }}, {{ musicien.prenomMusicien }} :</p>
-{% endfor %} 
+<p class="nommusicien">{{ musicien.nomMusicien }}, {{ musicien.prenomMusicien }} :</p>
+{% endfor %}
 <div class="form-group">
     <label for="selectgraph" class="control-label">Sélectionner le graphique souhaité</label>
     <select id="selectgraph" name="selectgraph" class="form-control" required>
@@ -22,7 +22,7 @@
         <!-- Contenu pour "Nombre de participation par musicien" -->
         {{ plot | safe }}
     </div>
-    
+
     <div id="pourcentage" class="hidden">
         <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
         {{ pourcentage | safe }}
@@ -30,17 +30,17 @@
     <div id="jour_dispo" class="hidden">
         <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
         {{ jour_dispo | safe }}
-</div>
-<script>
-    // Écouter les changements dans le menu déroulant
-    document.getElementById("selectgraph").addEventListener("change", function() {
-        var selectedValue = this.value;
-        // Masquer toutes les divs
-        document.getElementById("plot").classList.add("hidden");
-        document.getElementById("pourcentage").classList.add("hidden");
-        document.getElementById("jour_dispo").classList.add("hidden");
-        // Afficher la div en fonction de l'option sélectionnée
-        document.getElementById(selectedValue).classList.remove("hidden");
-    });
-</script>
-{% endblock %}
+    </div>
+    <script>
+        // Écouter les changements dans le menu déroulant
+        document.getElementById("selectgraph").addEventListener("change", function () {
+            var selectedValue = this.value;
+            // Masquer toutes les divs
+            document.getElementById("plot").classList.add("hidden");
+            document.getElementById("pourcentage").classList.add("hidden");
+            document.getElementById("jour_dispo").classList.add("hidden");
+            // Afficher la div en fonction de l'option sélectionnée
+            document.getElementById(selectedValue).classList.remove("hidden");
+        });
+    </script>
+    {% endblock %}

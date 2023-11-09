@@ -53,12 +53,7 @@ class LoginForm(FlaskForm):
 # Création du login
 @app.route("/login/", methods=["GET", "POST"])
 def login():
-    """Login
 
-    Returns:    {% endblock %}
-    {% block content%}
-        html: home page
-    """
     f = LoginForm()
     if not f.is_submitted():
         f.next.data = request.args.get("next")
@@ -68,7 +63,7 @@ def login():
             login_user(user)
             return redirect(url_for("home"))
         else:
-            print("Identifiants incorrects. Veuillez réessayer.", "danger")
+            f.password.errors += ("Nom d'utilisateur ou mot de passe incorrect",)
     return render_template("login.html", form=f)
 
 @app.route("/stat/")
@@ -310,7 +305,7 @@ def maj_profil():
         current_user.prenomMusicien = prenom
         current_user.telephone = telephone
         current_user.adresseMail = adresseMail
-        current_user.ageMusicien = age  # Mettez à jour l'âge
+        current_user.ageMusicien = age
         current_user.admin = admin
 
 

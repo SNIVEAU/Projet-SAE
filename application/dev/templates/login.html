@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block styles %}
 {{ bootstrap.load_css() }}
-    
+
 {{ super() }}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login_register.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login_register.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -29,6 +29,9 @@
             <label for="password" class="control-label">Mot de passe</label>
             {{ form.password(size=50, class_="form-control", placeholder="") }}
         </div>
+        {% for error in form.password.errors %}
+        <span class="text-danger">{{ error }}</span>
+        {% endfor %}
         <div class="form-group">
             <div>
                 <button type="submit" class="btn btn-danger rounded">Se Connecter</button>

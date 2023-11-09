@@ -18,10 +18,6 @@
                     <label for="nomMusicien" class="control-label">Nom</label>
                     <input type="text" id="nomMusicien" name="nomMusicien" class="form-control"
                         value="{{ current_user.nomMusicien }}" readonly>
-                    {% for error in form.nomMusicien.errors %}
-                        <span class="text-danger">{{ error }}</span>
-                    {% endfor %}
-
                 </div>
                 <div class="col-sm-6">
                     <label for="prenomMusicien" class="control-label">Prénom</label>
@@ -29,6 +25,9 @@
                         value="{{ current_user.prenomMusicien }}" readonly>
                 </div>
             </div>
+            {% for error in form.nomMusicien.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
         <div class="form-group">
             <label for="telephone" class="control-label">Télephone</label>
@@ -39,7 +38,7 @@
         <div class="form-group">
             <label for="adresseMail" class="control-label">Email</label>
             <input type="text" id="adresseMail" name="adresseMail" class="form-control"
-            value="{{ current_user.adresseMail }}" readonly>
+                value="{{ current_user.adresseMail }}" readonly>
             {% for error in form.adresseMail.errors %}
             <span class="text-danger">{{ error }}</span>
             {% endfor %}
@@ -51,7 +50,7 @@
         <div class="form-group">
             <label for="ageMusicien" class="control-label">Âge</label>
             <input type="text" id="ageMusicien" name="ageMusicien" class="form-control"
-            value="{{ current_user.ageMusicien }}" readonly>
+                value="{{ current_user.ageMusicien }}" readonly>
             {% for error in form.ageMusicien.errors %}
             <span class="text-danger">{{ error }}</span>
             {% endfor %}

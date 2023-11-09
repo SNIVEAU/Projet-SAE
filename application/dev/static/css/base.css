@@ -1,6 +1,12 @@
+h1 {
+    color: black;
+}
+
 div.sample {
-    margin-bottom: 10%;
     text-align: center;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-bottom: 10%;
 }
 
 
@@ -22,14 +28,26 @@ div.sample {
 
 footer{ 
     background-color: #444750;
-    color : white;
-    text-align: center;
-    padding: 20px;
-    position: fixed;
-    bottom: 0;
+    position: absolute;
+    bottom: 0%;
     width: 100%;
 }
 
 span{
     color: white;
 }
+header{
+    margin-bottom: 10px;
+}
+
+main>.container {
+    padding: 5em 1em 0;
+}
+
+.nom {
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    margin-right: 10px;
+}
+

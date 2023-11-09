@@ -1,32 +1,74 @@
 {% extends "base.html" %}
 {% block styles %}
+{{ bootstrap.load_css() }}
+
 {{ super() }}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login_register.css') }}">
 {% endblock %}
+
 {% block content %}
-<form class="form-horizontal" role="form" method="POST" action="{{ url_for ('register') }}">
-    {{ form.hidden_tag() }}
-    <div class="form-group">
-        <h2>S'incrire</h2>
-        <label for="username" class="col-sm-2control-label">{{ form.username.label }}</label>
-        <div class="col-sm-10">
-            {{ form.username(size=50, class_="form-control",placeholder ="Username") }}
+<div class="sample">
+    <form class="form-horizontal" role="form" method="POST" action="{{ url_for('register') }}">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            <h2>S'incrire</h2>
         </div>
-    </div>
-    <div class="form-group">
-        <label for="password" class="col-sm-2control-label">{{ form.password.label }}</label>
-        <div class="col-sm-10">
-            {{ form. password (size =50, class_="form-control",
-            placeholder="Password") }}
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-6">
+                    <label for="nomMusicien" class="control-label">Nom</label>
+                    {{ form.nomMusicien(size=50, class_="form-control", placeholder="") }}
+                </div>
+                <div class="col-sm-6">
+                    <label for="prenomMusicien" class="control-label">Prénom</label>
+                    {{ form.prenomMusicien(size=50, class_="form-control", placeholder="") }}
+                </div>
+            </div>
+            {% for error in form.nomMusicien.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-offset-2col-sm-10">
-            <button type="submit" class="btnbtn-default">S'incrire</button>
+        <div class="form-group">
+            <label for="telephone" class="control-label">Télephone</label>
+            {{ form.telephone(size=50, class_="form-control", placeholder="") }}
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-offset-2col-sm-10">
-            <a href="{{ url_for('login') }}">Se Connecter</a>
+
+        <div class="form-group">
+            <label for="adresseMail" class="control-label">Email</label>
+            {{ form.adresseMail(size=50, class_="form-control", placeholder="") }}
+            {% for error in form.adresseMail.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
         </div>
-</form>
+
+        <div class="form-group">
+            <label for="password" class="control-label">Mot de passe</label>
+            {{ form.password(size=50, class_="form-control", placeholder="") }}
+        </div>
+        <div class="form-group">
+            <label for="confirm_password" class="control-label">Confirmer le mot de passe</label>
+            {{ form.confirm_password(size=50, class_="form-control", placeholder="") }}
+            {% for error in form.password.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+
+        </div>
+        <div class="form-group">
+            <label for="age" class="control-label">Âge</label>
+            <input type="number" id="age" name="age" class="form-control" required min="0" max="122">
+        </div>
+        <div class="form-group center-checkbox">
+            <label for="isAdmin" style="margin-right: 10px;">Admin</label>
+            <div class="form-check">
+                <input type="checkbox" id="isAdmin" name="isAdmin" class="form-check-input">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+                <button type="submit" class="btn btn-danger rounded">S'incrire</button>
+            </div>
+        </div>
+    </form>
+</div>
 {% endblock %}

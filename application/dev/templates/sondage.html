@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/sondage.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Sondage</h1>
+<h2>Sondage en cours</h2>
+<table>
+    <tr>
+        <th>sujet sondage</th>
+        <th>date</th>
+        <th>temps restant</th>
+        <th>vote</th>
+        <th>valider</th>
+    </tr>
+    {% if len(sondages)==0 %}
+    </table>
+    <p>pas de sondage en cours</p>
+    {% else %}
+    {% for s in sondages %}
+    <form method="POST" action="{{ url_for('validation_sondage')}}">
+    <tr>
+        <td>{{ s.message }}</td>
+        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
+        <td id="temps{{s.idSondage}}">
+            {{s.temps_restant()}}
+        </td>
+        <td>
+            <div>
+            <input type="radio" value="True" name="choix{{s.idSondage}}" id="oui" >
+            <label for="oui">oui</label>
+            </div>
+            <div>
+            <input type="radio" value="False" name="choix{{s.idSondage}}" id="non">
+            <label for="non">non</label>
+            </div>
+        </td>
+        <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
+        <td>
+            <input class="valid" type="submit" value="✔️">
+        </td>
+    </tr>
+    </form>
+    <script>
+        function updateContent(idSondage) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/update_temps'+idSondage);
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('temps'+idSondage).innerHTML = response.content;
+                }
+            };
+            xhr.send();
+        }
+        setInterval(updateContent({{s.idSondage}}), 1000);
+    </script>
+    {% endfor %}
+    </table>
+    {% endif %}
+<h2>sondage répondu</h2>
+<table>
+    <tr>
+        <th>sujet sondage</th>
+        <th>date</th>
+        <th>choix vote</th>
+        <th>date vote</th>
+        <th>annuler</th>
+    </tr>
+    {% for ps in participer_sortie %}
+    <tr>
+        <td>{{ get_sondage_by_sortie(ps.get_sortie().idSortie).message }}</td>
+        <td>{{ get_sortie_by_id(ps.idSortie).dateSortie }}</td>
+        {% if ps.presence%}
+        <td>oui</td>
+        {% else %}
+        <td>non</td>
+        {% endif %}
+        <td>
+            {{ ps.dateReponse }}
+        </td>
+        <td>
+            <form method="POST" action="{{url_for('annuler_sondage')}}">
+                <input type="text" name="idsondage" value="{{get_sondage_by_sortie(ps.get_sortie().idSortie).idSondage}}" hidden>
+                <input type="text" name="idsortie" value="{{ps.idSortie}}" hidden>
+                <input type="submit" value="✖️" class="annul">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<form action="{{url_for('sondage_ajoute')}}">
+    <input type="submit" name="message" value="ajoute sondage">
+</form>
+
+<form method="POST" action="{{url_for('ajoute_sortie')}}">
+    <date>
+        <input type="datetime-local" name="date">
+    </date>
+    {% if erreur %}
+    <p>champs non rempli</p>
+    {%endif%}
+    <input type="submit" value="ajoute sortie">
+</form>
+
+<form method="POST" action="{{url_for('ajoute_rep')}}">
+    <date>
+        <input type="datetime-local" name="date">
+    </date>
+    {% if erreur %}
+    <p>champs non rempli</p>
+    {%endif%}
+    <input type="submit" value="ajoute rep">
+</form>
+
+{% endblock %} 

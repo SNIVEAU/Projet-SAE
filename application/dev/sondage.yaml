@@ -1,0 +1,11 @@
+- idSondage : 1
+  idSortie : 1
+  message : "sortie du dimanche"
+  dateSondage : "2023-10-25 00:00:00"
+  dureeSondage : 6
+
+- idSondage : 2
+  idSortie : 2
+  message : "sortie du samaedi"
+  dateSondage : "2023-10-25 00:00:00"
+  dureeSondage : 6

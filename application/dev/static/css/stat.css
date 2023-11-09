@@ -1,0 +1,22 @@
+.nommusicien{
+    font-size: 150%;
+    padding-left: 10vh;
+}
+h1{
+    font-size: 200%;
+    padding-right: 60%;
+    padding-bottom: 10vh;
+    padding-top: 2vh;
+}
+.hidden {
+    display: none;
+}
+.form-group{
+    padding-left: 10vh;
+}
+#selectgraph{
+    border: 1px solid black;
+}
+div label{
+    padding-bottom: 5vh;
+}

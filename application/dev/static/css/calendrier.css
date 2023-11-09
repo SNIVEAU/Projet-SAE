@@ -1,0 +1,36 @@
+
+th {
+  border: 0.1vw solid #333;
+  padding: 0.5vw;
+  max-width: 5vw;
+}
+
+th {
+  background-color: red;
+  color: #fff;
+  text-align: center;
+}
+
+td {
+  text-align: center;
+  border: 0.1vw solid #333;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%; 
+} 
+
+.today{
+    color:black;
+    font-size: 50px;
+}
+
+.sortie{
+    background-color: orange;
+    margin-right: 1vw;
+}
+
+.repetition{
+    background-color: yellow;
+}

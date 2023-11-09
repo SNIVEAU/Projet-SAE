@@ -28,8 +28,9 @@ div.sample {
 
 footer{ 
     background-color: #444750;
-    position: sticky;
-    bottom: 0;
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
 }
 
 span{
@@ -41,7 +42,7 @@ header{
 
 main>.container {
     padding: 5em 1em 0;
-
+}
 
 .nom {
     font-size: 1em;

@@ -7,6 +7,22 @@
   telephone : "0600000000"
   admin : true
   image : None
-
-
+- idMusicien : 1
+  nomMusicien : "a"
+  prenomMusicien : "a"
+  password : "a"
+  ageMusicien : 25
+  adresseMail : "a@gmail.com"
+  telephone : "0600000000"
+  admin : true
+  image : None
+- idMusicien : 15
+  nomMusicien : "ppp"
+  prenomMusicien : "ppp"
+  password : "ppp"
+  ageMusicien : 25
+  adresseMail : "ppp@gmail.com"
+  telephone : "ppp"
+  admin : true
+  image : None
 

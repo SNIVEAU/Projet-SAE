@@ -4,7 +4,6 @@ from .models import *
 from flask_wtf import FlaskForm
 from wtforms import BooleanField, StringField , HiddenField, PasswordField,EmailField, IntegerField
 from wtforms.validators import DataRequired, Email, NumberRange
-from hashlib import sha256
 from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
 from hashlib import sha256
@@ -47,6 +46,7 @@ class LoginForm(FlaskForm):
         m = sha256()
         m.update(self.password.data.encode())
         passwd = m.hexdigest()
+        print(passwd)
         return musicien if passwd == musicien.password else None
 
 
@@ -105,12 +105,14 @@ def stat():
 
 @app.route("/sondage/")
 def page_sondage(erreur=False):
-    participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
-    s=get_sondage_non_rep(current_user.idMusicien)
-    if s is None:
-        s=[]
-    return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
+    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
 
+        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
+        s=get_sondage_non_rep(current_user.idMusicien)
+        if s is None:
+            s=[]
+        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
+    return render_template("error_pages.html"), 403
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
     new_content = get_sondage_by_id(idSondage).temps_restant()
@@ -248,11 +250,11 @@ class RegistrationForm(FlaskForm):
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
-    if not current_user.is_authenticated:
-        return redirect(url_for("login"))
+    # if not current_user.is_authenticated:
+    #     return redirect(url_for("login"))
 
-    if not current_user.admin:
-        return render_template('error_pages.html'), 403
+    # if not current_user.admin:
+    #     return render_template('error_pages.html'), 403
     
     form = RegistrationForm()
 

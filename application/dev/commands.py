@@ -3,6 +3,7 @@ from .app import app,db
 import yaml
 from .models import *
 from datetime import *
+from hashlib import sha256
 
 # voir pour inserer des image en sql alchemy
 
@@ -30,10 +31,14 @@ def crea_musicien(filename:str) -> None:
     fy=yaml.safe_load(open(filename))
     for musicien in fy:
         print(musicien)
+        m = sha256()
+        m.update(musicien["password"].encode())
+        hashed_password = m.hexdigest(),
         m=Musicien(idMusicien=int(musicien["idMusicien"]),
                    nomMusicien=musicien["nomMusicien"],
                    prenomMusicien=musicien["prenomMusicien"],
-                   password=musicien["password"],
+                   
+                   password=str(hashed_password[0]),
                    ageMusicien=int(musicien["ageMusicien"]),
                    adresseMail=musicien["adresseMail"],
                    telephone=musicien["telephone"],

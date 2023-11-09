@@ -14,7 +14,12 @@
         <th>vote</th>
         <th>valider</th>
     </tr>
+    {% if len(sondages)==0 %}
+    </table>
+    <p>pas de sondage en cours</p>
+    {% else %}
     {% for s in sondages %}
+    <form method="POST" action="{{ url_for('validation_sondage')}}">
     <tr>
         <td>{{ s.message }}</td>
         <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
@@ -22,14 +27,21 @@
             {{s.temps_restant()}}
         </td>
         <td>
-            <input type="button" value="oui">
-            <input type="button" value="non">
+            <div>
+            <input type="radio" value="True" name="choix{{s.idSondage}}" id="oui" >
+            <label for="oui">oui</label>
+            </div>
+            <div>
+            <input type="radio" value="False" name="choix{{s.idSondage}}" id="non">
+            <label for="non">non</label>
+            </div>
         </td>
+        <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
         <td>
-            <input class="valid" type="button" value="✔️">
+            <input class="valid" type="submit" value="✔️">
         </td>
     </tr>
-    
+    </form>
     <script>
         function updateContent(idSondage) {
             var xhr = new XMLHttpRequest();
@@ -47,7 +59,8 @@
         setInterval(function(){updateContent({{s.idSondage}})}, 1000);
     </script>
     {% endfor %}
-</table>
+    </table>
+    {% endif %}
 <h2>sondage répondu</h2>
 <table>
     <tr>
@@ -59,28 +72,39 @@
     </tr>
     {% for ps in participer_sortie %}
     <tr>
-        <td>{{ ps.get_sortie().message }}</td>
-        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
-        <td>temps</td>
+        <td>{{ get_sondage_by_sortie(ps.get_sortie().idSortie).message }}</td>
+        <td>{{ get_sortie_by_id(ps.idSortie).dateSortie }}</td>
+        {% if ps.presence%}
+        <td>oui</td>
+        {% else %}
+        <td>non</td>
+        {% endif %}
         <td>
-            
+            {{ ps.dateReponse }}
         </td>
         <td>
-            <input type="button" value="✖️" class="annul">
+            <form method="POST" action="{{url_for('annuler_sondage')}}">
+                <input type="text" name="idsondage" value="{{get_sondage_by_sortie(ps.get_sortie().idSortie).idSondage}}" hidden>
+                <input type="text" name="idsortie" value="{{ps.idSortie}}" hidden>
+                <input type="submit" value="✖️" class="annul">
+            </form>
         </td>
     </tr>
     {% endfor %}
 </table>
 
 <form action="{{url_for('sondage_ajoute')}}">
-    <input type="submit" name="message" value="test">
+    <input type="submit" name="message" value="ajoute sondage">
 </form>
 
 <form method="POST" action="{{url_for('ajoute_sortie')}}">
     <date>
-        <input type="date" name="date">
+        <input type="datetime-local" name="date">
     </date>
-    <input type="submit" value="test2">
+    {% if erreur %}
+    <p>champs non rempli</p>
+    {%endif%}
+    <input type="submit" value="ajoute sortie">
 </form>
 
 {% endblock %}

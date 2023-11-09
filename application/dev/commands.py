@@ -102,6 +102,21 @@ def toute_sortie():
 @app.cli.command()
 def tout_sondage():
     print(Sondage.query.all())
+
 @app.cli.command()
 def tout_dispo():
     print(disponibilite.query.all())
+
+
+@app.cli.command()
+def sup_srt_sdg_part():
+    db.session.query(Sondage).delete()
+    db.session.query(Sortie).delete()
+    db.session.query(participer_sortie).delete()
+    db.session.commit()
+
+@app.cli.command()
+def clean_sondage():
+    db.session.query(Sondage).delete()
+    db.session.commit()
+

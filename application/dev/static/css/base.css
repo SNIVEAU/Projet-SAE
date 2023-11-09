@@ -41,4 +41,12 @@ header{
 
 main>.container {
     padding: 5em 1em 0;
+
+
+.nom {
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    margin-right: 10px;
 }
+

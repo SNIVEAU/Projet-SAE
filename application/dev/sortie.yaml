@@ -1,4 +1,4 @@
-- idSortie : 1
+- idSortie : 3
   dateSortie : "2023-10-30 00:00:00"
   dureeSortie : 4
   description : "Concert de test"
@@ -6,7 +6,7 @@
   type : "Concert"
   tenue : "Décontractée"
 
-- idSortie : 2
+- idSortie : 4
   dateSortie : "2023-10-28 00:00:00"
   dureeSortie : 4
   description : "Concert de test2"

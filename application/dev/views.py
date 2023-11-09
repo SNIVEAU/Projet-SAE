@@ -75,48 +75,61 @@ def stat():
     """
     
     data = [go.Bar(x=[], y=[])]
-    data2 = [go.Bar(x=[1,2,3,4,5], y=[1,2,8])]
-    data_jour_dispo = [go.Bar(x=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"], y=["Feur"])]
+    data2 = [go.Bar(x=[], y=[])]
+    data_jour_dispo = [go.Bar(x=[], y=[])]
     mus=get_musicien()
-    for musicien in mus:
-        data.append(go.Bar(x=[musicien.nomMusicien], y=[musicien.ageMusicien]))
     layout = go.Layout(title='Nombre de participation par musicien')
     layout2 = go.Layout(title='Pourcentage de participation par activité')
     layout_jour_dispo = go.Layout(title='Jour de disponibilité')
-    fig = go.Figure(data=data, layout=layout)
-    fig2 = go.Figure(data=data2, layout=layout2)
-    fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
+    
+    for musicien in mus:
+        data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
+    for sort in get_sorties():
+        print(sort.description)
+        pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
+        data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
+    deja_parcouru = []
+    for dispo in get_disponibilites():
+        if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
+            deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
+            data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
     #  catégorie de personne présente
     #pourcentage de personne présente à une activité
     #vérifier le pourcentage de réponse à un sondage
     # graphique affichatn les jours avec le plus de disponibilité
     #pourceentage h/f
+    fig = go.Figure(data=data, layout=layout)
+    fig2 = go.Figure(data=data2, layout=layout2)
+    fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
     return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
 
 @app.route("/sondage/")
-def page_sondage():
+def page_sondage(erreur=False):
     participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
-    return render_template("sondage.html",sondages=get_sondages(),get_sortie_by_id=get_sortie_by_id,participer_sortie=get_sortie_by_musicien(current_user.idMusicien))
+    s=get_sondage_non_rep(current_user.idMusicien)
+    if s is None:
+        s=[]
+    return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
 
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
-    # Code to update the content
     new_content = get_sondage_by_id(idSondage).temps_restant()
     return jsonify({'content': new_content})
 
 @app.route("/sondage_ajout")
 def sondage_ajoute():
     s=Sondage(idSondage=get_max_id_sondage()+1,
-                idSortie=1,
+                idSortie=get_max_id_sortie(),
                 message="test",
                 dateSondage=datetime.now(),
                 dureeSondage=1)
     db.session.add(s)
     db.session.commit()
-    return page_sondage()
+    return redirect(url_for("page_sondage"))
 
 @app.route("/sortie_ajoute/" , methods=["GET", "POST"])
 def ajoute_sortie():
+
     #date_str=request.form["date"]
     #print(date_str)
     #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
@@ -139,6 +152,59 @@ def is_valid_age(age):
     except ValueError:
         return False
 
+    date_str=request.form.get("date")
+    if date_str=="":
+        return page_sondage(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    s=Sortie(idSortie=get_max_id_sortie()+1,
+                dateSortie=date,
+                dureeSortie=1,
+                lieu="test",
+                type="test",  
+                tenue="test")
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
+
+
+@app.route("/valid_sondage/", methods=["POST","GET"])
+def validation_sondage():
+    print(datetime.now())
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    print(request.form.get("choix"+str(id)))
+    if request.form.get("choix"+str(id))=="True":
+        reponse=True
+    else:
+        reponse=False
+    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
+                         idMusicien=current_user.idMusicien,
+                         dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
+                         presence=reponse)
+    db.session.add(rs)
+    db.session.commit()
+    return page_sondage()
+
+@app.route("/annuler_sondage/", methods=["POST","GET"])
+def annuler_sondage():
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+    db.session.delete(rs)
+    db.session.commit()
+    return page_sondage()
+
+
+
+# class AuthorForm(FlaskForm):
+#     id = HiddenField('id')
+#     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
  
 class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')

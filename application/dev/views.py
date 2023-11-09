@@ -14,16 +14,25 @@ import email_validator
 
 @login_manager.user_loader
 def load_user(user_id):
+    """Charger l'utilisateur actuel"""
     return Musicien.query.get(user_id)
 
 @app.route("/")
 def home():
+    """home page
+    Returns:
+        html: home page"""
     musiciens = Musicien.query.all()
     return render_template("home.html", musiciens=musiciens)
 
 
 class LoginForm(FlaskForm):
-    # Création des deux formulaires
+    """Formulaire de connexion
+    Attributes:
+        nomMusicien (StringField): Nom de l'utilisateur
+        prenomMusicien (StringField): Prénom de l'utilisateur
+        password (PasswordField): Mot de passe de l'utilisateur
+        next (HiddenField): Page suivante"""
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')
     password = PasswordField('Password')
@@ -37,11 +46,12 @@ class LoginForm(FlaskForm):
         """
         nom = self.nomMusicien.data
         prenom = self.prenomMusicien.data
-        username = f"{nom}.{prenom}"  # Utiliser le username généré
 
+        # Vérifier si l'utilisateur existe
         musicien = Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first()
         if musicien is None:
             return None
+        
         # Vérifier si le mot de passe est correct
         m = sha256()
         m.update(self.password.data.encode())
@@ -49,11 +59,12 @@ class LoginForm(FlaskForm):
         print(passwd)
         return musicien if passwd == musicien.password else None
 
-
-# Création du login
 @app.route("/login/", methods=["GET", "POST"])
 def login():
-
+    """Login page
+    Returns:
+        html: login page
+    """
     f = LoginForm()
     if not f.is_submitted():
         f.next.data = request.args.get("next")
@@ -66,80 +77,20 @@ def login():
             f.password.errors += ("Nom d'utilisateur ou mot de passe incorrect",)
     return render_template("login.html", form=f)
 
-@app.route("/stat/")
-def stat():
-    """home page
 
+@app.route("/logout/")
+def logout():
+    """Logout
     Returns:
         html: home page
     """
-    if current_user.is_authenticated and current_user.admin and len(get_sorties())!=0:
-        data = [go.Bar(x=[], y=[])]
-        data2 = [go.Bar(x=[], y=[])]
-        data_jour_dispo = [go.Bar(x=[], y=[])]
-        mus=get_musicien()
-        layout = go.Layout(title='Nombre de participation par musicien')
-        layout2 = go.Layout(title='Pourcentage de participation par activité')
-        layout_jour_dispo = go.Layout(title='Jour de disponibilité')
-    
-        for musicien in mus:
-            data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
-        for sort in get_sorties():
-            print(sort.description)
-            pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
-            data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
-        deja_parcouru = []
-        for dispo in get_disponibilites():
-            if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
-                deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
-                data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
-        #  catégorie de personne présente
-        #pourcentage de personne présente à une activité
-        #vérifier le pourcentage de réponse à un sondage
-        # graphique affichatn les jours avec le plus de disponibilité
-        #pourceentage h/f
-        fig = go.Figure(data=data, layout=layout)
-        fig2 = go.Figure(data=data2, layout=layout2)
-        fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
-        return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
-    return render_template("error_pages.html"), 403
-
-@app.route("/sondage/")
-def page_sondage(erreur=False):
-    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
-
-        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
-        s=get_sondage_non_rep(current_user.idMusicien)
-        if s is None:
-            s=[]
-        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
-    return render_template("error_pages.html"), 403
-@app.route('/update_temps<idSondage>')
-def update_temps(idSondage:Sondage.idSondage):
-    new_content = get_sondage_by_id(idSondage).temps_restant()
-    return jsonify({'content': new_content})
-
-@app.route("/sondage_ajout")
-def sondage_ajoute():
-    s=Sondage(idSondage=get_max_id_sondage()+1,
-                idSortie=get_max_id_sortie(),
-                message="test",
-                dateSondage=datetime.now(),
-                dureeSondage=1)
-    db.session.add(s)
-    db.session.commit()
-    return redirect(url_for("page_sondage"))
-
-@app.route("/sortie_ajoute/" , methods=["GET", "POST"])
-def ajoute_sortie():
-
-    #date_str=request.form["date"]
-    #print(date_str)
-    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-    return page_sondage()
-
+    logout_user()
+    return redirect(url_for("home"))
 
 def is_valid_email(email):
+    """Vérifie si l'adresse e-mail est valide
+    Returns:
+        bool: True si l'adresse e-mail est valide"""
     try:
         # Vérifie si l'adresse e-mail a le bon format
         email_validator.validate_email(email)
@@ -148,6 +99,9 @@ def is_valid_email(email):
         return False
 
 def is_valid_age(age):
+    """Vérifie si l'âge est valide
+    Returns:
+        bool: True si l'âge est valide"""
     try:
         # Vérifie si l'âge est un nombre entre 18 et 100
         age = int(age)
@@ -155,61 +109,16 @@ def is_valid_age(age):
     except ValueError:
         return False
 
-    date_str=request.form.get("date")
-    if date_str=="":
-        return page_sondage(erreur=True)
-    
-    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
-
-    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    s=Sortie(idSortie=get_max_id_sortie()+1,
-                dateSortie=date,
-                dureeSortie=1,
-                lieu="test",
-                type="test",  
-                tenue="test")
-    db.session.add(s)
-    db.session.commit()
-    return redirect(url_for("page_sondage"))
-
-
-@app.route("/valid_sondage/", methods=["POST","GET"])
-def validation_sondage():
-    print(datetime.now())
-    if len(request.form)==0:
-        return redirect(url_for("page_sondage"))
-    id=int(request.form.get("idsondage"))
-    print(request.form.get("choix"+str(id)))
-    if request.form.get("choix"+str(id))=="True":
-        reponse=True
-    else:
-        reponse=False
-    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
-                         idMusicien=current_user.idMusicien,
-                         dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
-                         presence=reponse)
-    db.session.add(rs)
-    db.session.commit()
-    return page_sondage()
-
-@app.route("/annuler_sondage/", methods=["POST","GET"])
-def annuler_sondage():
-    if len(request.form)==0:
-        return redirect(url_for("page_sondage"))
-    id=int(request.form.get("idsondage"))
-    rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
-    db.session.delete(rs)
-    db.session.commit()
-    return page_sondage()
-
-
-
-# class AuthorForm(FlaskForm):
-#     id = HiddenField('id')
-#     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
- 
 class RegistrationForm(FlaskForm):
+    """Formulaire d'inscription
+    Attributes:
+        nomMusicien (StringField): Nom de l'utilisateur
+        prenomMusicien (StringField): Prénom de l'utilisateur
+        password (PasswordField): Mot de passe de l'utilisateur
+        confirm_password (PasswordField): Confirmation du mot de passe de l'utilisateur
+        ageMusicien (IntegerField): Age de l'utilisateur
+        isAdmin (BooleanField): Admin ou non
+        next (HiddenField): Page suivante"""
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')
     telephone = StringField('Télephone')
@@ -251,11 +160,15 @@ class RegistrationForm(FlaskForm):
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
-    # if not current_user.is_authenticated:
-    #     return redirect(url_for("login"))
+    """Register page
+    Returns:
+        html: register page
+    """
+    if not current_user.is_authenticated:
+        return redirect(url_for("login"))
 
-    # if not current_user.admin:
-    #     return render_template('error_pages.html'), 403
+    if not current_user.admin:
+        return render_template('error_pages.html'), 403
     
     form = RegistrationForm()
 
@@ -268,8 +181,6 @@ def register():
         password = form.password.data
         ageMusicien = request.form.get('age')
         admin = form.isAdmin.data
-
-
 
         # Hasher le mot de passe
         m = sha256()
@@ -296,6 +207,7 @@ def register():
     return render_template("register.html", form=form)
 
 
+
 @app.route("/profil/")
 @login_required
 def profil():
@@ -307,17 +219,18 @@ def profil():
     form = maj_profile()
     return render_template("profil.html", form=form)
 
-@app.route("/logout/")
-def logout():
-    """Logout
-    Returns:
-        html: page de home
-    """
-    logout_user()
-    return redirect(url_for("home"))
-
 
 class maj_profile(FlaskForm):
+    """Formulaire de mise à jour du profil
+    Attributes:
+        nomMusicien (StringField): Nom de l'utilisateur
+        prenomMusicien (StringField): Prénom de l'utilisateur
+        password (PasswordField): Mot de passe de l'utilisateur
+        confirm_password (PasswordField): Confirmation du mot de passe de l'utilisateur
+        ageMusicien (IntegerField): Age de l'utilisateur
+        isAdmin (BooleanField): Admin ou non
+        next (HiddenField): Page suivante
+    """
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')
     telephone = StringField('Télephone')
@@ -355,18 +268,20 @@ class maj_profile(FlaskForm):
 
 
 @app.route("/maj_profil/", methods=["GET", "POST"])
-@login_required  # Assurez-vous que l'utilisateur est authentifié
+@login_required 
 def maj_profil():
+    """Mise à jour du profil
+    Returns:
+        html: page de mise à jour du profil
+    """
     form = maj_profile()
-    print("test")
     if request.method == "POST" and form.validate():
-        print(request.form)
         # Récupérer les données du formulaire
         nom = form.nomMusicien.data
         prenom = form.prenomMusicien.data
         telephone = form.telephone.data
         adresseMail = form.adresseMail.data
-        age = request.form.get('ageMusicien') # Ajout de l'âge
+        age = request.form.get('ageMusicien')
         admin = current_user.admin
 
         # Mettez à jour l'utilisateur actuel
@@ -384,3 +299,145 @@ def maj_profil():
         return redirect(url_for("home"))
 
     return render_template("profil.html", form=form)
+
+@app.route("/stat/")
+def stat():
+    """Statistiques
+    Returns:
+        html: page de statistiques
+    """
+    if current_user.is_authenticated and current_user.admin and len(get_sorties())!=0:
+        data = [go.Bar(x=[], y=[])]
+        data2 = [go.Bar(x=[], y=[])]
+        data_jour_dispo = [go.Bar(x=[], y=[])]
+        mus=get_musicien()
+        layout = go.Layout(title='Nombre de participation par musicien')
+        layout2 = go.Layout(title='Pourcentage de participation par activité')
+        layout_jour_dispo = go.Layout(title='Jour de disponibilité')
+    
+        for musicien in mus:
+            data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
+        for sort in get_sorties():
+            print(sort.description)
+            pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
+            data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
+        deja_parcouru = []
+        for dispo in get_disponibilites():
+            if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
+                deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
+                data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
+        #  catégorie de personne présente
+        #pourcentage de personne présente à une activité
+        #vérifier le pourcentage de réponse à un sondage
+        # graphique affichatn les jours avec le plus de disponibilité
+        #pourceentage h/f
+        fig = go.Figure(data=data, layout=layout)
+        fig2 = go.Figure(data=data2, layout=layout2)
+        fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
+        return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
+    return render_template("error_pages.html"), 403
+
+@app.route("/sondage/")
+def page_sondage(erreur=False):
+    """Sondage
+    Returns:
+        html: page de sondage
+    """
+    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
+
+        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
+        s=get_sondage_non_rep(current_user.idMusicien)
+        if s is None:
+            s=[]
+        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
+    return render_template("error_pages.html"), 403
+@app.route('/update_temps<idSondage>')
+def update_temps(idSondage:Sondage.idSondage):
+    new_content = get_sondage_by_id(idSondage).temps_restant()
+    return jsonify({'content': new_content})
+
+@app.route("/sondage_ajout")
+def sondage_ajoute():
+    """Ajouter un sondage
+    Returns:
+        html: page de sondage
+    """
+    s=Sondage(idSondage=get_max_id_sondage()+1,
+                idSortie=get_max_id_sortie(),
+                message="test",
+                dateSondage=datetime.now(),
+                dureeSondage=1)
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
+
+@app.route("/sortie_ajoute/" , methods=["GET", "POST"])
+def ajoute_sortie():
+    """Ajouter une sortie
+    Returns:
+        html: page de sondage
+    """
+
+    #date_str=request.form["date"]
+    #print(date_str)
+    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    return page_sondage()
+
+
+    # date_str=request.form.get("date")
+    # if date_str=="":
+    #     return page_sondage(erreur=True)
+    
+    # date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    # date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    # s=Sortie(idSortie=get_max_id_sortie()+1,
+    #             dateSortie=date,
+    #             dureeSortie=1,
+    #             lieu="test",
+    #             type="test",  
+    #             tenue="test")
+    # db.session.add(s)
+    # db.session.commit()
+    # return redirect(url_for("page_sondage"))
+
+
+@app.route("/valid_sondage/", methods=["POST","GET"])
+def validation_sondage():
+    """Valider un sondage
+    Returns:
+        html: page de sondage
+    """
+    print(datetime.now())
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    print(request.form.get("choix"+str(id)))
+    if request.form.get("choix"+str(id))=="True":
+        reponse=True
+    else:
+        reponse=False
+    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
+                         idMusicien=current_user.idMusicien,
+                         dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
+                         presence=reponse)
+    db.session.add(rs)
+    db.session.commit()
+    return page_sondage()
+
+@app.route("/annuler_sondage/", methods=["POST","GET"])
+def annuler_sondage():
+    """Annuler un sondage
+    Returns:
+        html: page de sondage
+    """
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+    db.session.delete(rs)
+    db.session.commit()
+    return page_sondage()
+
+

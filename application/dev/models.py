@@ -192,7 +192,7 @@ class participer_sortie(db.Model):
         return Sortie.query.filter_by(idSortie=self.idSortie).first()
 
     def __repr__(self) -> str:
-        return self.idMusicien+" "+self.idSortie
+        return str(self.idMusicien)+" "+str(self.idSortie)
     
 def get_participer_sorties()->list:
     return participer_sortie.query.all()

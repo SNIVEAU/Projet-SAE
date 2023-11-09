@@ -1,8 +1,9 @@
 import click
 from .app import app,db
 import yaml
-from .models import Musicien,Sondage,Sortie,participer_sortie,participer_repetition
+from .models import *
 from datetime import *
+from hashlib import sha256
 
 # voir pour inserer des image en sql alchemy
 
@@ -30,10 +31,14 @@ def crea_musicien(filename:str) -> None:
     fy=yaml.safe_load(open(filename))
     for musicien in fy:
         print(musicien)
+        m = sha256()
+        m.update(musicien["password"].encode())
+        hashed_password = m.hexdigest(),
         m=Musicien(idMusicien=int(musicien["idMusicien"]),
                    nomMusicien=musicien["nomMusicien"],
                    prenomMusicien=musicien["prenomMusicien"],
-                   password=musicien["password"],
+                   
+                   password=str(hashed_password[0]),
                    ageMusicien=int(musicien["ageMusicien"]),
                    adresseMail=musicien["adresseMail"],
                    telephone=musicien["telephone"],
@@ -41,7 +46,17 @@ def crea_musicien(filename:str) -> None:
                    img=None)
         db.session.add(m)
         db.session.commit()
-
+@app.cli.command()
+@click.argument('filename')
+def ajoute_disponibilite(filename:str) -> None:
+    """ permet l'injection de données ( de disponibilité ) dans la base de données"""
+    fy=yaml.safe_load(open(filename))
+    for disp in fy:
+        datedispo=datetime.strptime(disp["date"], '%Y-%m-%d %H:%M:%S')
+        d=disponibilite(idMusicien=int(disp["idMusicien"]),
+                        date=datedispo)
+        db.session.add(d)
+        db.session.commit()
 @app.cli.command()
 @click.argument('filename')
 def crea_sondage(filename:str) -> None:
@@ -56,7 +71,15 @@ def crea_sondage(filename:str) -> None:
                   dureeSondage=int(sondage["dureeSondage"]))
         db.session.add(s)
         db.session.commit()
-
+@app.cli.command()
+@click.argument('filename')
+def crea_participe_sortie(filename:str) -> None:
+    fy=yaml.safe_load(open(filename))
+    for participation_sortie in fy:
+        srt = participer_sortie(idMusicien=participation_sortie["idMusicien"],
+                                   idSortie=participation_sortie["idSortie"])
+        db.session.add(srt)
+    db.session.commit()
 @app.cli.command()
 @click.argument('filename')
 def crea_sortie(filename:str) -> None:
@@ -86,6 +109,11 @@ def tout_sondage():
     print(Sondage.query.all())
 
 @app.cli.command()
+def tout_dispo():
+    print(disponibilite.query.all())
+
+
+@app.cli.command()
 def sup_srt_sdg_part():
     db.session.query(Sondage).delete()
     db.session.query(Sortie).delete()
@@ -96,3 +124,4 @@ def sup_srt_sdg_part():
 def clean_sondage():
     db.session.query(Sondage).delete()
     db.session.commit()
+

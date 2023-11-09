@@ -2,9 +2,8 @@ from .app import *
 from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField , HiddenField, PasswordField
-from wtforms.validators import DataRequired
-from hashlib import sha256
+from wtforms import BooleanField, StringField , HiddenField, PasswordField,EmailField, IntegerField
+from wtforms.validators import DataRequired, Email, NumberRange
 from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
 from hashlib import sha256
@@ -13,6 +12,8 @@ from flask import Flask, render_template
 import calendar
 
 MOIS=['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre']
+import email_validator
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -84,18 +85,14 @@ class LoginForm(FlaskForm):
         m = sha256()
         m.update(self.password.data.encode())
         passwd = m.hexdigest()
+        print(passwd)
         return musicien if passwd == musicien.password else None
 
 
 # Création du login
 @app.route("/login/", methods=["GET", "POST"])
 def login():
-    """Login
 
-    Returns:    {% endblock %}
-    {% block content%}
-        html: home page
-    """
     f = LoginForm()
     if not f.is_submitted():
         f.next.data = request.args.get("next")
@@ -105,7 +102,7 @@ def login():
             login_user(user)
             return redirect(url_for("home"))
         else:
-            print("Identifiants incorrects. Veuillez réessayer.", "danger")
+            f.password.errors += ("Nom d'utilisateur ou mot de passe incorrect",)
     return render_template("login.html", form=f)
 
 @app.route("/stat/")
@@ -115,34 +112,47 @@ def stat():
     Returns:
         html: home page
     """
+    if current_user.is_authenticated and current_user.admin and len(get_sorties())!=0:
+        data = [go.Bar(x=[], y=[])]
+        data2 = [go.Bar(x=[], y=[])]
+        data_jour_dispo = [go.Bar(x=[], y=[])]
+        mus=get_musicien()
+        layout = go.Layout(title='Nombre de participation par musicien')
+        layout2 = go.Layout(title='Pourcentage de participation par activité')
+        layout_jour_dispo = go.Layout(title='Jour de disponibilité')
     
-    data = [go.Bar(x=[], y=[])]
-    data2 = [go.Bar(x=[1,2,3,4,5], y=[1,2,8])]
-    data_jour_dispo = [go.Bar(x=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"], y=["Feur"])]
-    mus=get_musicien()
-    for musicien in mus:
-        data.append(go.Bar(x=[musicien.nomMusicien], y=[musicien.ageMusicien]))
-    layout = go.Layout(title='Nombre de participation par musicien')
-    layout2 = go.Layout(title='Pourcentage de participation par activité')
-    layout_jour_dispo = go.Layout(title='Jour de disponibilité')
-    fig = go.Figure(data=data, layout=layout)
-    fig2 = go.Figure(data=data2, layout=layout2)
-    fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
-    #  catégorie de personne présente
-    #pourcentage de personne présente à une activité
-    #vérifier le pourcentage de réponse à un sondage
-    # graphique affichatn les jours avec le plus de disponibilité
-    #pourceentage h/f
-    return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
+        for musicien in mus:
+            data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
+        for sort in get_sorties():
+            print(sort.description)
+            pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
+            data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
+        deja_parcouru = []
+        for dispo in get_disponibilites():
+            if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
+                deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
+                data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
+        #  catégorie de personne présente
+        #pourcentage de personne présente à une activité
+        #vérifier le pourcentage de réponse à un sondage
+        # graphique affichatn les jours avec le plus de disponibilité
+        #pourceentage h/f
+        fig = go.Figure(data=data, layout=layout)
+        fig2 = go.Figure(data=data2, layout=layout2)
+        fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
+        return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html())
+    return render_template("error_pages.html"), 403
 
 @app.route("/sondage/")
 def page_sondage(erreur=False):
-    participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
-    s=get_sondage_non_rep(current_user.idMusicien)
-    if s is None:
-        s=[]
-    return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
+    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
 
+        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
+        s=get_sondage_non_rep(current_user.idMusicien)
+        if s is None:
+            s=[]
+        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
+    return render_template("error_pages.html"), 403
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
     new_content = get_sondage_by_id(idSondage).temps_restant()
@@ -161,6 +171,29 @@ def sondage_ajoute():
 
 @app.route("/sortie_ajoute/" , methods=["GET", "POST"])
 def ajoute_sortie():
+
+    #date_str=request.form["date"]
+    #print(date_str)
+    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    return page_sondage()
+
+
+def is_valid_email(email):
+    try:
+        # Vérifie si l'adresse e-mail a le bon format
+        email_validator.validate_email(email)
+        return True
+    except email_validator.EmailNotValidError:
+        return False
+
+def is_valid_age(age):
+    try:
+        # Vérifie si l'âge est un nombre entre 18 et 100
+        age = int(age)
+        return 18 <= age <= 100
+    except ValueError:
+        return False
+
     date_str=request.form.get("date")
     if date_str=="":
         return page_sondage(erreur=True)
@@ -237,9 +270,10 @@ class RegistrationForm(FlaskForm):
     nomMusicien = StringField('Nom')
     prenomMusicien = StringField('Prénom')
     telephone = StringField('Télephone')
-    adresseMail = StringField('Email')
+    adresseMail = EmailField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Mot de passe')
     confirm_password = PasswordField('Confirmer le mot de passe')
+    ageMusicien = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=100)])    
     isAdmin = BooleanField('Admin')  # Ajout du champ pour la case à cocher
     next = HiddenField()
 
@@ -251,26 +285,34 @@ class RegistrationForm(FlaskForm):
         """
         # Vérifier si le mot de passe est correct
         if self.password.data != self.confirm_password.data:
-            self.password.errors.append("Les mots de passe ne correspondent pas")
+            self.password.errors += ("Les mots de passe ne correspondent pas.",)
             return False
+        
+        if not is_valid_email(self.adresseMail.data):
+            self.adresseMail.errors += ("adresse mail non valide.",)
+            return False
+
+        if not is_valid_age(request.form.get('age')):
+            self.ageMusicien.errors += ("L\'âge doit être un nombre entre 18 et 100 ans.",)
+            return False
+
         # Vérifier si l'utilisateur existe déjà
         nom = self.nomMusicien.data
         prenom = self.prenomMusicien.data
         username = f"{nom}.{prenom}"
-
-        # Vérifier si isAdmin est coché
-        admin = self.isAdmin.data  # Récupère la valeur de la case à cocher
-
+        if Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first() is not None:
+            self.nomMusicien.errors += ("Un utilisateur avec ce nom et prénom existe déjà.",)
+            return False
         return True
 
 
 @app.route("/register/", methods=["GET", "POST"])
 def register():
-    if not current_user.is_authenticated:
-        return redirect(url_for("login"))
+    # if not current_user.is_authenticated:
+    #     return redirect(url_for("login"))
 
-    if not current_user.admin:
-        return render_template('error_pages.html'), 403
+    # if not current_user.admin:
+    #     return render_template('error_pages.html'), 403
     
     form = RegistrationForm()
 
@@ -281,7 +323,9 @@ def register():
         telephone = form.telephone.data
         adresseMail = form.adresseMail.data
         password = form.password.data
-        admin = form.isAdmin.data 
+        ageMusicien = request.form.get('age')
+        admin = form.isAdmin.data
+
 
 
         # Hasher le mot de passe
@@ -294,9 +338,11 @@ def register():
             nomMusicien=nom,
             prenomMusicien=prenom,
             password=hashed_password,
-            telephone=telephone,
+            ageMusicien=int(ageMusicien),
             adresseMail=adresseMail,
-            admin=admin
+            telephone=telephone,
+            admin=admin,
+            img=None
         )
         db.session.add(user)
         db.session.commit()
@@ -307,6 +353,16 @@ def register():
     return render_template("register.html", form=form)
 
 
+@app.route("/profil/")
+@login_required
+def profil():
+    """Profil
+
+    Returns:
+        html: page de profile
+    """
+    form = maj_profile()
+    return render_template("profil.html", form=form)
 
 @app.route("/logout/")
 def logout():
@@ -318,3 +374,70 @@ def logout():
     return redirect(url_for("home"))
 
 
+class maj_profile(FlaskForm):
+    nomMusicien = StringField('Nom')
+    prenomMusicien = StringField('Prénom')
+    telephone = StringField('Télephone')
+    adresseMail = EmailField('Email', validators=[DataRequired(), Email()])
+    ageMusicien = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=100)])    
+    isAdmin = BooleanField('Admin')  
+
+    def validate(self):
+        """Vérifie si le formulaire est valide
+
+        Returns:
+            bool: True si le formulaire est valide
+        """
+        if not is_valid_email(self.adresseMail.data):
+            self.adresseMail.errors += ("adresse mail non valide.",)
+            return False
+
+        if not is_valid_age(request.form.get('ageMusicien')):
+            self.ageMusicien.errors += ("L\'âge doit être un nombre entre 18 et 100 ans.",)
+            return False
+
+        # Vérifier si l'utilisateur existe déjà
+        nom = self.nomMusicien.data
+        prenom = self.prenomMusicien.data
+        id  = current_user.idMusicien
+        username = f"{nom}.{prenom}"
+        # verifie si le nom et le prenom existe deja
+        m=Musicien.query.filter_by(nomMusicien=nom, prenomMusicien=prenom).first()
+        if m is not None and id != m.idMusicien  :
+            self.nomMusicien.errors += ("Un utilisateur avec ce nom et prénom existe déjà.",)
+            return False
+        return True
+
+
+
+
+@app.route("/maj_profil/", methods=["GET", "POST"])
+@login_required  # Assurez-vous que l'utilisateur est authentifié
+def maj_profil():
+    form = maj_profile()
+    print("test")
+    if request.method == "POST" and form.validate():
+        print(request.form)
+        # Récupérer les données du formulaire
+        nom = form.nomMusicien.data
+        prenom = form.prenomMusicien.data
+        telephone = form.telephone.data
+        adresseMail = form.adresseMail.data
+        age = request.form.get('ageMusicien') # Ajout de l'âge
+        admin = current_user.admin
+
+        # Mettez à jour l'utilisateur actuel
+        current_user.nomMusicien = nom
+        current_user.prenomMusicien = prenom
+        current_user.telephone = telephone
+        current_user.adresseMail = adresseMail
+        current_user.ageMusicien = age
+        current_user.admin = admin
+
+
+        # Enregistrez les modifications dans la base de données
+        db.session.commit()
+
+        return redirect(url_for("home"))
+
+    return render_template("profil.html", form=form)

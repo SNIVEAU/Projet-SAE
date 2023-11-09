@@ -28,6 +28,9 @@ div.sample {
 
 footer{ 
     background-color: #444750;
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
 }
 
 span{
@@ -47,3 +50,4 @@ main>.container {
     color: white;
     margin-right: 10px;
 }
+

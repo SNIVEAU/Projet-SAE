@@ -40,10 +40,14 @@ class Repetition(db.Model):
     idRepetition = db.Column(db.Integer, primary_key=True)
     dateRepetition = db.Column(db.DateTime)
     dureeRepetition = db.Column(db.Integer)
+    lieu = db.Column(db.String(50))
     tenue = db.Column(db.String(50))
 
     def __repr__(self) -> str:
-        return self.dateRepetition+" "+self.dureeRepetition+" "+self.idRepetition
+        return str(self.dateRepetition)+" "+str(self.dureeRepetition)+" "+str(self.idRepetition)
+    
+    def to_dict(self)->dict:
+        return {"idRepetition":self.idRepetition,"dateRepetition":self.dateRepetition,"dureeRepetition":self.dureeRepetition,"lieu":self.lieu,"tenue":self.tenue}
     
 def get_repetitions()->list:
     return Repetition.query.all()
@@ -62,6 +66,9 @@ class Sortie(db.Model):
     def __repr__(self) -> str:
         return str(self.dateSortie)+" "+str(self.dureeSortie)+" "+str(self.idSortie)
     
+    def to_dict(self)->dict:
+        return {"idSortie":self.idSortie,"dateSortie":self.dateSortie,"dureeSortie":self.dureeSortie,"description":self.description,"lieu":self.lieu,"type":self.type,"tenue":self.tenue}
+    
 def get_sorties()->list:
     return Sortie.query.all()
 
@@ -72,6 +79,35 @@ def get_max_id_sortie()->int:
     if Sortie.query.count()==0:
         return 0
     return Sortie.query.order_by(Sortie.idSortie.desc()).first().idSortie
+
+
+def get_eve_by_mois(mois)->list:
+    eve={}
+    for sortie in get_sorties():
+        if sortie.dateSortie.month==mois:
+            eve[str(sortie.dateSortie.day)]=[sortie.idSortie]
+            eve[str(sortie.dateSortie.day)].append(None)
+    keys=eve.keys()
+    for repetition in get_repetitions():
+        if repetition.dateRepetition.month==mois:
+            if str(repetition.dateRepetition.day) in keys:
+                eve[str(repetition.dateRepetition.day)].pop()
+                eve[str(repetition.dateRepetition.day)].append(repetition.idRepetition)
+            else:
+                eve[str(repetition.dateRepetition.day)]=[None]
+                eve[str(repetition.dateRepetition.day)].append(repetition.idRepetition)
+    keys=eve.keys()
+    cle_trier=sorted(keys)
+    eve_trier={}
+    for cle in cle_trier:
+        eve_trier[cle]=eve[cle]
+    return eve_trier
+
+def get_val_dico_mois(num_jour)->Sortie:
+    dict=get_eve_by_mois(datetime.now().month)
+    if str(num_jour) not in dict.keys():
+        return None
+    return dict[str(num_jour)]
 
 class Sondage(db.Model):
     idSondage = db.Column(db.Integer, primary_key=True)
@@ -182,3 +218,8 @@ def get_disponibilites()->list:
 
 def get_disponibilite_by_musicien(id)->list:
     return disponibilite.query.filter_by(idMusicien=id).all()
+
+def get_max_id_repetition()->int:
+    if Repetition.query.count()==0:
+        return 0
+    return Repetition.query.order_by(Repetition.idRepetition.desc()).first().idRepetition

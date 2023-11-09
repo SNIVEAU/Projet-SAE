@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/calendrier.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Calendrier</h1>
+{{calendrier | safe}}
+<script>
+    var test = document.getElementsByClassName("mois")
+    for(element of test){
+        element.innerHTML = "{{mois}}";
+    }
+    var jours = document.querySelectorAll("th");
+    for(var i=0;i<jours.length;i++){
+        if(jours[i].innerHTML == "Mon"){
+            jours[i].innerHTML = "Lundi";
+        }
+        if(jours[i].innerHTML == "Tue"){
+            jours[i].innerHTML = "Mardi";
+        }
+        if(jours[i].innerHTML == "Wed"){
+            jours[i].innerHTML = "Mercredi";
+        }
+        if(jours[i].innerHTML == "Thu"){
+            jours[i].innerHTML = "Jeudi";
+        }
+        if(jours[i].innerHTML == "Fri"){
+            jours[i].innerHTML = "Vendredi";
+        }
+        if(jours[i].innerHTML == "Sat"){
+            jours[i].innerHTML = "Samedi";
+        }
+        if(jours[i].innerHTML == "Sun"){
+            jours[i].innerHTML = "Dimanche";
+        }   
+    }
+
+    var datas = document.querySelectorAll("td");
+    var fin=true
+    var i=0
+    while(fin){
+        datas[i].style.backgroundColor = "grey";
+        if(datas[i].innerHTML == "{{num_day}}"){
+            fin=false;
+        }
+        i++;
+    }
+    for(var j=0; j<datas.length; j++){
+        (function(j) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/get_val_dico_mois/' + datas[j].innerHTML);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var eve = JSON.parse(xhr.responseText);
+                    if(Object.keys(eve).length !== 0){
+                        var new_content = "";
+                        if(Object.keys(eve).includes("sortie")){
+                        new_content = new_content+"<a href='/sortie/" + eve.sortie + "' class='sortie'> S n°" +eve.sortie+" du "+datas[j].innerHTML + "</a>";
+                        }
+                        if(Object.keys(eve).includes("repetition")){
+                            new_content = new_content+"<a href='/repetition/" + eve.repetition + "' class='repetition' >R n°" +eve.repetition+" du "+datas[j].innerHTML + "</a>";
+                        }
+                        if(new_content != ""){
+                            datas[j].innerHTML = new_content;
+                        }
+                    }
+                }
+            };
+            xhr.send();
+        })(j);
+    }
+    datas[{{num_day}}+1].style.backgroundColor = "blue";
+</script>
+{% endblock %}

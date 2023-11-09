@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% block styles %}
     {{ bootstrap.load_css() }}
-    <link rel="stylesheet" href="{{url_for('static',filename='css/home.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='css/base.css')}}">
     {% endblock %}
     <title>Union Musicale</title>
     {% endblock %}
@@ -53,7 +53,7 @@
         </nav>
     </header>
     <!-- Your page content -->
-    <main class="flex-shrink-0">
+    <main>
         <div class="container">
             {% block content %}
             {% endblock %}

@@ -1,0 +1,35 @@
+div.sample {
+    margin-bottom: 10%;
+    text-align: center;
+}
+
+
+.navbar {
+    background-color: #444750;
+}
+
+
+.nav-item{
+    font-weight: bold;
+    margin-right: 100px;
+}
+
+.nav-item2{
+    font-weight: bold;
+    margin-right: 15px;
+
+}
+
+footer{ 
+    background-color: #444750;
+    color : white;
+    text-align: center;
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+span{
+    color: white;
+}

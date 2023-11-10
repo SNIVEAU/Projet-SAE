@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
 {% block styles %}
 {{ super() }}
-<link rel="stylesheet" href="{{url_for('static',filename='css/calendrier.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='css/evenement.css')}}">
 {% endblock %}
 {% block content %}
+<div>
+    <h2>{{rep.dateRepetition}}</h2>
+</div>
+<div>
+    <p>{{rep.dureeRepetition}}</p>
+    <p>{{rep.lieu}}</p>
+    <p>{{rep.tenue}}</p>
 {% endblock %}

@@ -5,29 +5,26 @@ from .models import *
 from datetime import *
 from hashlib import sha256
 
-# voir pour inserer des image en sql alchemy
-
-
 @app.cli.command()
 def destroydb():
-    """Destroys the current database."""
+    """Destruction de toutes les tables."""
     db.drop_all()
 
 @app.cli.command()
 def syncdb():
-    """Creates all missing tables."""
+    """Création de toutes les tables."""
     db.create_all()
 
 @app.cli.command()
 def resetdb():
-    """Destroys and creates all tables."""
+    """Destruction et recréation de toutes les tables."""
     db.drop_all()
     db.create_all()
 
 @app.cli.command()
 @click.argument('filename')
 def crea_musicien(filename:str) -> None:
-    """ permet l'injection de données ( de musicien ) dans la base de données"""
+    """ permet l'injection de données (de musicien) dans la base de données"""
     fy=yaml.safe_load(open(filename))
     for musicien in fy:
         print(musicien)
@@ -46,6 +43,7 @@ def crea_musicien(filename:str) -> None:
                    img=None)
         db.session.add(m)
         db.session.commit()
+
 @app.cli.command()
 @click.argument('filename')
 def ajoute_disponibilite(filename:str) -> None:
@@ -57,6 +55,7 @@ def ajoute_disponibilite(filename:str) -> None:
                         date=datedispo)
         db.session.add(d)
         db.session.commit()
+
 @app.cli.command()
 @click.argument('filename')
 def crea_sondage(filename:str) -> None:
@@ -71,15 +70,18 @@ def crea_sondage(filename:str) -> None:
                   dureeSondage=int(sondage["dureeSondage"]))
         db.session.add(s)
         db.session.commit()
+
 @app.cli.command()
 @click.argument('filename')
 def crea_participe_sortie(filename:str) -> None:
+    """ permet l'injection de données ( de participation à une sortie ) dans la base de données"""
     fy=yaml.safe_load(open(filename))
     for participation_sortie in fy:
         srt = participer_sortie(idMusicien=participation_sortie["idMusicien"],
                                    idSortie=participation_sortie["idSortie"])
         db.session.add(srt)
     db.session.commit()
+
 @app.cli.command()
 @click.argument('filename')
 def crea_sortie(filename:str) -> None:
@@ -98,23 +100,28 @@ def crea_sortie(filename:str) -> None:
 
 @app.cli.command()
 def tout_musicien():
+    """Affiche tous les musiciens."""
     print(Musicien.query.all())
 
 @app.cli.command()
 def toute_sortie():
+    """Affiche toutes les sorties."""
     print(Sortie.query.all())
 
 @app.cli.command()
 def tout_sondage():
+    """Affiche tous les sondages."""
     print(Sondage.query.all())
 
 @app.cli.command()
 def tout_dispo():
+    """Affiche toutes les disponibilités."""
     print(disponibilite.query.all())
 
 
 @app.cli.command()
 def sup_srt_sdg_part():
+    """Supprime toutes les sorties, sondages et participations."""
     db.session.query(Sondage).delete()
     db.session.query(Sortie).delete()
     db.session.query(participer_sortie).delete()
@@ -122,6 +129,7 @@ def sup_srt_sdg_part():
 
 @app.cli.command()
 def clean_sondage():
+    """Supprime tous les sondages."""
     db.session.query(Sondage).delete()
     db.session.commit()
 

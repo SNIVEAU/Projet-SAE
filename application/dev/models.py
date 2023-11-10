@@ -157,6 +157,7 @@ class Sondage(db.Model):
     """Classe Sondage"""
     idSondage = db.Column(db.Integer, primary_key=True)
     idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'))
+    idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'))
     message = db.Column(db.String(100))
     dateSondage = db.Column(db.DateTime)
     dureeSondage = db.Column(db.Integer)
@@ -234,6 +235,12 @@ def get_sondage_by_sortie(id)->Sondage:
         Sondage : sondage associé à la sortie dont l'id est passé en paramètre"""
     return Sondage.query.filter_by(idSortie=id).first()
 
+def get_sondage_by_repetition(id)->Sondage:
+    return Sondage.query.filter_by(idRepetition=id).first()
+
+def get_sortie_by_musicien(id)->list:
+    return participer_sortie.query.filter_by(idMusicien=id).all()
+
 def get_sondage_by_musicien(id)->list:
     """Retourne la liste des sondages auxquels le musicien a répondu
     Args:
@@ -243,9 +250,12 @@ def get_sondage_by_musicien(id)->list:
     participation=[]
     sondages=[]
     for sorti in get_sortie_by_musicien(id):
-        participation.append(get_sondage_by_id(sorti.idSortie))
+        participation.append(get_sondage_by_sortie(sorti.idSortie))
+    for repet in get_repetition_by_musicien(id):
+        participation.append(get_sondage_by_repetition(repet.idRepetition))
     for part in participation:
         sondages.append(get_sondage_by_sortie(part.idSortie))
+        sondages.append(get_sondage_by_repetition(part.idRepetition))
     return sondages
 
 class participer_repetition(db.Model):
@@ -261,6 +271,9 @@ class participer_repetition(db.Model):
             str : id du musicien et id de la répétition
         """
         return self.idMusicien+" "+self.idRepetition
+    
+    def get_repetition(self)->Repetition:
+        return Repetition.query.filter_by(idRepetition=self.idRepetition).first()
     
 def get_participer_repetitions()->list:
     """Retourne la liste des participations aux répétitions
@@ -309,13 +322,8 @@ def get_participer_sorties()->list:
         list : liste des participations aux sorties"""
     return participer_sortie.query.all()
 
-def get_sortie_by_musicien(id)->list:
-    """Retourne la liste des sorties auxquelles le musicien participe
-    Args:
-        id (int): id du musicien
-    Return:
-        list : liste des sorties auxquelles le musicien participe"""
-    return participer_sortie.query.filter_by(idMusicien=id).all()
+def get_eve_by_musicien(id)->list:
+    return participer_sortie.query.filter_by(idMusicien=id).all()+participer_repetition.query.filter_by(idMusicien=id).all()
 
 def get_musicien_by_sortie(id)->list:
     """Retourne la liste des musiciens participant à la sortie dont l'id est passé en paramètre
@@ -358,3 +366,4 @@ def get_max_id_repetition()->int:
     if Repetition.query.count()==0:
         return 0
     return Repetition.query.order_by(Repetition.idRepetition.desc()).first().idRepetition
+

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/crea_eve.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Créer une sortie</h1>
+<h3>Remplissez les champs ci-dessous avec les informations necessaire</h3>
+{% if erreur %}
+<h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
+{% endif %}
+<form action="{{url_for('save_sortie')}}" method="post" class="form_sortie">
+<h4>lieu de la sortie</h4>
+<input type="text" name="lieu" class="form_sortie" placeholder="lieu de la sortie">
+<h4>description de la sortie</h4>
+<textarea name="description" class="form_sortie" placeholder="description de la sortie" rows="10" cols="50"></textarea>
+<h4> type de sortie</h4>
+<input type="text" name="type" class="form_sortie" placeholder="type de sortie">
+<h4>tenue de la sortie</h4>
+<input type="text" name="tenue" class="form_sortie" placeholder="tenue">
+<h4>date de la sortie</h4>
+<input type="datetime-local" name="date" class="form_sortie" min="{{date}}">
+<h4>durée de la sortie</h4>
+<input type="number" name="duree" class="form_sortie" placeholder="durée en heure">
+
+<input type="submit" value="créer la sortie" class="submit_sortie">
+</form>
+{% endblock %}

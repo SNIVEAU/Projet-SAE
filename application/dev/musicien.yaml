@@ -1,0 +1,30 @@
+- idMusicien : 1
+  nomMusicien : "Simon"
+  prenomMusicien : "Gael"
+  password : "simon"
+  ageMusicien : 20
+  adresseMail : "simon@gmail.com"
+  telephone : "0600000000"
+  admin : true
+  image : None
+
+- idMusicien : 2
+  nomMusicien : "Depont"
+  prenomMusicien : "Samuel"
+  password : "depont"
+  ageMusicien : 21
+  adresseMail : "depont@gmail.com"
+  telephone : "0600000000"
+  admin : true
+  image : None
+
+- idMusicien : 3
+  nomMusicien : "Niveau"
+  prenomMusicien : "Samuel"
+  password : "niveau"
+  ageMusicien : 19
+  adresseMail : "niveau@gmail.com"
+  telephone : "0707070707"
+  admin : true
+  image : None
+

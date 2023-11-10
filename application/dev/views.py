@@ -2,7 +2,7 @@ from .app import *
 from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField , HiddenField, PasswordField,EmailField, IntegerField
+from wtforms import BooleanField, StringField , HiddenField, PasswordField,EmailField, IntegerField, DateTimeField  
 from wtforms.validators import DataRequired, Email, NumberRange
 from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
@@ -130,7 +130,6 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
-
 def is_valid_email(email):
     """Vérifie si l'adresse e-mail est valide
     Returns:
@@ -152,6 +151,68 @@ def is_valid_age(age):
         return 18 <= age <= 100
     except ValueError:
         return False
+
+   
+
+@app.route("/rep_ajoute/" , methods=["GET", "POST"])
+def ajoute_rep():
+    date_str=request.form.get("date")
+    if date_str=="":
+        return page_sondage(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    r=Repetition(idRepetition=get_max_id_repetition()+1,
+                dateRepetition=date,
+                dureeRepetition=1,
+                lieu="test",
+                tenue="test")
+    db.session.add(r)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
+
+
+@app.route("/valid_sondage/", methods=["POST","GET"])
+def validation_sondage():
+    """Valider un sondage
+    Returns:
+        html: page de sondage
+    """
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    if request.form.get("choix"+str(id))=="True":
+        reponse=True
+    else:
+        reponse=False
+    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if get_sondage_by_id(id).idRepetition is None:
+        rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
+                            idMusicien=current_user.idMusicien,
+                            dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
+                            presence=reponse)
+    if get_sondage_by_id(id).idSortie is None:
+        rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
+                            idMusicien=current_user.idMusicien,
+                            dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
+                            presence=reponse)
+    db.session.add(rs)
+    db.session.commit()
+    return page_sondage()
+
+@app.route("/annuler_sondage/", methods=["POST","GET"])
+def annuler_sondage():
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    if get_sondage_by_id(id).idRepetition is None:
+        rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+    if get_sondage_by_id(id).idSortie is None:
+        rs=participer_repetition.query.filter_by(idRepetition=get_sondage_by_id(id).idRepetition,idMusicien=current_user.idMusicien).first()
+    db.session.delete(rs)
+    db.session.commit()
+    return page_sondage()
 
 class RegistrationForm(FlaskForm):
     """Formulaire d'inscription
@@ -344,6 +405,67 @@ def maj_profil():
 
     return render_template("profil.html", form=form)
 
+@app.route("/crea_sortie/", methods=["GET", "POST"])
+def crea_sortie(erreur=False):
+    date=datetime.now().strftime("%Y-%m-%dT%H:%M")
+    print(erreur)
+    return render_template("crea_sortie.html" ,date=date , erreur=erreur )
+
+@app.route("/save_sortie/", methods=["GET", "POST"])
+def save_sortie():
+    date_str=request.form.get("date")
+    if date_str=="" or request.form.get("lieu")=="" or request.form.get("type")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="":
+        return crea_sortie(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    s=Sortie(idSortie=get_max_id_sortie()+1,
+                dateSortie=date,
+                dureeSortie=int(request.form.get("duree")),
+                lieu=request.form.get("lieu"),
+                type=request.form.get("type"),  
+                tenue=request.form.get("tenue"))
+    sondage=Sondage(idSondage=get_max_id_sondage()+1,
+                    idSortie=s.idSortie,
+                    idRepetition=None,
+                    message="sortie à "+request.form.get("lieu"),
+                    dateSondage=datetime.now(),
+                    dureeSondage=int(request.form.get("duree")))
+    db.session.add(s)
+    db.session.add(sondage)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route("/crea_repetition/", methods=["GET", "POST"])
+def crea_repetition(erreur=False):
+    date=datetime.now().strftime("%Y-%m-%dT%H:%M")
+    return render_template("crea_repetition.html",date=date , erreur=erreur )
+
+@app.route("/save_repetition/", methods=["GET", "POST"])
+def save_repetition():
+    date_str=request.form.get("date")
+    if date_str=="" or request.form.get("lieu")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="":
+        return crea_repetition(erreur=True)
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    r=Repetition(idRepetition=get_max_id_repetition()+1,
+                dateRepetition=date,
+                dureeRepetition=int(request.form.get("duree")),
+                lieu=request.form.get("lieu"),
+                tenue=request.form.get("tenue"))
+    sondage=Sondage(idSondage=get_max_id_sondage()+1,
+                    idSortie=None,
+                    idRepetition=r.idRepetition,
+                    message="repetition à "+request.form.get("lieu"),
+                    dateSondage=datetime.now(),
+                    dureeSondage=int(request.form.get("duree")))
+    db.session.add(r)
+    db.session.add(sondage)
+    db.session.commit()
+    return redirect(url_for("home"))
+    
 @app.route("/stat/")
 def stat():
     """Statistiques
@@ -383,109 +505,15 @@ def stat():
 
 @app.route("/sondage/")
 def page_sondage(erreur=False):
-    """Sondage
-    Returns:
-        html: page de sondage
-    """
-    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
+    if current_user.is_authenticated:
 
-        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
-        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
-    return render_template("error_pages.html"), 403
+        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=get_eve_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep)
+    return redirect(url_for("login"))
+
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
     new_content = get_sondage_by_id(idSondage).temps_restant()
     return jsonify({'content': new_content})
-
-@app.route("/sondage_ajout")
-def sondage_ajoute():
-    """Ajouter un sondage
-    Returns:
-        html: page de sondage
-    """
-    s=Sondage(idSondage=get_max_id_sondage()+1,
-                idSortie=get_max_id_sortie(),
-                message="test",
-                dateSondage=datetime.now(),
-                dureeSondage=1)
-    db.session.add(s)
-    db.session.commit()
-    return redirect(url_for("page_sondage"))
-
-@app.route("/sortie_ajoute/" , methods=["GET", "POST"])
-def ajoute_sortie():
-    date_str=request.form.get("date")
-    if date_str=="":
-        return page_sondage(erreur=True)
-    
-    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
-    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    s=Sortie(idSortie=get_max_id_sortie()+1,
-                dateSortie=date,
-                dureeSortie=1,
-                lieu="test",
-                type="test",  
-                tenue="test")
-    db.session.add(s)
-    db.session.commit()
-    return redirect(url_for("page_sondage"))
-
-@app.route("/rep_ajoute/" , methods=["GET", "POST"])
-def ajoute_rep():
-    date_str=request.form.get("date")
-    if date_str=="":
-        return page_sondage(erreur=True)
-
-    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
-
-    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    r=Repetition(idRepetition=get_max_id_repetition()+1,
-                dateRepetition=date,
-                dureeRepetition=1,
-                lieu="test",
-                tenue="test")
-    db.session.add(r)
-    db.session.commit()
-    return redirect(url_for("page_sondage"))
-@app.route("/valid_sondage/", methods=["POST","GET"])
-def validation_sondage():
-    """Valider un sondage
-    Returns:
-        html: page de sondage
-    """
-    print(datetime.now())
-    if len(request.form)==0:
-        return redirect(url_for("page_sondage"))
-    id=int(request.form.get("idsondage"))
-    print(request.form.get("choix"+str(id)))
-    if request.form.get("choix"+str(id))=="True":
-        reponse=True
-    else:
-        reponse=False
-    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
-                         idMusicien=current_user.idMusicien,
-                         dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
-                         presence=reponse)
-    db.session.add(rs)
-    db.session.commit()
-    return page_sondage()
-
-@app.route("/annuler_sondage/", methods=["POST","GET"])
-def annuler_sondage():
-    """Annuler un sondage
-    Returns:
-        html: page de sondage
-    """
-    if len(request.form)==0:
-        return redirect(url_for("page_sondage"))
-    id=int(request.form.get("idsondage"))
-    rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
-    db.session.delete(rs)
-    db.session.commit()
-    return page_sondage()
-
-

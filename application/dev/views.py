@@ -171,12 +171,22 @@ def sondage_ajoute():
 
 @app.route("/sortie_ajoute/" , methods=["GET", "POST"])
 def ajoute_sortie():
+    date_str=request.form.get("date")
+    if date_str=="":
+        return page_sondage(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
 
-    #date_str=request.form["date"]
-    #print(date_str)
-    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-    return page_sondage()
-
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    s=Sortie(idSortie=get_max_id_sortie()+1,
+                dateSortie=date,
+                dureeSortie=1,
+                lieu="test",
+                type="test",  
+                tenue="test")
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
 
 def is_valid_email(email):
     try:
@@ -194,22 +204,7 @@ def is_valid_age(age):
     except ValueError:
         return False
 
-    date_str=request.form.get("date")
-    if date_str=="":
-        return page_sondage(erreur=True)
-    
-    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
-
-    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    s=Sortie(idSortie=get_max_id_sortie()+1,
-                dateSortie=date,
-                dureeSortie=1,
-                lieu="test",
-                type="test",  
-                tenue="test")
-    db.session.add(s)
-    db.session.commit()
-    return redirect(url_for("page_sondage"))
+   
 
 @app.route("/rep_ajoute/" , methods=["GET", "POST"])
 def ajoute_rep():

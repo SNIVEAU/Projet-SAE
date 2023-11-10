@@ -42,12 +42,12 @@
                         <li class=nom>
                             <a>{{ current_user.nomMusicien }} {{ current_user.prenomMusicien }}</a>
                         </li>
-                        {% if current_user.admin %} 
+                        {% if current_user.admin %}
                         <li class="nav-item2">
                             <a class="nav-link active btn btn-danger rounded" aria-current="page"
                                 href="{{ url_for('register') }}">Crée un compte</a>
                         </li>
-                        {% endif %} 
+                        {% endif %}
                         <li class="nav-item2">
                             <a class="nav-link active btn btn-danger rounded" aria-current="page"
                                 href="{{ url_for('profil') }}">Profil</a>

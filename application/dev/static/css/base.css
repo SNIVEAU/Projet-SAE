@@ -15,28 +15,29 @@ div.sample {
 }
 
 
-.nav-item{
+.nav-item {
     font-weight: bold;
     margin-right: 100px;
 }
 
-.nav-item2{
+.nav-item2 {
     font-weight: bold;
     margin-right: 15px;
 
 }
 
-footer{ 
+footer {
     background-color: #444750;
     position: absolute;
     bottom: 0%;
     width: 100%;
 }
 
-span{
+span {
     color: white;
 }
-header{
+
+header {
     margin-bottom: 10px;
 }
 
@@ -50,4 +51,3 @@ main>.container {
     color: white;
     margin-right: 10px;
 }
-

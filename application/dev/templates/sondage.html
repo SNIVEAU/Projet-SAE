@@ -15,11 +15,11 @@
         <th>valider</th>
     </tr>
     {% if len(sondages)==0 %}
-    </table>
-    <p>pas de sondage en cours</p>
-    {% else %}
-    {% for s in sondages %}
-    <form method="POST" action="{{ url_for('validation_sondage')}}">
+</table>
+<p>pas de sondage en cours</p>
+{% else %}
+{% for s in sondages %}
+<form method="POST" action="{{ url_for('validation_sondage')}}">
     <tr>
         <td>{{ s.message }}</td>
         <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
@@ -28,12 +28,12 @@
         </td>
         <td>
             <div>
-            <input type="radio" value="True" name="choix{{s.idSondage}}" id="oui" >
-            <label for="oui">oui</label>
+                <input type="radio" value="True" name="choix{{s.idSondage}}" id="oui">
+                <label for="oui">oui</label>
             </div>
             <div>
-            <input type="radio" value="False" name="choix{{s.idSondage}}" id="non">
-            <label for="non">non</label>
+                <input type="radio" value="False" name="choix{{s.idSondage}}" id="non">
+                <label for="non">non</label>
             </div>
         </td>
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
@@ -41,12 +41,11 @@
             <input class="valid" type="submit" value="✔️">
         </td>
     </tr>
-    </form>
-    <script>
-        function updateContent(idSondage) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/update_temps'+idSondage);
-
+</form>
+<script>
+    function updateContent(idSondage) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/update_temps' + idSondage);
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     var response = JSON.parse(xhr.responseText);
@@ -100,8 +99,7 @@
                 <input type="text" name="idsondage" value="{{get_sondage_by_sortie(ps.get_sortie().idSortie).idSondage}}" hidden>
             {% else %}
                 <input type="text" name="idsondage" value="{{get_sondage_by_repetition(ps.get_repetition().idRepetition).idSondage}}" hidden>
-            {% endif %}
-                
+            {% endif %}    
                 <input type="text" name="idsortie" value="{{ps.idSortie}}" hidden>
                 <input type="submit" value="✖️" class="annul">
             </form>
@@ -111,4 +109,4 @@
 </table>
 
 
-{% endblock %} 
+{% endblock %}

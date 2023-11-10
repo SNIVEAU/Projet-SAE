@@ -157,13 +157,22 @@ def get_sondage_non_rep(idMusicien)->list:
 def get_sondage_by_sortie(id)->Sondage:
     return Sondage.query.filter_by(idSortie=id).first()
 
+def get_sondage_by_repetition(id)->Sondage:
+    return Sondage.query.filter_by(idRepetition=id).first()
+
+def get_sortie_by_musicien(id)->list:
+    return participer_sortie.query.filter_by(idMusicien=id).all()
+
 def get_sondage_by_musicien(id)->list:
     participation=[]
     sondages=[]
     for sorti in get_sortie_by_musicien(id):
-        participation.append(get_sondage_by_id(sorti.idSortie))
+        participation.append(get_sondage_by_sortie(sorti.idSortie))
+    for repet in get_repetition_by_musicien(id):
+        participation.append(get_sondage_by_repetition(repet.idRepetition))
     for part in participation:
         sondages.append(get_sondage_by_sortie(part.idSortie))
+        sondages.append(get_sondage_by_repetition(part.idRepetition))
     return sondages
 
 class participer_repetition(db.Model):
@@ -174,6 +183,10 @@ class participer_repetition(db.Model):
     
     def __repr__(self) -> str:
         return self.idMusicien+" "+self.idRepetition
+    
+    def get_repetition(self)->Repetition:
+        return Repetition.query.filter_by(idRepetition=self.idRepetition).first()
+    
 def get_participer_repetitions()->list:
     return participer_repetition.query.all()
 
@@ -198,8 +211,8 @@ class participer_sortie(db.Model):
 def get_participer_sorties()->list:
     return participer_sortie.query.all()
 
-def get_sortie_by_musicien(id)->list:
-    return participer_sortie.query.filter_by(idMusicien=id).all()
+def get_eve_by_musicien(id)->list:
+    return participer_sortie.query.filter_by(idMusicien=id).all()+participer_repetition.query.filter_by(idMusicien=id).all()
 
 def get_musicien_by_sortie(id)->list:
     return participer_sortie.query.filter_by(idSortie=id).all()
@@ -224,3 +237,4 @@ def get_max_id_repetition()->int:
     if Repetition.query.count()==0:
         return 0
     return Repetition.query.order_by(Repetition.idRepetition.desc()).first().idRepetition
+

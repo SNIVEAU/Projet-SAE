@@ -17,7 +17,11 @@ import email_validator
 
 @login_manager.user_loader
 def load_user(user_id):
-    """Charger l'utilisateur actuel"""
+    """Charger l'utilisateur actuel
+    Args:
+        user_id (int): id de l'utilisateur
+    Returns:
+        user: l'utilisateur actuel"""
     return Musicien.query.get(user_id)
 
 @app.route("/")
@@ -485,7 +489,7 @@ def ajoute_sortie():
         html: page de sondage
     """
 
-
+    
 
     date_str=request.form.get("date")
     if date_str=="":

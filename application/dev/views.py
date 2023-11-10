@@ -14,7 +14,11 @@ import email_validator
 
 @login_manager.user_loader
 def load_user(user_id):
-    """Charger l'utilisateur actuel"""
+    """Charger l'utilisateur actuel
+    Args:
+        user_id (int): id de l'utilisateur
+    Returns:
+        user: l'utilisateur actuel"""
     return Musicien.query.get(user_id)
 
 @app.route("/")
@@ -382,25 +386,6 @@ def ajoute_sortie():
     #print(date_str)
     #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
     return page_sondage()
-
-
-    # date_str=request.form.get("date")
-    # if date_str=="":
-    #     return page_sondage(erreur=True)
-    
-    # date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
-
-    # date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    # s=Sortie(idSortie=get_max_id_sortie()+1,
-    #             dateSortie=date,
-    #             dureeSortie=1,
-    #             lieu="test",
-    #             type="test",  
-    #             tenue="test")
-    # db.session.add(s)
-    # db.session.commit()
-    # return redirect(url_for("page_sondage"))
-
 
 @app.route("/valid_sondage/", methods=["POST","GET"])
 def validation_sondage():

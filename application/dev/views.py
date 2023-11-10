@@ -145,14 +145,15 @@ def stat():
 
 @app.route("/sondage/")
 def page_sondage(erreur=False):
-    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
+    if current_user.is_authenticated:
 
         participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
         return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
-    return render_template("error_pages.html"), 403
+    return redirect(url_for("login"))
+
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
     new_content = get_sondage_by_id(idSondage).temps_restant()

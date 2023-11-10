@@ -1,28 +1,30 @@
-- idMusicien : 2
-  nomMusicien : "John"
-  prenomMusicien : "Doe"
-  password : "test"
-  ageMusicien : 25
-  adresseMail : "test@test.com"
-  telephone : "0600000000"
-  admin : true
-  image : None
 - idMusicien : 1
-  nomMusicien : "a"
-  prenomMusicien : "a"
-  password : "a"
-  ageMusicien : 25
-  adresseMail : "a@gmail.com"
+  nomMusicien : "Simon"
+  prenomMusicien : "Gael"
+  password : "simon"
+  ageMusicien : 20
+  adresseMail : "simon@gmail.com"
   telephone : "0600000000"
   admin : true
   image : None
-- idMusicien : 15
-  nomMusicien : "ppp"
-  prenomMusicien : "ppp"
-  password : "ppp"
-  ageMusicien : 25
-  adresseMail : "ppp@gmail.com"
-  telephone : "ppp"
+
+- idMusicien : 2
+  nomMusicien : "Depont"
+  prenomMusicien : "Samuel"
+  password : "depont"
+  ageMusicien : 21
+  adresseMail : "depont@gmail.com"
+  telephone : "0600000000"
+  admin : true
+  image : None
+
+- idMusicien : 3
+  nomMusicien : "Niveau"
+  prenomMusicien : "Samuel"
+  password : "niveau"
+  ageMusicien : 19
+  adresseMail : "niveau@gmail.com"
+  telephone : "0707070707"
   admin : true
   image : None
 

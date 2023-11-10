@@ -2,7 +2,7 @@ from .app import *
 from flask import render_template, url_for, redirect, request,jsonify
 from .models import *
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, StringField , HiddenField, PasswordField,EmailField, IntegerField
+from wtforms import BooleanField, StringField , HiddenField, PasswordField,EmailField, IntegerField, DateTimeField  
 from wtforms.validators import DataRequired, Email, NumberRange
 from flask_login import login_user, current_user, login_required, logout_user
 from flask import request
@@ -147,7 +147,6 @@ def stat():
 def page_sondage(erreur=False):
     if current_user.is_authenticated:
 
-        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
@@ -437,3 +436,67 @@ def maj_profil():
         return redirect(url_for("home"))
 
     return render_template("profil.html", form=form)
+
+
+
+@app.route("/crea_sortie/", methods=["GET", "POST"])
+def crea_sortie(erreur=False):
+    date=datetime.now().strftime("%Y-%m-%dT%H:%M")
+    print(erreur)
+    return render_template("crea_sortie.html" ,date=date , erreur=erreur )
+
+@app.route("/save_sortie/", methods=["GET", "POST"])
+def save_sortie():
+    date_str=request.form.get("date")
+    if date_str=="" or request.form.get("lieu")=="" or request.form.get("type")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="":
+        return crea_sortie(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    s=Sortie(idSortie=get_max_id_sortie()+1,
+                dateSortie=date,
+                dureeSortie=int(request.form.get("duree")),
+                lieu=request.form.get("lieu"),
+                type=request.form.get("type"),  
+                tenue=request.form.get("tenue"))
+    sondage=Sondage(idSondage=get_max_id_sondage()+1,
+                    idSortie=s.idSortie,
+                    idRepetition=None,
+                    message="sortie à "+request.form.get("lieu"),
+                    dateSondage=datetime.now(),
+                    dureeSondage=int(request.form.get("duree")))
+    db.session.add(s)
+    db.session.add(sondage)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route("/crea_repetition/", methods=["GET", "POST"])
+def crea_repetition(erreur=False):
+    date=datetime.now().strftime("%Y-%m-%dT%H:%M")
+    return render_template("crea_repetition.html",date=date , erreur=erreur )
+
+@app.route("/save_repetition/", methods=["GET", "POST"])
+def save_repetition():
+    date_str=request.form.get("date")
+    if date_str=="" or request.form.get("lieu")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="":
+        return crea_repetition(erreur=True)
+    
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    r=Repetition(idRepetition=get_max_id_repetition()+1,
+                dateRepetition=date,
+                dureeRepetition=int(request.form.get("duree")),
+                lieu=request.form.get("lieu"),
+                tenue=request.form.get("tenue"))
+    sondage=Sondage(idSondage=get_max_id_sondage()+1,
+                    idSortie=None,
+                    idRepetition=r.idRepetition,
+                    message="repetition à "+request.form.get("lieu"),
+                    dateSondage=datetime.now(),
+                    dureeSondage=int(request.form.get("duree")))
+    db.session.add(r)
+    db.session.add(sondage)
+    db.session.commit()
+    return redirect(url_for("home"))

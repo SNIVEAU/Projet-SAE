@@ -112,6 +112,7 @@ def get_val_dico_mois(num_jour)->Sortie:
 class Sondage(db.Model):
     idSondage = db.Column(db.Integer, primary_key=True)
     idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'))
+    idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'))
     message = db.Column(db.String(100))
     dateSondage = db.Column(db.DateTime)
     dureeSondage = db.Column(db.Integer)

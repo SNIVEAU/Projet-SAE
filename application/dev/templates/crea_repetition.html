@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/crea_eve.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Créer une sortie</h1>
+<h3>Remplissez les champs ci-dessous avec les informations necessaire</h3>
+{% if erreur %}
+<h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
+{% endif %}
+<form action="{{url_for('save_repetition')}}" method="post" class="form_repetition">
+<h4>lieu de la repetition</h4>
+<input type="text" name="lieu" class="lieu" placeholder="lieu de la sortie">
+<h4>tenue de la repetition</h4>
+<input type="text" name="tenue" class="tenue" placeholder="tenue">
+<h4>date de la repetition</h4>
+<input type="datetime-local" name="date" class="date" min="{{date}}">
+<h4>durée de la repetition</h4>
+<input type="number" name="duree" class="nombre" placeholder="durée en heure">
+
+<input type="submit" value="créer la repetition" class="submit_repetition">
+</form>
+{% endblock %}

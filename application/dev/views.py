@@ -505,18 +505,13 @@ def stat():
 
 @app.route("/sondage/")
 def page_sondage(erreur=False):
-    """Sondage
-    Returns:
-        html: page de sondage
-    """
-    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
+    if current_user.is_authenticated:
 
-        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
-        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
-    return render_template("error_pages.html"), 403
+        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=get_eve_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep)
+    return redirect(url_for("login"))
 
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):

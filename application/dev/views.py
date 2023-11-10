@@ -9,6 +9,9 @@ from flask import request
 from hashlib import sha256
 import plotly.graph_objs as go
 from flask import Flask, render_template
+import calendar
+
+MOIS=['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre']
 import email_validator
 
 
@@ -25,6 +28,42 @@ def home():
     musiciens = Musicien.query.all()
     return render_template("home.html", musiciens=musiciens)
 
+@app.route("/calendrier/")
+def calendrier():
+    c=calendar.HTMLCalendar(firstweekday=0)
+    c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
+    c.cssclass_month_head="mois"
+    num_day=datetime.now().day
+    num_mois=datetime.now().month
+    mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
+    return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois)
+
+
+@app.route('/get_val_dico_mois/<day>')
+def get_val_dico_mois_route(day):
+    result = get_val_dico_mois(day)
+    print(result)
+    if result is None:
+        return jsonify({})
+    dict={}
+    for i in range(len(result)):
+        if i==0 and result[i] is not None:
+            dict["sortie"]=result[i]
+        if i==1 and result[i] is not None:
+            dict["repetition"]=result[i]
+    print(dict)
+    return jsonify(dict)
+
+
+@app.route("/sortie/<idSortie>")
+def sortie(idSortie):
+    sortie = get_sortie_by_id(idSortie)
+    return render_template("sortie.html", sortie=sortie)
+
+@app.route("/repetition/<idRepetition>")
+def repetition(idRepetition):
+    rep = get_repetition_by_idRep(idRepetition)
+    return render_template("repetition.html", rep=rep)
 
 class LoginForm(FlaskForm):
     """Formulaire de connexion
@@ -87,6 +126,35 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
+@app.route("/sondage/")
+def page_sondage(erreur=False):
+    if len(Sondage.query.all())!=0 and current_user.is_authenticated:
+
+        participations = participer_sortie.query.filter_by(idMusicien=current_user.idMusicien).all()
+        s=get_sondage_non_rep(current_user.idMusicien)
+        if s is None:
+            s=[]
+        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participer_sortie=get_sortie_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur)
+    return render_template("error_pages.html"), 403
+@app.route('/update_temps<idSondage>')
+def update_temps(idSondage:Sondage.idSondage):
+    new_content = get_sondage_by_id(idSondage).temps_restant()
+    return jsonify({'content': new_content})
+
+@app.route("/sondage_ajout")
+def sondage_ajoute():
+    s=Sondage(idSondage=get_max_id_sondage()+1,
+                idSortie=get_max_id_sortie(),
+                message="test",
+                dateSondage=datetime.now(),
+                dureeSondage=1)
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
+
+
+
+
 def is_valid_email(email):
     """Vérifie si l'adresse e-mail est valide
     Returns:
@@ -109,6 +177,45 @@ def is_valid_age(age):
     except ValueError:
         return False
 
+    
+
+
+@app.route("/valid_sondage/", methods=["POST","GET"])
+def validation_sondage():
+    print(datetime.now())
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    print(request.form.get("choix"+str(id)))
+    if request.form.get("choix"+str(id))=="True":
+        reponse=True
+    else:
+        reponse=False
+    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
+                         idMusicien=current_user.idMusicien,
+                         dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
+                         presence=reponse)
+    db.session.add(rs)
+    db.session.commit()
+    return page_sondage()
+
+@app.route("/annuler_sondage/", methods=["POST","GET"])
+def annuler_sondage():
+    if len(request.form)==0:
+        return redirect(url_for("page_sondage"))
+    id=int(request.form.get("idsondage"))
+    rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+    db.session.delete(rs)
+    db.session.commit()
+    return page_sondage()
+
+
+
+# class AuthorForm(FlaskForm):
+#     id = HiddenField('id')
+#     name = StringField('Nom', validators=[DataRequired()]) # Doit obligatoirement remplir le champs 
+ 
 class RegistrationForm(FlaskForm):
     """Formulaire d'inscription
     Attributes:
@@ -378,28 +485,24 @@ def ajoute_sortie():
         html: page de sondage
     """
 
-    #date_str=request.form["date"]
-    #print(date_str)
-    #date=datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
-    return page_sondage()
 
 
-    # date_str=request.form.get("date")
-    # if date_str=="":
-    #     return page_sondage(erreur=True)
+    date_str=request.form.get("date")
+    if date_str=="":
+        return page_sondage(erreur=True)
     
-    # date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
+    date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
 
-    # date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    # s=Sortie(idSortie=get_max_id_sortie()+1,
-    #             dateSortie=date,
-    #             dureeSortie=1,
-    #             lieu="test",
-    #             type="test",  
-    #             tenue="test")
-    # db.session.add(s)
-    # db.session.commit()
-    # return redirect(url_for("page_sondage"))
+    date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+    s=Sortie(idSortie=get_max_id_sortie()+1,
+                dateSortie=date,
+                dureeSortie=1,
+                lieu="test",
+                type="test",  
+                tenue="test")
+    db.session.add(s)
+    db.session.commit()
+    return redirect(url_for("page_sondage"))
 
 
 @app.route("/valid_sondage/", methods=["POST","GET"])

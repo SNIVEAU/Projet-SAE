@@ -1,10 +1,51 @@
 {% extends 'base.html' %}
 {% block styles %}
 {{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/home.css')}}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 {% endblock %}
 {% block content %}
-<h1>{{title}}</h1>
-<div class="sample">
-    <!--CODER ICI PIERRE-->
-</div>
+    <div class="TexteDeBienvenue">
+        <img src="{{ url_for('static', filename='images/orchestre.jpeg') }}" alt="">
+        <h1>Union Musicale</h1>
+        <h2>Bienvenue !</h2>
+    </div>
+    <div class="TextePresentation">
+        <p>L'Union Musicale de Férolles-Marcilly a créé un site web pour faciliter la gestion de ses activités. Ce site est accessible à tous les membres de l'association, y compris les musiciens, les responsables et les parents ou tuteurs.
+            Le site permet de consulter le calendrier des répétitions, de répondre aux sondages sur les disponibilités des musiciens et de consulter des statistiques sur les activités de l'association.</p>
+    </div>
+    <div class="Prochainesorties">
+        <h2>PROCHAINES SORTIES...</h2>
+        <p>Vous voulez en savoir plus ? N'hésitez pas à aller voir le <a href="calendrier.html">planning</a> !</p>
+    </div>
+    <div class="slide">
+        <img src="{{ url_for('static', filename='images/sortie1.jpg') }}" alt="" class="imagesortie" id="slideImage">
+        <h3 id="slideDate">Date1</h3>
+        <a href="#" class="left" onclick="changeSlide(-1)"><img src="{{ url_for('static', filename='images/flechesansfond.png') }}" class="arrow1"><i class="fas fa-angle-left"></i></a>
+        <a href="#" class="right" onclick="changeSlide(1)"><img src="{{ url_for('static', filename='images/flechesansfond.png') }}" class="arrow"><i class="fas fa-angle-right"></i></a>
+    </div>
+
+    <script>
+        var currentSlide = 1;
+        var slideDates = ["Date1", "Date2", "Date3"]; // Remplacez ces valeurs par les dates réelles
+
+        function changeSlide(direction) {
+            currentSlide += direction;
+
+            if (currentSlide < 1) {
+                currentSlide = 3; // Ajustez ce nombre en fonction du nombre total d'images
+            } else if (currentSlide > 3) {
+                currentSlide = 1; // Ajustez ce nombre en fonction du nombre total d'images
+            }
+
+            var imagePath = "{{ url_for('static', filename='images/sortie') }}" + currentSlide + ".jpg";
+            var slideDate = slideDates[currentSlide - 1]; // -1 car les indices du tableau commencent à 0
+
+            document.getElementById('slideImage').src = imagePath;
+            document.getElementById('slideDate').textContent = slideDate;
+        }
+    </script>
+    
 {% endblock %}

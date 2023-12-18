@@ -34,13 +34,15 @@ def home():
 
 @app.route("/calendrier/")
 def calendrier():
-    c=calendar.HTMLCalendar(firstweekday=0)
-    c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
-    c.cssclass_month_head="mois"
-    num_day=datetime.now().day
-    num_mois=datetime.now().month
-    mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
-    return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois)
+    if current_user.is_authenticated:
+        c=calendar.HTMLCalendar(firstweekday=0)
+        c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
+        c.cssclass_month_head="mois"
+        num_day=datetime.now().day
+        num_mois=datetime.now().month
+        mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
+        return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois)
+    return redirect(url_for("login"))
 
 
 @app.route('/get_val_dico_mois/<day>')

@@ -1,22 +1,11 @@
-REPETITION:idRepetition,dateRepetition,dureeRepetition,tenue
 :
-:
-:
-
+REPETITION:idRepetition,dateRepetition,dureeRepetition
 PARTICIPER2,0N REPETITION, 0N MUSICIEN : materiel
-SONDAGE:idSondage,dateSondage,dureeSondage
-:
-:
-
-
-MUSICIEN:idMusicien,nom,prenom,age,adresseMail,telephone,admin,imgMusicien
+SORTIE:idSortie,dateSortie,dureeSortie,lieu,type,tenue
 RELIER,0N SORTIE,11 SONDAGE
-:
-JOURNAL_SORTIE:idMusicien,idSortie,intituleSortie,dateSortie,dureeSortie,
 
-
-
-PARTICIPER1,0N SORTIE,0N MUSICIEN
-SORTIE:idSortie,dateSortie,dureeSortie,lieu,type
-:
-JOURNAL_REPETITION:idMusicien,idRepetition,nom,prenom,dateRepetition,dureeRepetition
+DEMI_JOURNNE:date
+DISPONIBILITE, 0N DEMI_JOURNNE,0N MUSICIEN
+MUSICIEN:idMusicien,nom,prenom,password,age,adresseMail,telephone,admin,imgMusicien
+PARTICIPER1,0N SORTIE,0N MUSICIEN:materiel
+SONDAGE:idSondage,dateSondage,dureeSondage

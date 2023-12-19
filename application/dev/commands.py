@@ -85,6 +85,14 @@ def crea_participe_sortie(filename:str) -> None:
 @app.cli.command()
 @click.argument('filename')
 def crea_sortie(filename:str) -> None:
+    def image_to_blob(chemin_image):
+        with open(chemin_image, 'rb') as fichier_image:
+            donnees_binaires = base64.b64encode(fichier_image.read())
+        return donnees_binaires
+    blob_data = image_to_blob("/home/iut45/Etudiants/o22204836/Documents/but2/SAE/Projet-SAE/application/dev/static/images/sortie1.jpg")
+    # print(blob_data)
+    
+    print(str(blob_data))
     """ permet l'injection de données ( de sortie ) dans la base de données"""
     fy=yaml.safe_load(open(filename))
     for sortie in fy:
@@ -94,7 +102,8 @@ def crea_sortie(filename:str) -> None:
                    dureeSortie=int(sortie["dureeSortie"]),
                    lieu=sortie["lieu"],
                    type=sortie["type"],
-                   tenue=sortie["tenue"])
+                   tenue=sortie["tenue"],
+                   blob_data=str(blob_data))
         db.session.add(srt)
         db.session.commit()
 

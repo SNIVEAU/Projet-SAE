@@ -31,6 +31,13 @@ footer {
     position: absolute;
     bottom: 0%;
     width: 100%;
+    margin-top: auto;
+}
+@media (max-width: 768px) {
+    footer {
+        position: relative;
+        margin-top: 20px; /* Ajustez selon vos besoins */
+    }
 }
 
 span {

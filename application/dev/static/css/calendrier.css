@@ -1,12 +1,16 @@
-
+h1{
+  text-align: center;
+  padding-bottom: 3%;
+}
 th {
   border: 0.1vw solid #333;
   padding: 0.5vw;
   max-width: 5vw;
+  border: 1px;
 }
 
 th {
-  background-color: red;
+  background-color: #1C2942;
   color: #fff;
   text-align: center;
 }
@@ -26,6 +30,12 @@ table {
     font-size: 50px;
 }
 
+.mois{
+    border-bottom: #fff 1px solid;
+}
+th{
+    border-bottom: #fff 1px solid;
+}
 .sortie{
     background-color: orange;
     margin-right: 1vw;
@@ -34,3 +44,17 @@ table {
 .repetition{
     background-color: yellow;
 }
+button{
+  margin: 1vw;
+  background-color: #333;
+  color: white;
+  border-radius: 0.5vw;
+  padding: 0.5vw;
+  font-size: 1vw;
+  cursor: pointer;
+}
+button:hover{
+    background-color: #555;
+}
+.bouton_crea_repetition{
+padding-right: 80%;}

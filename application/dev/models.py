@@ -1,3 +1,5 @@
+import base64
+from sqlalchemy import LargeBinary
 from .app import db
 from flask_login import UserMixin
 from .app import db, login_manager
@@ -93,15 +95,17 @@ class Sortie(db.Model):
     lieu = db.Column(db.String(50))
     type= db.Column(db.String(50))
     tenue = db.Column(db.String(50))
+    blob_data = (db.String(500000))  # Ajout de l'attribut blob_data
     def __repr__(self) -> str:
         """Retourne la date, la durée et l'id de la sortie
         Return:
             str : date, durée et id de la sortie"""
-        return str(self.dateSortie)+" "+str(self.dureeSortie)+" "+str(self.idSortie)
-    
+        return str(self.dateSortie)+" "+str(self.dureeSortie)+" "+str(self.idSortie)+" "+str(self.blob_data)
     def to_dict(self)->dict:
-        return {"idSortie":self.idSortie,"dateSortie":self.dateSortie,"dureeSortie":self.dureeSortie,"description":self.description,"lieu":self.lieu,"type":self.type,"tenue":self.tenue}
+        return {"idSortie":self.idSortie,"dateSortie":self.dateSortie,"dureeSortie":self.dureeSortie,"description":self.description,
+                "lieu":self.lieu,"type":self.type,"tenue":self.tenue,"blob_data": self.blob_data}
     
+
 def get_sorties()->list:
     """Retourne la liste des sorties
     Return:

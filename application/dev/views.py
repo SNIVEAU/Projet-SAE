@@ -39,6 +39,7 @@ def calendrier():
         c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
         c.cssclass_month_head="mois"
         num_day=datetime.now().day
+        print(num_day)
         num_mois=datetime.now().month
         mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
         return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois)
@@ -48,7 +49,6 @@ def calendrier():
 @app.route('/get_val_dico_mois/<day>')
 def get_val_dico_mois_route(day):
     result = get_val_dico_mois(day)
-    print(result)
     if result is None:
         return jsonify({})
     dict={}
@@ -101,7 +101,6 @@ class LoginForm(FlaskForm):
         m = sha256()
         m.update(self.password.data.encode())
         passwd = m.hexdigest()
-        print(passwd)
         return musicien if passwd == musicien.password else None
 
 @app.route("/login/", methods=["GET", "POST"])
@@ -447,7 +446,7 @@ def crea_repetition(erreur=False):
 @app.route("/save_repetition/", methods=["GET", "POST"])
 def save_repetition():
     date_str=request.form.get("date")
-    if date_str=="" or request.form.get("lieu")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="":
+    if date_str=="" or request.form.get("lieu")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="" or request.form.get("date")=="":
         return crea_repetition(erreur=True)
     date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
 
@@ -468,6 +467,38 @@ def save_repetition():
     db.session.commit()
     return redirect(url_for("home"))
     
+@app.route("/crea_sondage_standard/", methods=["GET", "POST"])
+def crea_sondage_standard():
+    return render_template("crea_sondage_standard.html")
+
+@app.route("/save_sondage_standard/", methods=["GET", "POST"])
+def save_sondage_standard():
+    if request.form.get("intitule")=="" or request.form.get("duree")=="" or request.form.get("type_question")=="":
+        return crea_sondage_standard()
+    else:
+
+        sondage=Sondage(idSondage=get_max_id_sondage()+1,
+                        idSortie=None,
+                        idRepetition=None,
+                        message=request.form.get("intitule"),
+                        dateSondage=datetime.now(),
+                        dureeSondage=int(request.form.get("duree")))
+        reponse="type:"+request.form.get("type_question")+"|"+"intitule:"+request.form.get("intitule")+"|reponse:"
+        for i in range(1,int(request.form.get("nbreponse"))+1):
+            print(reponse)
+            reponse+=request.form.get("reponse"+str(i))+";"
+            
+        question=Question(idQuestion=get_max_id_question()+1,
+                        idSondage=sondage.idSondage,
+                        reponsesQuestion=reponse,
+                        intitule=request.form.get("intitule_question"))
+        db.session.add(sondage)
+        db.session.add(question)
+        db.session.commit()
+
+        return redirect(url_for("home"))
+        
+
 @app.route("/stat/")
 def stat():
     """Statistiques

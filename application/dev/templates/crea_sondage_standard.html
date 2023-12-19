@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/crea_eve.css')}}">
+{% endblock %}
+{% block content %}
+<h1>Créer une question</h1>
+<h3>Remplissez les champs ci-dessous avec les informations necessaire</h3>
+{% if erreur %}
+<h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
+{% endif %}
+<form action="{{url_for('save_sondage_standard')}}" method="post" class="form_question">
+<input type="text" name="intitule" placeholder="Intitule" size="100">
+<datalist id="type_question">
+    <option value="texte">
+    <option value="choix">
+    <option value="date">
+    <option value="heure">
+    <option value="nombre">
+</datalist>
+<input list="type_question" name="type_question" placeholder="type de question">
+<ul class="question">
+</ul>
+<p>ajouter une réponse</p>
+<input type="button" value="+" class="plus" onclick="ajouterQuestion()">
+<input type="button" value="-" class="moins" onclick="supprimerQuestion()">
+<input type="submit" value="créer la question" class="submit_sortie">
+
+<h4>durée de la question ( en jour )</h4>
+<input type="number" name="duree" class="nombre" placeholder="durée en jour" min=0>
+<input type="number" name="nbreponse" class="nombreReponse" placeholder="nombre de réponse" min=0 hidden>
+
+</form>
+
+
+<script>
+var liste = document.getElementsByClassName("question");
+var boutonPlus = document.getElementsByClassName("plus");
+var boutonMoins = document.getElementsByClassName("moins");
+var nombreReponse = document.getElementsByClassName("nombreReponse")[0];
+
+function ajouterQuestion(){
+    var enfant = liste[0].appendChild(document.createElement("li"));
+    var nombre = liste[0].childElementCount;
+    enfant.innerHTML = "<input type='text' name='reponse"+nombre+"' placeholder='réponse' class='réponse'>";
+    nombreReponse.value =  nombre;
+}
+
+function supprimerQuestion(){
+    liste[0].removeChild(liste[0].lastChild);
+    nombreReponse.value =  liste[0].childElementCount;
+}
+
+
+</script>
+{% endblock %}

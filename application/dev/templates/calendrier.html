@@ -6,6 +6,7 @@
 {% block content %}
 <h1>Calendrier</h1>
 {{calendrier | safe}}
+<p class="test"></p>
 <script>
     var test = document.getElementsByClassName("mois")
     for(element of test){
@@ -35,13 +36,15 @@
             jours[i].innerHTML = "Dimanche";
         }   
     }
-
+    var test1 = document.getElementsByClassName("test")
     var datas = document.querySelectorAll("td");
+    test1.innerHTML == datas
     var fin=true
     var i=0
     while(fin){
         datas[i].style.backgroundColor = "grey";
         if(datas[i].innerHTML == "{{num_day}}"){
+            datas[i].style.backgroundColor = "blue";
             fin=false;
         }
         i++;
@@ -70,9 +73,8 @@
             xhr.send();
         })(j);
     }
-    datas[{{num_day}}+1].style.backgroundColor = "blue";
 </script>
-
 <a href="/crea_sortie" class="bouton_crea_sortie"><button>Créer une sortie</button></a>
 <a href="/crea_repetition" class="bouton_crea_repetition"><button>Créer une repetition</button></a>
+<a href="/crea_sondage_standard" class="bouton_crea_sondage_standard"><button>Créer un sondage standard</button></a>
 {% endblock %}

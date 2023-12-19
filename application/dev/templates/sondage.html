@@ -22,7 +22,14 @@
 <form method="POST" action="{{ url_for('validation_sondage')}}">
     <tr>
         <td>{{ s.message }}</td>
-        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
+        <td>
+            {% if s.idSortie!=None %}
+            {{ get_sortie_by_id(s.idSortie).dateSortie }}
+            {% else %}
+            {{ get_repetition_by_id(s.idRepetition).dateRepetition }}
+            {% endif %}
+            
+        </td>
         <td id="temps{{s.idSondage}}">
             {{s.temps_restant()}}
         </td>

@@ -1,27 +1,48 @@
 {% extends 'base.html' %}
+
 {% block styles %}
-{{ super() }}
-<link rel="stylesheet" href="{{url_for('static',filename='css/crea_eve.css')}}">
+    {{ super() }}
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/crea_eve.css') }}">
 {% endblock %}
+
 {% block content %}
-<h1>Créer une sortie</h1>
-<h3>Remplissez les champs ci-dessous avec les informations necessaire</h3>
-{% if erreur %}
-<h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
-{% endif %}
-<form action="{{url_for('save_sortie')}}" method="post" class="form_sortie">
-<h4>lieu de la sortie</h4>
-<input type="text" name="lieu" class="form_sortie" placeholder="lieu de la sortie">
-<h4>description de la sortie</h4>
-<textarea name="description" class="form_sortie" placeholder="description de la sortie" rows="10" cols="50"></textarea>
-<h4> type de sortie</h4>
-<input type="text" name="type" class="form_sortie" placeholder="type de sortie">
-<h4>tenue de la sortie</h4>
-<input type="text" name="tenue" class="form_sortie" placeholder="tenue">
-<h4>date de la sortie</h4>
-<input type="datetime-local" name="date" class="form_sortie" min="{{date}}">
-<h4>durée de la sortie</h4>
-<input type="number" name="duree" class="form_sortie" placeholder="durée en heure">
+    <div class="container">
+        <h1>Créer une sortie</h1>
+        <h3>Remplissez les champs ci-dessous avec les informations nécessaires</h3>
+        {% if erreur %}
+            <h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
+        {% endif %}
+        <form action="{{ url_for('save_sortie') }}" method="post" class="form_sortie">
+            <div class="form-group">
+                <label for="lieu" class="control-label">Lieu de la sortie</label>
+                <input type="text" name="lieu" class="form-control" placeholder="Lieu de la sortie">
+            </div>
+            <div class="form-group">
+                <label for="description" class="control-label">Description de la sortie</label>
+                <textarea name="description" class="form-control" placeholder="Description de la sortie" rows="5"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="type" class="control-label">Type de sortie</label>
+                <input type="text" name="type" class="form-control" placeholder="Type de sortie">
+            </div>
+            <div class="form-group">
+                <label for="tenue" class="control-label">Tenue de la sortie</label>
+                <input type="text" name="tenue" class="form-control" placeholder="Tenue de la sortie">
+            </div>
+            <div class="form-group">
+                <label for="date" class="control-label">Date de la sortie</label>
+                <input type="datetime-local" name="date" class="form-control" min="{{ date }}">
+            </div>
+            <div class="form-group">
+                <label for="duree" class="control-label">Durée de la sortie (en heures)</label>
+                <input type="number" name="duree" class="form-control" placeholder="Durée en heures">
+            </div>
+
+
+            <input type="submit" value="Créer la sortie" class="btn btn-danger">
+        </form>
+    </div>
 
 <input type="submit" value="créer la sortie" class="submit_sortie">
 </form>
@@ -47,3 +68,4 @@ function previewFile() {
 </script>
 
 {% endblock %}
+

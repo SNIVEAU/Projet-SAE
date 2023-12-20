@@ -1,11 +1,18 @@
+RELIER1,0N REPETITION,11 SONDAGE
 :
 REPETITION:idRepetition,dateRepetition,dureeRepetition
 PARTICIPER2,0N REPETITION, 0N MUSICIEN : materiel
-SORTIE:idSortie,dateSortie,dureeSortie,lieu,type,tenue
-RELIER,0N SORTIE,11 SONDAGE
-
 DEMI_JOURNNE:date
-DISPONIBILITE, 0N DEMI_JOURNNE,0N MUSICIEN
-MUSICIEN:idMusicien,nom,prenom,password,age,adresseMail,telephone,admin,imgMusicien
-PARTICIPER1,0N SORTIE,0N MUSICIEN:materiel
+
 SONDAGE:idSondage,dateSondage,dureeSondage
+RELIER2,0N QUESTION,11 SONDAGE
+QUESTION:idQuestion,intitule,questions
+REPONDU,0N QUESTION,0N MUSICIEN
+MUSICIEN:idMusicien,nom,prenom,password,age,adresseMail,telephone,admin,imgMusicien
+DISPONIBILITE, 0N DEMI_JOURNNE,0N MUSICIEN
+
+RELIER,0N SORTIE,11 SONDAGE
+:
+SORTIE:idSortie,dateSortie,dureeSortie,lieu,type,tenue
+PARTICIPER1,0N SORTIE,0N MUSICIEN:materiel
+:

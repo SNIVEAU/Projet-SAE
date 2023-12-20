@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/evenement.css')}}">
+{% endblock %}
+{% block content %}
+<h3>{{question.intitule}}</h3>
+{{question.reponseQuestion}}
+<form action="{{url_for('save_reponse_question')}}" method="POST">
+<input type="hidden" name="idQuestion" value="{{question.idQuestion}}">
+{% for reponse in listeReponse %}
+    <label>{{reponse}}</label>
+    <input type="{{type}}" name="reponse">
+{% endfor %}
+<input type="textarea" name="reponseSpeciale"> 
+<input type="submit" value="Valider">
+</form>
+{% endblock %}

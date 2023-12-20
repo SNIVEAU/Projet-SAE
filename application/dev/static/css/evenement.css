@@ -1,4 +1,23 @@
 p,h2{
     font-family: 'Inter', sans-serif;
-    padding: 1%;
+    padding-bottom:  1%;
+}
+#paragraph{
+    display: flex;
+    padding-bottom:  2%;
+
+}
+div > div > p{
+    flex-wrap: wrap;
+}
+#Lieu{
+    padding-right: 3%;
+
+}
+button{
+    border-radius: 5px;
+    background-color: #b10505;
+    color: white;
+    font-family: 'Inter', sans-serif;
+
 }

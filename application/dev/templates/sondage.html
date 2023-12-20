@@ -51,7 +51,7 @@
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
         <td>
             {% if s.idSortie==None and s.idRepetition==None %}
-            <div><a href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idSondage}}">repondre</a></div> 
+            <div><a  class = "reponse" href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idSondage}}">repondre</a></div> 
             {% else %}
             <input class="valid" type="submit" value="✔️">
             {% endif %}

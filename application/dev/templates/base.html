@@ -68,12 +68,13 @@
             {% block content %}
             {% endblock %}
         </div>
+        <footer class="">
+            <div class="container">
+                <span class="font-weight-bold">Copyright © 2023 Tous droits Réservés</span>
+            </div>
+        </footer>
     </main>
-    <footer class="footer mt-auto py-3 text-center">
-        <div class="container">
-            <span class="font-weight-bold">Copyright © 2023 Tous droits Réservés</span>
-        </div>
-    </footer>
+    
 
     {% block scripts %}
     {{ bootstrap.load_js() }}

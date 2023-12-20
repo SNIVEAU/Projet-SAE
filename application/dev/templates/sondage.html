@@ -8,25 +8,36 @@
 <h2>Sondage en cours</h2>
 <table>
     <tr>
-        <th>sujet sondage</th>
-        <th>date</th>
-        <th>temps restant</th>
-        <th>vote</th>
-        <th>valider</th>
+        <th>Sujet sondage</th>
+        <th>Date</th>
+        <th>Temps restant</th>
+        <th>Vote</th>
+        <th>Valider</th>
     </tr>
     {% if len(sondages)==0 %}
 </table>
-<p>pas de sondage en cours</p>
+<p>Pas de sondage en cours</p>
 {% else %}
 {% for s in sondages %}
 <form method="POST" action="{{ url_for('validation_sondage')}}">
     <tr>
         <td>{{ s.message }}</td>
-        <td>{{ get_sortie_by_id(s.idSortie).dateSortie }}</td>
+        <td>
+            {% if s.idSortie!=None %}
+            {{ get_sortie_by_id(s.idSortie).dateSortie }}
+            {% elif s.idRepetition!=None %}
+            {{ get_repetition_by_id(s.idRepetition).dateRepetition }}
+            {% else %}
+            <p>aucune</p>
+            {% endif %}
+        </td>
         <td id="temps{{s.idSondage}}">
             {{s.temps_restant()}}
         </td>
         <td>
+            {% if s.idSortie==None and s.idRepetition==None %}
+            <div>aucune</div> 
+            {% else %}
             <div>
                 <input type="radio" value="True" name="choix{{s.idSondage}}" id="oui">
                 <label for="oui">oui</label>
@@ -35,10 +46,15 @@
                 <input type="radio" value="False" name="choix{{s.idSondage}}" id="non">
                 <label for="non">non</label>
             </div>
+            {% endif %}
         </td>
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
         <td>
+            {% if s.idSortie==None and s.idRepetition==None %}
+            <div><a href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idSondage}}">repondre</a></div> 
+            {% else %}
             <input class="valid" type="submit" value="✔️">
+            {% endif %}
         </td>
     </tr>
 </form>
@@ -60,18 +76,18 @@
     {% endfor %}
     </table>
     {% endif %}
-<h2>sondage répondu</h2>
+<h2>Sondage répondu</h2>
 <table>
     <tr>
-        <th>sujet sondage</th>
-        <th>date</th>
-        <th>choix vote</th>
-        <th>date vote</th>
-        <th>annuler</th>
+        <th>Sujet sondage</th>
+        <th>Date</th>
+        <th>Choix vote</th>
+        <th>Date vote</th>
+        <th>Annuler</th>
     </tr>
     {% if len(participation)==0 %}
     </table>
-    <p>pas de sondage repondu</p>
+    <p>Pas de sondage repondu</p>
     {% else %}
     {% for ps in participation %}
     <tr>

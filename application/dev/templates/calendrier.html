@@ -6,6 +6,7 @@
 {% block content %}
 <h1>Calendrier</h1>
 {{calendrier | safe}}
+<p class="test"></p>
 <script>
     var test = document.getElementsByClassName("mois")
     for(element of test){
@@ -35,13 +36,15 @@
             jours[i].innerHTML = "Dimanche";
         }   
     }
-
+    var test1 = document.getElementsByClassName("test")
     var datas = document.querySelectorAll("td");
+    test1.innerHTML == datas
     var fin=true
     var i=0
     while(fin){
         datas[i].style.backgroundColor = "grey";
         if(datas[i].innerHTML == "{{num_day}}"){
+            datas[i].style.backgroundColor = "blue";
             fin=false;
         }
         i++;
@@ -70,9 +73,69 @@
             xhr.send();
         })(j);
     }
-    datas[{{num_day}}+1].style.backgroundColor = "blue";
 </script>
 
-<a href="/crea_sortie" class="bouton_crea_sortie"><button>Créer une sortie</button></a>
-<a href="/crea_repetition" class="bouton_crea_repetition"><button>Créer une repetition</button></a>
+
+<div>
+    <a href="/crea_sortie" class="bouton_crea_sortie"><button>Créer une sortie</button></a>
+    <a href="/crea_repetition" class="bouton_crea_repetition"><button class="deux">Créer une repetition</button></a>
+    <a href="/crea_sondage_standard" class="bouton_crea_sondage_standard"><button>Créer un sondage standard</button></a>
+</div>
+    <h2>Disponibilité</h2>
+
+    <!-- mes 2 select de date -->
+    <div class="select_date">
+        <form action="/ajoute_dispo" method="post">
+            <label for="date_debut">Date de début</label>
+            <input type="date" id="date_debut" name="date_debut" value="{{date_debut}}">
+            <label for="date_fin">Date de fin</label>
+            <input type="date" id="date_fin" name="date_fin" value="{{date_fin}}" min = {{date}}>
+            <input type="submit" value="Valider">
+        </form>
+    </div>
+    
+    <div class="dispo">
+        <div class="dispo1">
+            <h3>Disponibilité de {{current_user.nomMusicien}} {{current_user.prenomMusicien}}</h3>
+            {% if dispo %}
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Supprimer</th>
+                </tr>
+                {% for d in dispo %}
+                <tr>
+                    <td>{{d.date}}</td>
+                    <td><a href="/supprime_dispo/{{d.date}}"><button>Supprimer</button></a></td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <h4>Vous n'avez pas de disponibilité</h4>
+            {% endif %}
+        </div>
+        {% if current_user.admin %}
+        <div class="dispo2">
+            <h3>Disponibilité des musiciens</h3>
+            {% if dispo_musicien %}
+            <table>
+                <tr>
+                    <th>Id</th>
+                    <th>Date</th>
+                </tr>
+                {% for d in dispo_musicien %}
+                <tr>
+                    <td>{{d.idMusicien}}</td>
+                    <td>{{d.date}}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <h4>Il n'y a pas de disponibilité</h4>
+            {% endif %}
+
+        </div>
+        {% endif %}
+    </div>
+    </div>
 {% endblock %}

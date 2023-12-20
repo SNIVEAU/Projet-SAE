@@ -94,7 +94,6 @@ def crea_sortie(filename:str) -> None:
                    dureeSortie=int(sortie["dureeSortie"]),
                    lieu=sortie["lieu"],
                    type=sortie["type"],
-                   description=sortie["description"],
                    tenue=sortie["tenue"])
         db.session.add(srt)
         db.session.commit()

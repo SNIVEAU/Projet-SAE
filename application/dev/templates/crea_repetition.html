@@ -1,24 +1,37 @@
 {% extends 'base.html' %}
-{% block styles %}
-{{ super() }}
-<link rel="stylesheet" href="{{url_for('static',filename='css/crea_eve.css')}}">
-{% endblock %}
-{% block content %}
-<h1>Créer une sortie</h1>
-<h3>Remplissez les champs ci-dessous avec les informations necessaire</h3>
-{% if erreur %}
-<h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
-{% endif %}
-<form action="{{url_for('save_repetition')}}" method="post" class="form_repetition">
-<h4>lieu de la repetition</h4>
-<input type="text" name="lieu" class="lieu" placeholder="lieu de la répétition">
-<h4>tenue de la repetition</h4> 
-<input type="text" name="tenue" class="tenue" placeholder="tenue">
-<h4>date de la repetition</h4>
-<input type="datetime-local" name="date" class="date" min="{{date}}">
-<h4>durée de la repetition</h4>
-<input type="number" name="duree" class="nombre" placeholder="durée en heure">
 
-<input type="submit" value="créer la repetition" class="submit_repetition">
-</form>
+{% block styles %}
+    {{ super() }}
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/crea_eve.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Créer une répétition</h1>
+        <h3>Remplissez les champs ci-dessous avec les informations nécessaires</h3>
+        {% if erreur %}
+            <h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
+        {% endif %}
+        <form action="{{ url_for('save_repetition') }}" method="post" class="form_repetition">
+            <div class="form-group">
+                <label for="lieu" class="control-label text-center">Lieu de la répétition</label>
+                <input type="text" name="lieu" class="form-control" placeholder="Lieu de la répétition">
+            </div>
+            <div class="form-group">
+                <label for="tenue" class="control-label text-center">Tenue de la répétition</label>
+                <input type="text" name="tenue" class="form-control" placeholder="Tenue de la répétition">
+            </div>
+            <div class="form-group">
+                <label for="date" class="control-label text-center">Date de la répétition</label>
+                <input type="datetime-local" name="date" class="form-control" min="{{ date }}">
+            </div>
+            <div class="form-group">
+                <label for="duree" class="control-label text-center">Durée de la répétition (en heures)</label>
+                <input type="number" name="duree" class="form-control" placeholder="Durée en heures">
+            </div>
+
+            <input type="submit" value="Créer la répétition" class="btn btn-danger mx-auto d-block">
+        </form>
+    </div>
 {% endblock %}

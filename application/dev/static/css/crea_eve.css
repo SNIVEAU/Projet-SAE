@@ -1,0 +1,53 @@
+
+h1, h3{
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+
+}
+
+
+.form_sortie {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Inter', sans-serif;
+}
+
+.form-control {
+    background-color: #D9D9D9;
+}
+
+.form-group {
+    font-family: 'Inter', sans-serif;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.center-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.submit_sortie {
+    background-color: #D9534F;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn{
+    font-family: 'Inter', sans-serif;
+    margin-top: 2%;
+    
+}

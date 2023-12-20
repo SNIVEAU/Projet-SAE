@@ -5,13 +5,37 @@
 {% endblock %}
 {% block content %}
 <div>
-    <h2>{{sortie.type}}</h2>
-    <h2>{{sortie.dateSortie}}</h2>
-    <p>{{sortie.description}}</p>
+    <h2>Date de la sortie {{sortie.dateSortie}}</h2>
+    <h2>Type : {{sortie.type}}</h2>
+    <p>Description : {{sortie.description}}</p>
 </div>
 <div>
-    <p>{{sortie.dureeSortie}}</p>
-    <p>{{sortie.lieu}}</p>
-    <p>{{sortie.tenue}}</p>
-</div>
+    <p>Durée de la sortie :{{sortie.dureeSortie}} h</p>
+    <div>
+        <div id="paragraph">
+            <div> Lieu :</div>
+            <div id = "Lieu">{{sortie.lieu}}</div>
+            <button onclick="myFunction()">Copier le Lieu</button>
+        </div>
+    </div>    
+    <p>Tenue : {{sortie.tenue}}</p>
+    <p> {{sortie.blob_data}}</p>
+    {% if sortie.blob_data %}
+    <img src="data:image/jpeg;base64,{{sortie.blob_data}}" alt="Image de la sortie">
+{% endif %}
+    
+
+    </div>
+<script>
+    function myFunction() {
+        // Get the text content of the paragraph
+        var copyText = document.getElementById("Lieu").innerText;
+    
+        // Copy the text to the clipboard
+        navigator.clipboard.writeText(copyText);
+    
+        // Alert the user
+        alert("Copied the text: " + copyText);
+    }
+</script>
 {% endblock %}

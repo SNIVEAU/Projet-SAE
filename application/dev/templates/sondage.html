@@ -92,34 +92,40 @@
     {% for ps in participation %}
     <tr>
         <td>
-            {% if isinstance(ps,p_s) %}
-                {{ get_sondage_by_sortie(ps.get_sortie().idSortie).message }}
+            {% if ps.idRepetition!=None or ps.idSortie!=None %}
+                {{ ps.message }}
             {% else %}
-                {{ get_sondage_by_repetition(ps.get_repetition().idRepetition).message }}
+                {{ get_question_by_idSondage(ps.idSondage).intitule }}
             {% endif %}
         </td>
         <td>
-            {% if isinstance(ps,p_s) %}
+            {% if ps.idSortie!=None %}
                 {{ get_sortie_by_id(ps.idSortie).dateSortie }}
-            {% else %}
+            {% elif ps.idRepetition!=None%}
                 {{ get_repetition_by_id(ps.idRepetition).dateRepetition }}
+            {% else %}
+                <p>aucune</p>
             {% endif %}
-            </td>
-        {% if ps.presence%}
-        <td>oui</td>
-        {% else %}
-        <td>non</td>
-        {% endif %}
-        <td>
-            {{ ps.dateReponse }}
         </td>
+        {% if ps.idSortie!=None %}
+            {% if get_sortie_by_id(ps.idSortie).presence %}
+                <td>oui</td>
+            {% else %}
+                <td>non</td>
+            {% endif %}
+        {% elif ps.idRepetition!=None %}
+            {% if get_participation_rep_by_musicien_and_sondage(current_user.idMusicien,ps.idSondage).presence %}
+                <td>{{get_participation_rep_by_musicien_and_sondage(current_user.idMusicien,ps.idSondage).presence}}</td>
+            {% else %}
+                <td>{{get_participation_rep_by_musicien_and_sondage(current_user.idMusicien,ps.idSondage).presence}}</td>
+            {% endif %}
+        {% else %}
+            {{ get_reponse_by_id(get_question_by_idSondage(ps.idSondage).idQuestion,ps.Sondage) }}
+        {% endif %}
+        <td></td>
         <td>
             <form method="POST" action="{{url_for('annuler_sondage')}}">
-            {% if isinstance(ps,p_s) %}
-                <input type="text" name="idsondage" value="{{get_sondage_by_sortie(ps.get_sortie().idSortie).idSondage}}" hidden>
-            {% else %}
-                <input type="text" name="idsondage" value="{{get_sondage_by_repetition(ps.get_repetition().idRepetition).idSondage}}" hidden>
-            {% endif %}    
+                <input type="text" name="idsondage" value="{{ps.idSondage}}" hidden>
                 <input type="text" name="idsortie" value="{{ps.idSortie}}" hidden>
                 <input type="submit" value="✖️" class="annul">
             </form>

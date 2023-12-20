@@ -248,7 +248,6 @@ def get_sondage_by_musicien(id)->list:
     Return:
         list : liste des sondages auxquels le musicien a répondu"""
     participation=[]
-    sondages=[]
     for sorti in get_sortie_by_musicien(id):
         participation.append(get_sondage_by_sortie(sorti.idSortie))
     for repet in get_repetition_by_musicien(id):
@@ -295,6 +294,15 @@ def get_repetition_by_musicien(id)->list:
     Return:
         list : liste des répétitions auxquelles le musicien participe"""
     return participer_repetition.query.filter_by(idMusicien=id)
+
+def get_participation_by_musicien_and_repetition(idMusicien,idRepetition)->list:
+    """Retourne la liste des participations du musicien dont l'id est passé en paramètre au sondage dont l'id est passé en paramètre
+    Args:
+        idMusicien (int): id du musicien
+        idSondage (int): id du sondage
+    Return:
+        list : liste des participations du musicien dont l'id est passé en paramètre au sondage dont l'id est passé en paramètre"""
+    return participer_repetition.query.filter_by(idMusicien=idMusicien,idRepetition=idRepetition).all()
 
 class participer_sortie(db.Model):
     """Classe participer_sortie"""
@@ -393,8 +401,9 @@ class Reponse(db.Model):
     idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
     reponseQuestion = db.Column(db.String(400)) # exemple de format possible "type:radio%intitule:question1%reponse:reponse1;reponse2;reponse3"
     reponseSpeciale = db.Column(db.String(400)) # reponse personnalise pour les questions, commentaires, ...
+    date_reponse = db.Column(db.DateTime)
 
-def get_Reponse_id(idQuestion,idMusicien)->Reponse:
+def get_reponse_by_id(idQuestion,idMusicien)->Reponse:
     return Reponse.query.filter_by(idQuestion=idQuestion,idMusicien=idMusicien).first()
 
 def get_Reponse_by_idQuestion(idQuestion)->list:
@@ -402,6 +411,7 @@ def get_Reponse_by_idQuestion(idQuestion)->list:
 
 def get_reponse_by_idMusicien(idMusicien)->list:
     return Reponse.query.filter_by(idMusicien=idMusicien).all()
+
 
 
 

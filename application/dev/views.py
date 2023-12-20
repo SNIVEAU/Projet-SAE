@@ -188,32 +188,34 @@ def validation_sondage():
     else:
         reponse=False
     date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if get_sondage_by_id(id).idRepetition is None:
-        rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
+    if get_sondage_by_id(id).idRepetition!=None:
+        rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
                             idMusicien=current_user.idMusicien,
                             dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
                             presence=reponse)
-    if get_sondage_by_id(id).idSortie is None:
-        rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
+    elif get_sondage_by_id(id).idSortie!=None:
+        rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
                             idMusicien=current_user.idMusicien,
                             dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
                             presence=reponse)
     db.session.add(rs)
     db.session.commit()
-    return page_sondage()
+    return redirect(url_for("page_sondage"))
 
 @app.route("/annuler_sondage/", methods=["POST","GET"])
 def annuler_sondage():
     if len(request.form)==0:
         return redirect(url_for("page_sondage"))
     id=int(request.form.get("idsondage"))
-    if get_sondage_by_id(id).idRepetition is None:
-        rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
-    if get_sondage_by_id(id).idSortie is None:
+    if get_sondage_by_id(id).idRepetition!=None:
         rs=participer_repetition.query.filter_by(idRepetition=get_sondage_by_id(id).idRepetition,idMusicien=current_user.idMusicien).first()
+    elif get_sondage_by_id(id).idSortie!=None:
+        rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+    else:
+        rs=Reponse.query.filter_by(idQuestion=get_sondage_by_id(id).idQuestion,idMusicien=current_user.idMusicien).first()
     db.session.delete(rs)
     db.session.commit()
-    return page_sondage()
+    return redirect(url_for("page_sondage"))
 
 class RegistrationForm(FlaskForm):
     """Formulaire d'inscription
@@ -500,7 +502,9 @@ def save_sondage_standard():
 @app.route("/page_reponse_question/<idQuestion>", methods=["GET", "POST"])
 def page_reponse_question(idQuestion):
     question=get_question_by_id(idQuestion)
+    print(question)
     questions=question.reponsesQuestion.split("|")
+     
     type=questions[0].split(":")[1]
     liste_reponse=questions[1].split(":")[1].split(";")
     liste_reponse.pop()
@@ -508,12 +512,24 @@ def page_reponse_question(idQuestion):
     
 @app.route("/save_reponse_question/", methods=["GET", "POST"])
 def save_reponse_question():
-    print(request.form.get("reponse"))
+    reponse_sondage=""
+    questions=get_question_by_id(int(request.form.get("idQuestion"))).reponsesQuestion.split("|")
+    type=questions[0].split(":")[1]
+    reponse_sondage+="type:"+type+"|"
+    if type=="radio":
+        reponse_sondage+=request.form.get("reponse")
+    else:
+        liste_reponse=questions[1].split(":")[1].split(";")
+        print(liste_reponse)
+        liste_reponse.pop()
+        for reponse in liste_reponse:
+            reponse_sondage+=request.form.get(reponse)+";"
     reponse=Reponse(
                     idQuestion=int(request.form.get("idQuestion")),
                     idMusicien=current_user.idMusicien,
-                    reponseQuestion=request.form.get("reponse"),
-                    reponseSpeciale=request.form.get("reponseSpeciale"))
+                    reponseQuestion=reponse_sondage,
+                    reponseSpeciale=request.form.get("reponseSpeciale"),
+                    date_reponse=datetime.now())
     db.session.add(reponse)
     db.session.commit()
     return redirect(url_for("home"))
@@ -562,7 +578,8 @@ def page_sondage(erreur=False):
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
-        return render_template("sondage.html",len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=get_eve_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep)
+        participation=get_sondage_by_musicien(current_user.idMusicien)
+        return render_template("sondage.html",get_participation_by_musicien_and_repetition=get_participation_by_musicien_and_repetition,get_reponse_by_id=get_reponse_by_id,len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=participation,sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep,get_question_by_id=get_question_by_id,get_sondage_by_question=get_sondage_by_question)
     return redirect(url_for("login"))
 
 @app.route('/update_temps<idSondage>')

@@ -1,44 +1,72 @@
 table,
 th {
-  border: 0.1vw solid #333;
+  border: 0.1vw solid #1C2942;
   padding: 0.5vw;
 }
+h1{
+  text-align: center;
+  padding-bottom: 3%;
+  font-family: 'Inter', sans-serif;
+}
+h2{
+  font-family: 'Inter', sans-serif;
 
+}
 th {
-  background-color: #333;
+  background-color: #1C2942;
   color: #fff;
   text-align: center;
+  font-family: 'Inter', sans-serif;
+
 }
 
 td {
   text-align: center;
   border: 0.1vw solid #333;
-}
 
+}
+div label{
+  font-family: 'Inter', sans-serif;
+}
+div label:hover{
+  color: #333;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+
+}
+td input{
+  background-color: #fff;
+
+}
+td input:hover{
+  background-color: #fff;
+  border-color: #fff;
+}
 .valid {
   background-color: #4CAF50;
   color: white;
-  border: none;
-  padding: 0.2vh 0.2vh;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 0.8vw;
-  margin: 0.2vh 0.2vh;
   cursor: pointer;
-  border-radius: 0.5vw;
+  border: 1px solid #4CAF50;
+  border-radius: 30%;
+  min-width: fit-content;
+  min-height: fit-content;
 }
 
 .annul {
   background-color: #f44336;
   color: white;
-  border: none;
-  padding: 0.2vh 0.2vh;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 0.5vw;
-  margin: 0.2vh 0.2vh;
   cursor: pointer;
-  border-radius: 0.5vw;
+  border: 1px solid #f44336;
+  border-radius: 30%;
+  min-width: fit-content;
+  min-height: fit-content;
 }

@@ -393,7 +393,7 @@ class Question(db.Model):
     idSondage = db.Column(db.Integer, db.ForeignKey('sondage.idSondage'), primary_key=True)
     idQuestion = db.Column(db.Integer, primary_key=True)
     intitule = db.Column(db.String(100))
-    reponsesQuestion = db.Column(db.String(300)) # exemple de format possible "type:radio|intitule:question1|reponse:reponse1;reponse2;reponse3"
+    reponsesQuestion = db.Column(db.String(300)) # exemple de format possible "type:radio|reponse:reponse1;reponse2;reponse3"
 
 def get_max_id_question()->int:
     if Question.query.count()==0:
@@ -412,7 +412,7 @@ def get_sondage_by_question(idQuestion)->Sondage:
 class Reponse(db.Model):
     idQuestion = db.Column(db.Integer, db.ForeignKey('question.idQuestion'), primary_key=True)
     idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
-    reponseQuestion = db.Column(db.String(400)) # exemple de format possible "type:radio%intitule:question1%reponse:reponse1;reponse2;reponse3"
+    reponseQuestion = db.Column(db.String(400)) # exemple de format possible 
     reponseSpeciale = db.Column(db.String(400)) # reponse personnalise pour les questions, commentaires, ...
 
 def get_Reponse_id(idQuestion,idMusicien)->Reponse:

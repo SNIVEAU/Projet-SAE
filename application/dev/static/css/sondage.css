@@ -1,6 +1,6 @@
 table,
 th {
-  border: 0.1vw solid #333;
+  border: 0.1vw solid #1C2942;
   padding: 0.5vw;
 }
 h1{
@@ -13,7 +13,7 @@ h2{
 
 }
 th {
-  background-color: #333;
+  background-color: #1C2942;
   color: #fff;
   text-align: center;
   font-family: 'Inter', sans-serif;

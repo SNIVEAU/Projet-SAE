@@ -83,7 +83,7 @@ main>.container {
 .dropdown {
     position: relative;
     display: inline-block;
-    padding-right: 23px;
+    padding-right: 20px;
 }
 
 .dropdown-content {
@@ -97,7 +97,7 @@ main>.container {
 
 .dropdown-content a {
     color: black;
-    padding: 12px 20px;
+    padding: 12px 17px;
     text-decoration: underline;
     border: 1px solid #ddd;
     text-align: right;

@@ -42,7 +42,7 @@
                     <div class="connexion">
                         <div class="dropdown">
                             {% if current_user.is_authenticated %}
-                            <button class="dropbtn">Dropdown</button>
+                            <button class="dropbtn">Mon Compte</button>
                             <div class="dropdown-content">
                                 {% if current_user.admin %}
                                 <a href="{{ url_for('register') }}">Crée un compte</a>

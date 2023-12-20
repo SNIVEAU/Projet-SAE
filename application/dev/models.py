@@ -253,10 +253,9 @@ def get_sondage_by_musicien(id)->list:
         participation.append(get_sondage_by_sortie(sorti.idSortie))
     for repet in get_repetition_by_musicien(id):
         participation.append(get_sondage_by_repetition(repet.idRepetition))
-    for part in participation:
-        sondages.append(get_sondage_by_sortie(part.idSortie))
-        sondages.append(get_sondage_by_repetition(part.idRepetition))
-    return sondages
+    for reponse in get_reponse_by_idMusicien(id):
+        participation.append(get_sondage_by_question(reponse.idQuestion))
+    return participation
 
 class participer_repetition(db.Model):
     """Classe participer_repetition"""
@@ -375,13 +374,19 @@ class Question(db.Model):
     intitule = db.Column(db.String(100))
     reponsesQuestion = db.Column(db.String(300)) # exemple de format possible "type:radio|intitule:question1|reponse:reponse1;reponse2;reponse3"
 
-def get_question_by_idSondage(idSondage)->list:
-    return Question.query.filter_by(idSondage=idSondage).all()
-
 def get_max_id_question()->int:
     if Question.query.count()==0:
         return 0
     return Question.query.order_by(Question.idQuestion.desc()).first().idQuestion
+
+def get_question_by_id(idQuestion)->Question:
+    return Question.query.filter_by(idQuestion=idQuestion).first()
+
+def get_question_by_idSondage(idSondage)->Question:
+    return Question.query.filter_by(idSondage=idSondage).first()  
+
+def get_sondage_by_question(idQuestion)->Sondage:
+    return Sondage.query.filter_by(idSondage=get_question_by_id(idQuestion).idSondage).first()
 
 class Reponse(db.Model):
     idQuestion = db.Column(db.Integer, db.ForeignKey('question.idQuestion'), primary_key=True)
@@ -394,6 +399,9 @@ def get_Reponse_id(idQuestion,idMusicien)->Reponse:
 
 def get_Reponse_by_idQuestion(idQuestion)->list:
     return Reponse.query.filter_by(idQuestion=idQuestion).all()
+
+def get_reponse_by_idMusicien(idMusicien)->list:
+    return Reponse.query.filter_by(idMusicien=idMusicien).all()
 
 
 

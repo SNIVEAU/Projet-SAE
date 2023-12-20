@@ -483,21 +483,40 @@ def save_sondage_standard():
                         message=request.form.get("intitule"),
                         dateSondage=datetime.now(),
                         dureeSondage=int(request.form.get("duree")))
-        reponse="type:"+request.form.get("type_question")+"|"+"intitule:"+request.form.get("intitule")+"|reponse:"
+        reponse="type:"+request.form.get("type_question")+"|reponse:"
         for i in range(1,int(request.form.get("nbreponse"))+1):
             print(reponse)
             reponse+=request.form.get("reponse"+str(i))+";"
-            
         question=Question(idQuestion=get_max_id_question()+1,
                         idSondage=sondage.idSondage,
                         reponsesQuestion=reponse,
-                        intitule=request.form.get("intitule_question"))
+                        intitule=request.form.get("intitule"))
         db.session.add(sondage)
         db.session.add(question)
         db.session.commit()
 
         return redirect(url_for("home"))
         
+@app.route("/page_reponse_question/<idQuestion>", methods=["GET", "POST"])
+def page_reponse_question(idQuestion):
+    question=get_question_by_id(idQuestion)
+    questions=question.reponsesQuestion.split("|")
+    type=questions[0].split(":")[1]
+    liste_reponse=questions[1].split(":")[1].split(";")
+    liste_reponse.pop()
+    return render_template("page_reponse_question.html",question=question,listeReponse=liste_reponse,type=type)
+    
+@app.route("/save_reponse_question/", methods=["GET", "POST"])
+def save_reponse_question():
+    print(request.form.get("reponse"))
+    reponse=Reponse(
+                    idQuestion=int(request.form.get("idQuestion")),
+                    idMusicien=current_user.idMusicien,
+                    reponseQuestion=request.form.get("reponse"),
+                    reponseSpeciale=request.form.get("reponseSpeciale"))
+    db.session.add(reponse)
+    db.session.commit()
+    return redirect(url_for("home"))
 
 @app.route("/stat/")
 def stat():
@@ -543,7 +562,7 @@ def page_sondage(erreur=False):
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
-        return render_template("sondage.html",len=len,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=get_eve_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep)
+        return render_template("sondage.html",len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=get_eve_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep)
     return redirect(url_for("login"))
 
 @app.route('/update_temps<idSondage>')

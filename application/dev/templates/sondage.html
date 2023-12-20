@@ -25,15 +25,19 @@
         <td>
             {% if s.idSortie!=None %}
             {{ get_sortie_by_id(s.idSortie).dateSortie }}
-            {% else %}
+            {% elif s.idRepetition!=None %}
             {{ get_repetition_by_id(s.idRepetition).dateRepetition }}
+            {% else %}
+            <p>aucune</p>
             {% endif %}
-            
         </td>
         <td id="temps{{s.idSondage}}">
             {{s.temps_restant()}}
         </td>
         <td>
+            {% if s.idSortie==None and s.idRepetition==None %}
+            <div>aucune</div> 
+            {% else %}
             <div>
                 <input type="radio" value="True" name="choix{{s.idSondage}}" id="oui">
                 <label for="oui">oui</label>
@@ -42,10 +46,15 @@
                 <input type="radio" value="False" name="choix{{s.idSondage}}" id="non">
                 <label for="non">non</label>
             </div>
+            {% endif %}
         </td>
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
         <td>
+            {% if s.idSortie==None and s.idRepetition==None %}
+            <div><a href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idSondage}}">repondre</a></div> 
+            {% else %}
             <input class="valid" type="submit" value="✔️">
+            {% endif %}
         </td>
     </tr>
 </form>

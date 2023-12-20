@@ -198,7 +198,6 @@ class Sondage(db.Model):
         """
         temps_second=self.dureeSondage*3600*24
         jour = ((datetime.now() - self.dateSondage).days)
-        print((datetime.now() - self.dateSondage).days)
         heure = (temps_second - (datetime.now() - self.dateSondage).seconds)//3600%24
         minute = (temps_second - (datetime.now() - self.dateSondage).seconds)//60%60
         seconde = (temps_second - (datetime.now() - self.dateSondage).seconds)%60
@@ -244,7 +243,6 @@ def get_sondage_non_rep(idMusicien)->list:
     for sondage in sondages:
         if sondage not in participations:
             s.append(sondage) 
-    print(sondages)  
     return s
 
 def get_sondage_by_sortie(id)->Sondage:
@@ -288,7 +286,7 @@ class participer_repetition(db.Model):
         Return:
             str : id du musicien et id de la répétition
         """
-        return self.idMusicien+" "+self.idRepetition
+        return str(self.idMusicien)+" "+str(self.idRepetition)+str(self.presence)
     
     def get_repetition(self)->Repetition:
         return Repetition.query.filter_by(idRepetition=self.idRepetition).first()
@@ -343,6 +341,15 @@ class participer_sortie(db.Model):
             str : id du musicien et id de la sortie"""
         return str(self.idMusicien)+" "+str(self.idSortie)
     
+def get_participation_by_musicien_and_sortie(idMusicien,idSortie)->list:
+    """Retourne la liste des participations du musicien dont l'id est passé en paramètre à la sortie dont l'id est passé en paramètre
+    Args:
+        idMusicien (int): id du musicien
+        idSortie (int): id de la sortie
+    Return:
+        list : liste des participations du musicien dont l'id est passé en paramètre à la sortie dont l'id est passé en paramètre"""
+    return participer_sortie.query.filter_by(idMusicien=idMusicien,idSortie=idSortie).all()
+
 def get_participer_sorties()->list:
     """Retourne la liste des participations aux sorties
     Return:
@@ -402,6 +409,12 @@ class Question(db.Model):
     idQuestion = db.Column(db.Integer, primary_key=True)
     intitule = db.Column(db.String(100))
     reponsesQuestion = db.Column(db.String(300)) # exemple de format possible "type:radio|intitule:question1|reponse:reponse1;reponse2;reponse3"
+    dateFin = db.Column(db.DateTime)
+
+    def get_date_fin(self)->str:
+        date=self.dateFin
+        date=datetime.strftime(date, '%Y-%m-%d %H:%M:%S')
+        return date
 
 def get_max_id_question()->int:
     if Question.query.count()==0:
@@ -422,7 +435,7 @@ class Reponse(db.Model):
     idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
     reponseQuestion = db.Column(db.String(400)) # exemple de format possible "type:radio%intitule:question1%reponse:reponse1;reponse2;reponse3"
     reponseSpeciale = db.Column(db.String(400)) # reponse personnalise pour les questions, commentaires, ...
-    date_reponse = db.Column(db.DateTime)
+    dateReponse = db.Column(db.DateTime)
 
 def get_reponse_by_id(idQuestion,idMusicien)->Reponse:
     return Reponse.query.filter_by(idQuestion=idQuestion,idMusicien=idMusicien).first()

@@ -14,6 +14,7 @@
         <option value="plot">Nombre de participation par musicien</option>
         <option value="pourcentage">Pourcentage de personne présente pour chaque activité</option>
         <option value="jour_dispo">Jour de la semaine où les musiciens sont le plus disponibles</option>
+        <option value="reponse">Taux de réponse à un sondage par musicien</option>
     </select>
 </div>
     <div id="plot">
@@ -29,6 +30,10 @@
         <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
         {{ jour_dispo | safe }}
     </div>
+    <div id="reponse" class="hidden">
+        <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
+        {{ reponse | safe }}
+    </div>
     <script>
         // Écouter les changements dans le menu déroulant
         document.getElementById("selectgraph").addEventListener("change", function () {
@@ -37,6 +42,7 @@
             document.getElementById("plot").classList.add("hidden");
             document.getElementById("pourcentage").classList.add("hidden");
             document.getElementById("jour_dispo").classList.add("hidden");
+            document.getElementById("reponse").classList.add("hidden");
             // Afficher la div en fonction de l'option sélectionnée
             document.getElementById(selectedValue).classList.remove("hidden");
         });

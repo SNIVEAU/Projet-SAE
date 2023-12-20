@@ -172,6 +172,22 @@ class Sondage(db.Model):
             Sortie : sortie associée au sondage"""
         return Sortie.query.filter_by(idSortie=self.idSortie).first()
     
+    def get_repetition(self)->Repetition:
+        """Retourne la répétition associée au sondage
+        Return:
+            Repetition : répétition associée au sondage"""
+        return Repetition.query.filter_by(idRepetition=self.idRepetition).first()
+    
+    def get_eve(self)->Sortie:
+        """Retourne l'événement associé au sondage
+        Return:
+            Sortie : événement associé au sondage"""
+        if self.idSortie!=None:
+            return self.get_sortie()
+        return self.get_repetition()
+    
+    
+    
     def temps_restant(self)->(int,int,int):
         """Retourne le temps restant avant la fin du sondage
         Return:
@@ -365,6 +381,7 @@ def get_disponibilite_by_musicien(id)->list:
     Return:
         list : liste des disponibilités du musicien"""
     return disponibilite.query.filter_by(idMusicien=id).all()
+
 
 def get_max_id_repetition()->int:
     if Repetition.query.count()==0:

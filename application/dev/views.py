@@ -34,13 +34,15 @@ def home():
 
 @app.route("/calendrier/")
 def calendrier():
-    c=calendar.HTMLCalendar(firstweekday=0)
-    c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
-    c.cssclass_month_head="mois"
-    num_day=datetime.now().day
-    num_mois=datetime.now().month
-    mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
-    return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois)
+    if current_user.is_authenticated:
+        c=calendar.HTMLCalendar(firstweekday=0)
+        c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
+        c.cssclass_month_head="mois"
+        num_day=datetime.now().day
+        num_mois=datetime.now().month
+        mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
+        return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),dispo_musicien = get_disponibilites())
+    return redirect(url_for("login"))
 
 
 @app.route('/get_val_dico_mois/<day>')
@@ -213,6 +215,42 @@ def annuler_sondage():
     db.session.delete(rs)
     db.session.commit()
     return page_sondage()
+
+@app.route("/ajoute_dispo/", methods=["POST","GET"])
+def ajoute_dispo():
+    datedebut = request.form.get("date_debut")
+    datefin = request.form.get("date_fin")
+    if datedebut == "" or datefin == "":
+        return redirect(url_for("calendrier"))
+    datedebut = datetime.strptime(datedebut, '%Y-%m-%d').date()
+    datefin = datetime.strptime(datefin, '%Y-%m-%d').date()
+    # on supprime les anciennes dates
+    dispo = get_disponibilite_by_musicien(current_user.idMusicien)
+    for d in dispo:
+        if d in get_disponibilite_by_musicien(current_user.idMusicien) and d.date >= datedebut and d.date <= datefin:
+            db.session.delete(d)
+    db.session.commit()
+    # si date debut deja passer on la met a aujourd'hui
+    if datedebut < datetime.now().date():
+        datedebut = datetime.now().date()
+    # on ajoute les nouvelles dates
+    for i in range((datefin - datedebut).days + 1):
+        d = disponibilite(idMusicien=current_user.idMusicien, date=datedebut + timedelta(days=i))
+        db.session.add(d)
+    db.session.commit()
+    return redirect(url_for("calendrier"))
+
+
+
+@app.route("/supprime_dispo/<date>", methods=["POST","GET"])
+def supprime_dispo(date):
+    d=disponibilite.query.filter_by(idMusicien=current_user.idMusicien,date=date).first()
+    db.session.delete(d)
+    db.session.commit()
+    return redirect(url_for("calendrier"))
+
+
+
 
 class RegistrationForm(FlaskForm):
     """Formulaire d'inscription
@@ -472,7 +510,8 @@ def save_repetition():
     db.session.add(sondage)
     db.session.commit()
     return redirect(url_for("home"))
-    
+
+
 @app.route("/stat/")
 def stat():
     """Statistiques

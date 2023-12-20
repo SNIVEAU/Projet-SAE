@@ -39,7 +39,33 @@
                 <input type="number" name="duree" class="form-control" placeholder="Durée en heures">
             </div>
 
+
             <input type="submit" value="Créer la sortie" class="btn btn-danger">
         </form>
     </div>
+
+<input type="submit" value="créer la sortie" class="submit_sortie">
+</form>
+<script>
+function previewFile() {
+    const preview = document.querySelector("img");
+    const file = document.querySelector("input[type=file]").files[0];
+    const reader = new FileReader();
+  
+    reader.addEventListener(
+      "load",
+      () => {
+        // convert image file to base64 string
+        preview.src = reader.result;
+      },
+      false,
+    );
+  
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+</script>
+
 {% endblock %}
+

@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 {% block styles %}
 {{ super() }}
@@ -5,10 +6,31 @@
 {% endblock %}
 {% block content %}
 <div>
-    <h2>{{rep.dateRepetition}}</h2>
+    <h2>Date de la répétition {{rep.dateRepetition}}</h2>
 </div>
 <div>
-    <p>{{rep.dureeRepetition}}</p>
-    <p>{{rep.lieu}}</p>
-    <p>{{rep.tenue}}</p>
+    <p>Durée de la sortie :{{rep.dureeRepetition}} h</p>
+    <div>
+        <div id="paragraph">
+            <div> Lieu :</div>
+            <div id = "Lieu">{{rep.lieu}}</div>
+            <button onclick="myFunction()">Copier le Lieu</button>
+
+        </div>
+    </div>    
+    <p>Tenue : {{rep.tenue}}</p>
+</div>
+<script>
+    function myFunction() {
+        // Get the text content of the paragraph
+        var copyText = document.getElementById("Lieu").innerText;
+    
+        // Copy the text to the clipboard
+        navigator.clipboard.writeText(copyText);
+    
+        // Alert the user
+        alert("Copied the text: " + copyText);
+    }
+    
+</script>
 {% endblock %}

@@ -69,6 +69,8 @@ td a button{
   border-radius: 15%;
   background-color: #333;
   color: white;
+  padding-left: 3%;
+  padding-right: 3%;
 
 }
 .collapsible-table {

@@ -39,7 +39,6 @@ def calendrier():
         c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
         c.cssclass_month_head="mois"
         num_day=datetime.now().day
-        print(num_day)
         num_mois=datetime.now().month
         mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
         return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),dispo_musicien = get_disponibilites())
@@ -57,7 +56,6 @@ def get_val_dico_mois_route(day):
             dict["sortie"]=result[i]
         if i==1 and result[i] is not None:
             dict["repetition"]=result[i]
-    print(dict)
     return jsonify(dict)
 
 
@@ -188,32 +186,34 @@ def validation_sondage():
     else:
         reponse=False
     date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if get_sondage_by_id(id).idRepetition is None:
-        rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
+    if get_sondage_by_id(id).idRepetition!=None:
+        rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
                             idMusicien=current_user.idMusicien,
                             dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
                             presence=reponse)
-    if get_sondage_by_id(id).idSortie is None:
-        rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
+    elif get_sondage_by_id(id).idSortie!=None:
+        rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
                             idMusicien=current_user.idMusicien,
                             dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
                             presence=reponse)
     db.session.add(rs)
     db.session.commit()
-    return page_sondage()
+    return redirect(url_for("page_sondage"))
 
 @app.route("/annuler_sondage/", methods=["POST","GET"])
 def annuler_sondage():
     if len(request.form)==0:
         return redirect(url_for("page_sondage"))
     id=int(request.form.get("idsondage"))
-    if get_sondage_by_id(id).idRepetition is None:
-        rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
-    if get_sondage_by_id(id).idSortie is None:
+    if get_sondage_by_id(id).idRepetition!=None:
         rs=participer_repetition.query.filter_by(idRepetition=get_sondage_by_id(id).idRepetition,idMusicien=current_user.idMusicien).first()
+    elif get_sondage_by_id(id).idSortie!=None:
+        rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+    else:
+        rs=Reponse.query.filter_by(idQuestion=get_question_by_idSondage(id).idQuestion,idMusicien=current_user.idMusicien).first()
     db.session.delete(rs)
     db.session.commit()
-    return page_sondage()
+    return redirect(url_for("page_sondage"))
 
 @app.route("/ajoute_dispo/", methods=["POST","GET"])
 def ajoute_dispo():
@@ -445,17 +445,14 @@ def maj_profil():
 @app.route("/crea_sortie/", methods=["GET", "POST"])
 def crea_sortie(erreur=False):
     date=datetime.now().strftime("%Y-%m-%dT%H:%M")
-    print(erreur)
     return render_template("crea_sortie.html" ,date=date , erreur=erreur )
 
 @app.route("/save_sortie/", methods=["GET", "POST"])
 def save_sortie():
-    def image_to_blob(chemin_image):
-        with open(chemin_image, 'rb') as fichier_image:
-            donnees_binaires = base64.b64encode(fichier_image.read())
-            return donnees_binaires
-    strimage = image_to_blob("/home/iut45/Etudiants/o22204836/Documents/but2/SAE/Projet-SAE/application/dev/static/images/sortie1.jpg")
-    print(strimage)
+    # def image_to_blob(chemin_image):
+    #     with open(chemin_image, 'rb') as fichier_image:
+    #         donnees_binaires = base64.b64encode(fichier_image.read())
+    #         return donnees_binaires
     date_str=request.form.get("date")
     if date_str=="" or request.form.get("lieu")=="" or request.form.get("type")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="":
         return crea_sortie(erreur=True)
@@ -469,7 +466,7 @@ def save_sortie():
                 lieu=request.form.get("lieu"),
                 type=request.form.get("type"),  
                 tenue=request.form.get("tenue"),
-                blob_data=strimage)
+                blob_data=None)
     sondage=Sondage(idSondage=get_max_id_sondage()+1,
                     idSortie=s.idSortie,
                     idRepetition=None,
@@ -526,14 +523,14 @@ def save_sondage_standard():
                         message=request.form.get("intitule"),
                         dateSondage=datetime.now(),
                         dureeSondage=int(request.form.get("duree")))
-        reponse="type:"+request.form.get("type_question")+"|reponse:"
+        reponse="type:"+request.form.get("type_question")+"|"
         for i in range(1,int(request.form.get("nbreponse"))+1):
-            print(reponse)
             reponse+=request.form.get("reponse"+str(i))+";"
         question=Question(idQuestion=get_max_id_question()+1,
                         idSondage=sondage.idSondage,
                         reponsesQuestion=reponse,
-                        intitule=request.form.get("intitule"))
+                        intitule=request.form.get("intitule"),
+                        dateFin=datetime.now() + timedelta(days=int(request.form.get("duree"))))
         db.session.add(sondage)
         db.session.add(question)
         db.session.commit()
@@ -542,21 +539,37 @@ def save_sondage_standard():
         
 @app.route("/page_reponse_question/<idQuestion>", methods=["GET", "POST"])
 def page_reponse_question(idQuestion):
-    question=get_question_by_id(idQuestion)
+    question=get_question_by_id(int(idQuestion))
     questions=question.reponsesQuestion.split("|")
+     
     type=questions[0].split(":")[1]
-    liste_reponse=questions[1].split(":")[1].split(";")
+    liste_reponse=questions[1].split(";")
     liste_reponse.pop()
     return render_template("page_reponse_question.html",question=question,listeReponse=liste_reponse,type=type)
     
 @app.route("/save_reponse_question/", methods=["GET", "POST"])
 def save_reponse_question():
-    print(request.form.get("reponse"))
+    reponse_sondage=""
+    questions=get_question_by_id(int(request.form.get("idQuestion"))).reponsesQuestion.split("|")
+    type=questions[0].split(":")[1]
+    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    reponse_sondage+="type:"+type+"|"
+    print("test")
+    if type=="radio":
+        reponse_sondage+="reponse"+":"+request.form.get("reponse")
+    else:
+        liste_reponse=questions[1].split(";")
+        liste_reponse.pop()
+        for reponse in liste_reponse:
+            reponse_sondage+=reponse+":"+request.form.get(reponse)+";"
+        print(reponse_sondage)
+    print(request.form.get("reponseSpeciale"))
     reponse=Reponse(
                     idQuestion=int(request.form.get("idQuestion")),
                     idMusicien=current_user.idMusicien,
-                    reponseQuestion=request.form.get("reponse"),
-                    reponseSpeciale=request.form.get("reponseSpeciale"))
+                    reponseQuestion=reponse_sondage,
+                    reponseSpeciale=request.form.get("reponseSpeciale"),
+                    dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'))
     db.session.add(reponse)
     db.session.commit()
     return redirect(url_for("home"))
@@ -582,7 +595,6 @@ def stat():
         for musicien in mus:
             data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
         for sort in get_sorties():
-            print(sort.description)
             pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
             data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
         deja_parcouru = []
@@ -614,10 +626,31 @@ def page_sondage(erreur=False):
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
-        return render_template("sondage.html",len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=get_eve_by_musicien(current_user.idMusicien),sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep)
+        participation=get_sondage_by_musicien(current_user.idMusicien)
+        return render_template("sondage.html",get_participation_by_musicien_and_sortie=get_participation_by_musicien_and_sortie,get_participation_by_musicien_and_repetition=get_participation_by_musicien_and_repetition,get_reponse_by_id=get_reponse_by_id,len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=participation,sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep,get_question_by_id=get_question_by_id,get_sondage_by_question=get_sondage_by_question)
     return redirect(url_for("login"))
 
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
     new_content = get_sondage_by_id(idSondage).temps_restant()
     return jsonify({'content': new_content})
+
+@app.route('/Sondage/verif_reponse/<idQuestion>', methods=['GET'])
+def verif_reponse(idQuestion):
+
+    question=get_question_by_id(int(idQuestion))
+    questions=question.reponsesQuestion.split("|")
+    type=questions[0].split(":")[1]
+    liste_reponse=questions[1].split(";")
+    liste_reponse.pop()
+
+    reponseMusicien=get_reponse_by_id(idQuestion,current_user.idMusicien).reponseQuestion.split("|")[1].split(";")
+    if type!="radio":
+        reponseMusicien.pop()
+    for i in range(len(reponseMusicien)):
+        reponseMusicien[i]=reponseMusicien[i].split(":")
+    reponseSpecial=get_reponse_by_id(idQuestion,current_user.idMusicien).reponseSpeciale
+    print(reponseSpecial)
+
+
+    return render_template("page_verif_reponse.html",question=question,type=type,reponseMusicien=reponseMusicien,reponseSpecial=reponseSpecial)

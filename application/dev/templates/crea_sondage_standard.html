@@ -11,13 +11,10 @@
 {% endif %}
 <form action="{{url_for('save_sondage_standard')}}" method="post" class="form_question">
 <input type="text" name="intitule" placeholder="Intitule" size="100">
-<datalist id="type_question">
-    <option value="text">
-    <option value="radio">
-    <option value="datetime">
-    <option value="number">
-</datalist>
-<input list="type_question" name="type_question" placeholder="type de question">
+<select name="type_question" id="type_question">
+    <option value="text">texte</option>
+    <option value="radio">choix unique</option>
+</select>
 <ul class="question">
 </ul>
 <p>ajouter une réponse</p>

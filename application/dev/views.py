@@ -546,7 +546,7 @@ def save_sondage_standard():
     if request.form.get("intitule")=="" or request.form.get("duree")=="" or request.form.get("type_question")=="":
         return crea_sondage_standard()
     else:
-
+        print(request.form.get("duree"))
         sondage=Sondage(idSondage=get_max_id_sondage()+1,
                         idSortie=None,
                         idRepetition=None,

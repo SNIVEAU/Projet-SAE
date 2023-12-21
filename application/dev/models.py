@@ -197,7 +197,7 @@ class Sondage(db.Model):
             int : nombre de secondes restantes
         """
         temps_second=self.dureeSondage*3600*24
-        jour = ((datetime.now() - self.dateSondage).days)
+        jour = ((datetime.now() - (self.dateSondage-timedelta(days=self.dureeSondage-1))).days)
         heure = (temps_second - (datetime.now() - self.dateSondage).seconds)//3600%24
         minute = (temps_second - (datetime.now() - self.dateSondage).seconds)//60%60
         seconde = (temps_second - (datetime.now() - self.dateSondage).seconds)%60

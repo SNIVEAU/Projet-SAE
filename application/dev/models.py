@@ -402,6 +402,13 @@ def get_max_id_repetition()->int:
         return 0
     return Repetition.query.order_by(Repetition.idRepetition.desc()).first().idRepetition
 
+def get_disponibilite_by_date(date)->list:
+    """Retourne la liste des disponibilités à la date passée en paramètre
+    Args:
+        date (Date): date
+    Return:
+        list : liste des disponibilités à la date passée en paramètre"""
+    return disponibilite.query.filter_by(date=date).all()
 
 
 class Question(db.Model):

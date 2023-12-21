@@ -1,29 +1,29 @@
 {% extends 'base.html' %}
 {% block styles %}
 {{ super() }}
-<link rel="stylesheet" href="{{url_for('static',filename='css/evenement.css')}}">
+<link rel="stylesheet" href="{{url_for('static',filename='css/reponse.css')}}">
 {% endblock %}
 {% block content %}
 <h3>{{question.intitule}}</h3>
 {{question.reponseQuestion}}
 <form action="{{url_for('save_reponse_question')}}" method="POST">
-<input type="hidden" name="idQuestion" value="{{question.idQuestion}}">
-{% for reponse in listeReponse %}
-{% if type=="radio" %}
+    <input type="hidden" name="idQuestion" value="{{question.idQuestion}}">
+    {% for reponse in listeReponse %}
+    {% if type=="radio" %}
     <label for="{{reponse}}">{{reponse}}</label>
-    <input id="{{reponse}}"type="{{type}}" name="reponse" value="{{reponse}}">
-{% else %}
+    <input id="{{reponse}}" type="{{type}}" name="reponse" value="{{reponse}}">
+    {% else %}
     <label>{{reponse}}</label>
     <input type="{{type}}" name="{{reponse}}">
-{% endif %}
-{% endfor %}
+    {% endif %}
+    {% endfor %}
 
-<input type="text" name="idQuestion" value="{{question.idQuestion}}" hidden>
+    <input type="text" name="idQuestion" value="{{question.idQuestion}}" hidden>
 
-<p>Si autre demande ou réponse : </p>
+    <p>Si autre demande ou réponse : </p>
 
-<input type="textarea" name="reponseSpeciale"> 
-<input type="submit" value="Valider">
+    <input type="textarea" name="reponseSpeciale">
+    <input type="submit" value="Valider">
 
 </form>
 {% endblock %}

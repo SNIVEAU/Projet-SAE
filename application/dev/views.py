@@ -611,7 +611,7 @@ def stat():
     Returns:
         html: page de statistiques
     """
-    if current_user.is_authenticated and current_user.admin and len(get_sorties())!=0:
+    if current_user.is_authenticated and current_user.admin:
         data = [go.Bar(x=[], y=[])]
         data2 = [go.Bar(x=[], y=[])]
         data_jour_dispo = [go.Bar(x=[], y=[])]

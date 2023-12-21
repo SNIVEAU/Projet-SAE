@@ -53,3 +53,20 @@ img {
     font-family: 'Inter', sans-serif;
     margin-top: 2%;
 }
+
+}
+div td{
+    padding: 1%;
+    font-family: 'Inter', sans-serif;
+
+}
+th{
+    font-family: 'Inter', sans-serif;
+    padding: 1%;
+    border: 1px solid black;
+}
+td{
+    font-family: 'Inter', sans-serif;
+    padding: 1%;
+    border: 1px solid black;
+}

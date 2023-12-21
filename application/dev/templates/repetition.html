@@ -38,3 +38,29 @@
         }
     </script>
 {% endblock %}
+    </div>    
+    <p>Tenue : {{rep.tenue}}</p>
+    <div>
+        <h2>Participations</h2>
+        {% for p in participation %}
+        <tr>
+            <td>{{p.nomMusicien}}</td>
+            <td>{{p.prenomMusicien}}</td>
+        </tr>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    function myFunction() {
+        // Get the text content of the paragraph
+        var copyText = document.getElementById("Lieu").innerText;
+    
+        // Copy the text to the clipboard
+        navigator.clipboard.writeText(copyText);
+    
+        // Alert the user
+        alert("Copied the text: " + copyText);
+    }
+    
+</script>
+{% endblock %}

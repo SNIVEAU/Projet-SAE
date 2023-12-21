@@ -592,7 +592,6 @@ def save_reponse_question():
         liste_reponse.pop()
         for reponse in liste_reponse:
             reponse_sondage+=reponse+":"+request.form.get(reponse)+";"
-        print(reponse_sondage)
     print(request.form.get("reponseSpeciale"))
     reponse=Reponse(
                     idQuestion=int(request.form.get("idQuestion")),
@@ -713,4 +712,9 @@ def verife_reponse(idQuestion,idMusicien):
 def detail_question():
     idQuestion = int(request.form.get("reponse"))
     question=get_question_by_id(idQuestion)
-    return render_template("detail_question.html",musiciens = get_musicien(),questions = question)
+    listemusicien = []
+    for rep in get_Reponse_by_idQuestion(idQuestion):
+        print(rep.idMusicien)
+        listemusicien.append(get_musicien_by_id(rep.idMusicien))
+        print(listemusicien)
+    return render_template("detail_question.html",musiciens = listemusicien,questions = question)

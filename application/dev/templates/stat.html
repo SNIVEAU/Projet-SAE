@@ -34,6 +34,17 @@
         <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
         {{ reponse | safe }}
     </div>
+</div class="form-group">
+    <form action="{{url_for('detail_question') }}" method="POST" class="form_question">
+
+    <select name="reponse" id="reponse_sondage">
+        {%for q in question%}
+            <option value="{{q.idQuestion}}">{{q.intitule}}</option>
+
+        {%endfor%}
+    </select>
+    <input type="submit" value="SELECTIONNER">
+</form>
     <script>
         // Écouter les changements dans le menu déroulant
         document.getElementById("selectgraph").addEventListener("change", function () {

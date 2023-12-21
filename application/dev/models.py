@@ -422,6 +422,8 @@ class Question(db.Model):
         date=self.dateFin
         date=datetime.strftime(date, '%Y-%m-%d %H:%M:%S')
         return date
+def get_questions() -> list:
+    return Question.query.all()
 
 def get_max_id_question()->int:
     if Question.query.count()==0:

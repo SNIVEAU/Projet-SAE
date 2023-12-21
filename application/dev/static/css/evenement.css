@@ -54,19 +54,39 @@ img {
     margin-top: 2%;
 }
 
-}
+th {
+    background-color: #1C2942;
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    border-bottom: 2px solid #1C2942;
+    border-right: #535353 solid 1px;
+    padding: 1%;
+  }
+  
+  th:first-child{
+    border-radius: 10px 0px 0px 0px; 
+  }
+  
+  th:last-child{
+    border-radius: 0px 10px 0px 0px; 
+    border-right:0px;
+  }
+  
+  td {
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    border: 0.1vw solid #333;
+    padding: 1%;
+  
+  } 
+  table {
+    border-collapse: collapse;
+    width: 100%; 
+  } 
 div td{
     padding: 1%;
     font-family: 'Inter', sans-serif;
 
-}
-th{
-    font-family: 'Inter', sans-serif;
-    padding: 1%;
-    border: 1px solid black;
-}
-td{
-    font-family: 'Inter', sans-serif;
-    padding: 1%;
-    border: 1px solid black;
 }

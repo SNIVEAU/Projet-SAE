@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block styles %}
+{{ bootstrap.load_css() }}
+
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/evenement.css')}}">
+{% endblock %}
+{% block content %}
+<h1> {{questions.intitule}} </h1>
+<table>
+{%for m in musiciens%}
+<tr>
+    <td>{{m.nomMusicien}}  </td>
+    <td>{{m.prenomMusicien}}  </td>
+    <td>{{m.idMusicien}}  </td>
+
+    <td><a href="/Sondage/verif_toute_reponse/{{questions.idQuestion}}/{{m.idMusicien}}">voir</a></td>
+
+</tr>
+{% endfor %}
+</table>
+{%endblock%}

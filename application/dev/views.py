@@ -611,7 +611,7 @@ def stat():
     Returns:
         html: page de statistiques
     """
-    if current_user.is_authenticated and current_user.admin and len(get_sorties())!=0:
+    if current_user.is_authenticated and current_user.admin:
         data = [go.Bar(x=[], y=[])]
         data2 = [go.Bar(x=[], y=[])]
         data_jour_dispo = [go.Bar(x=[], y=[])]
@@ -646,7 +646,7 @@ def stat():
         fig2 = go.Figure(data=data2, layout=layout2)
         fig_jour_dispo = go.Figure(data=data_jour_dispo, layout=layout_jour_dispo)
         fig_reponse = go.Figure(data=data_reponse_sondage, layout=layout_reponse)
-        return render_template("stat.html",musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html(),reponse=fig_reponse.to_html())
+        return render_template("stat.html",question = get_questions(),musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html(),reponse=fig_reponse.to_html())
     return render_template("error_pages.html"), 403
 
 @app.route("/sondage/")
@@ -688,3 +688,29 @@ def verif_reponse(idQuestion):
 
 
     return render_template("page_verif_reponse.html",question=question,type=type,reponseMusicien=reponseMusicien,reponseSpecial=reponseSpecial)
+
+@app.route('/Sondage/verif_toute_reponse/<idQuestion>/<idMusicien>', methods=['GET'])
+def verife_reponse(idQuestion,idMusicien):
+    
+    question=get_question_by_id(idQuestion)
+    questions=question.reponsesQuestion.split("|")
+    type=questions[0].split(":")[1]
+    liste_reponse=questions[1].split(";")
+    liste_reponse.pop()
+
+    reponseMusicien=get_reponse_by_id(idQuestion,idMusicien).reponseQuestion.split("|")[1].split(";")
+    if type!="radio":
+        reponseMusicien.pop()
+    for i in range(len(reponseMusicien)):
+        reponseMusicien[i]=reponseMusicien[i].split(":")
+    reponseSpecial=get_reponse_by_id(idQuestion,idMusicien).reponseSpeciale
+    print(reponseSpecial)
+
+
+    return render_template("page_verif_reponse.html",question=question,type=type,reponseMusicien=reponseMusicien,reponseSpecial=reponseSpecial)
+
+@app.route('/detail_question/',methods=['POST','GET'])
+def detail_question():
+    idQuestion = int(request.form.get("reponse"))
+    question=get_question_by_id(idQuestion)
+    return render_template("detail_question.html",musiciens = get_musicien(),questions = question)

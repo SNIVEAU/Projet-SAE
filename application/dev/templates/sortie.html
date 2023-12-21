@@ -19,7 +19,24 @@
         </div>
     </div>    
     <p>Tenue : {{sortie.tenue}}</p>
-    
+
+    <div>
+        <h2>Participations</h2>
+        <table>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Id</th>
+            </tr>
+        {% for p in participation %}
+        <tr>
+            <td>{{p.nomMusicien}}  </td>
+            <td>{{p.prenomMusicien}}  </td>
+            <td>{{p.idMusicien}}  </td>
+        </tr>
+        {% endfor %}
+        </table>
+  </div>    
 
     </div>
 <script>

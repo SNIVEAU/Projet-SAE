@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{url_for('static',filename='css/evenement.css')}}">
+{% endblock %}
+{% block content %}
+<h3>{{question.intitule}}</h3>
+<input type="hidden" name="idQuestion" value="{{question.idQuestion}}">
+{% for reponse in reponseMusicien %}
+{% if type=="radio" %}
+    <label for="{{reponse[1]}}">{{reponse[1]}}</label>
+    <input id="{{reponse[1]}}"type="{{type}}" name="reponse" value="{{reponse[1]}}" checked disabled>
+{% else %}
+    <label>{{reponse[0]}}</label>
+    <input type="{{type}}" name="{{reponse[0]}}" value="{{reponse[1]}}" disabled>
+{% endif %}
+{% endfor %}
+<input type="textarea" name="reponseSpeciale" value="{{reponseSpecial}}" disabled> 
+
+{% endblock %}

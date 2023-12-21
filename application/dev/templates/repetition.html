@@ -19,6 +19,15 @@
         </div>
     </div>    
     <p>Tenue : {{rep.tenue}}</p>
+    <div>
+        <h2>Participations</h2>
+        {% for p in participation %}
+        <tr>
+            <td>{{p.nomMusicien}}</td>
+            <td>{{p.prenomMusicien}}</td>
+        </tr>
+        {% endfor %}
+    </div>
 </div>
 <script>
     function myFunction() {

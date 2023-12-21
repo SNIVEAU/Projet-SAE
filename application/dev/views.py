@@ -565,7 +565,7 @@ def save_sondage_standard():
         db.session.add(question)
         db.session.commit()
 
-        return redirect(url_for("home"))
+        return redirect(url_for("page_sondage"))
         
 @app.route("/page_reponse_question/<idQuestion>", methods=["GET", "POST"])
 def page_reponse_question(idQuestion):
@@ -602,7 +602,7 @@ def save_reponse_question():
                     dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'))
     db.session.add(reponse)
     db.session.commit()
-    return redirect(url_for("home"))
+    return redirect(url_for("page_sondage"))
 
 
 @app.route("/stat/")

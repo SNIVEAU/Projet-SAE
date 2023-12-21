@@ -9,13 +9,6 @@ h2,h3 {
   padding-top: 1vw;
 }
 
-th {
-  background-color: #1C2942;
-  color: #fff;
-  text-align: center;
-}
-
-
 table {
   border-collapse: collapse;
   width: 100%; 
@@ -32,23 +25,19 @@ th {
 }
 
 th:first-child{
-  border-radius: 10px 0px 0px 0px; 
+  border-radius: 1vw 0px 0px 0px; 
 }
 
 th:last-child{
-  border-radius: 0px 10px 0px 0px; 
+  border-radius: 0px 1vw 0px 0px; 
   border-right: 0px;
 }
 
 
 
 .mois:first-of-type{
-    border-radius: 10px 10px 10px 10px;
-    border : 10px white solid;
-}
-
-.creation{
-  display: flex;
+    border-radius: 1vw 1vw 1vw 1vw;
+    border : 1vw #fff solid;
 }
 
 td {
@@ -67,9 +56,6 @@ td {
 .mois{
     border-bottom: #fff 1px solid;
 }
-th{
-    border-bottom: #fff 1px solid;
-}
 .sortie{
     background-color: orange;
     margin-right: 1vw;
@@ -78,6 +64,7 @@ th{
 .repetition{
     background-color: yellow;
 }
+
 div > a button{
   margin: 1vw;
   background-color: #333;
@@ -87,12 +74,15 @@ div > a button{
   font-size: 1vw;
   cursor: pointer;
 }
+
 button:hover{
     background-color: #555;
 }
+
 .bouton_crea_repetition{
 padding-right: 80%;
 }
+
 td a button{
   border-radius: 15%;
   background-color: #333;
@@ -101,9 +91,11 @@ td a button{
   padding-right: 3%;
 
 }
+
 .collapsible-table {
   display: none;
 }
+
 .dispo2{
   padding-bottom: 10%;
 }

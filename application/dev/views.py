@@ -62,12 +62,18 @@ def get_val_dico_mois_route(day):
 @app.route("/sortie/<idSortie>")
 def sortie(idSortie):
     sortie = get_sortie_by_id(idSortie)
-    return render_template("sortie.html", sortie=sortie)
-
+    print(get_musicien_by_sortie(idSortie))
+    liste_musicien = []
+    for i in get_musicien_by_sortie(idSortie):
+        liste_musicien.append(get_musicien_by_id(i.idMusicien))
+    return render_template("sortie.html", sortie=sortie,participation=liste_musicien)
 @app.route("/repetition/<idRepetition>")
 def repetition(idRepetition):
     rep = get_repetition_by_idRep(idRepetition)
-    return render_template("repetition.html", rep=rep)
+    liste_musicien = []
+    for i in get_musicien_by_repetition(idRepetition):
+        liste_musicien.append(get_musicien_by_id(i.idMusicien))
+    return render_template("repetition.html", rep=rep,participation=liste_musicien)
 
 class LoginForm(FlaskForm):
     """Formulaire de connexion

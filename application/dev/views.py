@@ -234,6 +234,7 @@ def ajoute_dispo():
         datedebut = datetime.now().date()
     # on ajoute les nouvelles dates
     for i in range((datefin - datedebut).days + 1):
+        print(datedebut + timedelta(days=i))
         d = disponibilite(idMusicien=current_user.idMusicien, date=datedebut + timedelta(days=i))
         db.session.add(d)
     db.session.commit()
@@ -460,7 +461,8 @@ def save_sortie():
     date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
 
     date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    s=Sortie(idSortie=get_max_id_sortie()+1,
+    idSorti=get_max_id_sortie()+1
+    s=Sortie(idSortie=idSorti,
                 dateSortie=date,
                 dureeSortie=int(request.form.get("duree")),
                 lieu=request.form.get("lieu"),
@@ -468,11 +470,23 @@ def save_sortie():
                 tenue=request.form.get("tenue"),
                 blob_data=None)
     sondage=Sondage(idSondage=get_max_id_sondage()+1,
-                    idSortie=s.idSortie,
+                    idSortie=idSorti,
                     idRepetition=None,
                     message="Sortie à "+request.form.get("lieu"),
                     dateSondage=datetime.now(),
                     dureeSondage=int(request.form.get("duree")))
+    date_jour=datetime.strftime(date,"%Y-%m-%d")
+    date_jour=datetime.strptime(date_jour,"%Y-%m-%d").date()
+    print(date_jour)
+    liste_dispo=get_disponibilite_by_date(date_jour)
+    print(liste_dispo)
+    for dispo in liste_dispo:
+        musicien=get_musicien_by_id(dispo.idMusicien)
+        ps=participer_sortie(idSortie=idSorti,
+                            idMusicien=musicien.idMusicien,
+                            dateReponse=date,
+                            presence=True)
+        db.session.add(ps)
     db.session.add(s)
     db.session.add(sondage)
     db.session.commit()
@@ -491,17 +505,30 @@ def save_repetition():
     date=date_str.split("T")[0]+" "+date_str.split("T")[1]+":00"
 
     date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
-    r=Repetition(idRepetition=get_max_id_repetition()+1,
+    id_repetition=get_max_id_repetition()+1
+    r=Repetition(idRepetition=id_repetition,
                 dateRepetition=date,
                 dureeRepetition=int(request.form.get("duree")),
                 lieu=request.form.get("lieu"),
                 tenue=request.form.get("tenue"))
     sondage=Sondage(idSondage=get_max_id_sondage()+1,
                     idSortie=None,
-                    idRepetition=r.idRepetition,
+                    idRepetition=id_repetition,
                     message="repetition à "+request.form.get("lieu"),
                     dateSondage=datetime.now(),
                     dureeSondage=int(request.form.get("duree")))
+    date_jour=datetime.strftime(date,"%Y-%m-%d")
+    date_jour=datetime.strptime(date_jour,"%Y-%m-%d").date()
+    print(date_jour)
+    liste_dispo=get_disponibilite_by_date(date_jour)
+    print(liste_dispo)
+    for dispo in liste_dispo:
+        musicien=get_musicien_by_id(dispo.idMusicien)
+        pr=participer_repetition(idRepetition=id_repetition,
+                            idMusicien=musicien.idMusicien,
+                            dateReponse=date,
+                            presence=True)
+        db.session.add(pr)
     db.session.add(r)
     db.session.add(sondage)
     db.session.commit()
@@ -633,6 +660,10 @@ def page_sondage(erreur=False):
 @app.route('/update_temps<idSondage>')
 def update_temps(idSondage:Sondage.idSondage):
     new_content = get_sondage_by_id(idSondage).temps_restant()
+    if new_content =="0j 0h 0m 0s":
+        new_content="Sondage terminé"
+        db.session.delete(get_sondage_by_id(idSondage))
+        db.session.commit()
     return jsonify({'content': new_content})
 
 @app.route('/Sondage/verif_reponse/<idQuestion>', methods=['GET'])

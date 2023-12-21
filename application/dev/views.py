@@ -456,10 +456,6 @@ def crea_sortie(erreur=False):
 
 @app.route("/save_sortie/", methods=["GET", "POST"])
 def save_sortie():
-    # def image_to_blob(chemin_image):
-    #     with open(chemin_image, 'rb') as fichier_image:
-    #         donnees_binaires = base64.b64encode(fichier_image.read())
-    #         return donnees_binaires
     date_str=request.form.get("date")
     if date_str=="" or request.form.get("lieu")=="" or request.form.get("type")=="" or request.form.get("tenue")=="" or request.form.get("duree")=="":
         return crea_sortie(erreur=True)
@@ -473,8 +469,9 @@ def save_sortie():
                 dureeSortie=int(request.form.get("duree")),
                 lieu=request.form.get("lieu"),
                 type=request.form.get("type"),  
-                tenue=request.form.get("tenue"),
-                blob_data=None)
+                tenue=request.form.get("tenue")
+               )
+
     sondage=Sondage(idSondage=get_max_id_sondage()+1,
                     idSortie=idSorti,
                     idRepetition=None,

@@ -118,3 +118,6 @@ main>.container {
 
 .dropdown:hover .dropbtn {background-color: #c50606;}
 
+main{
+    padding-bottom: 5%;
+}

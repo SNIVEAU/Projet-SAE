@@ -455,6 +455,20 @@ def get_Reponse_by_idQuestion(idQuestion)->list:
 def get_reponse_by_idMusicien(idMusicien)->list:
     return Reponse.query.filter_by(idMusicien=idMusicien).all()
 
+class Tutorer(db.Model):
+    idTuteur = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idTutele = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    
+def get_tutorer()->list:
+    return Tutorer.query.all()
+
+def tuteur_by_idTutele(idTutele)->int:
+    return Tutorer.query.filter_by(idTutele=idTutele).first()
+
+def tutele_by_idTuteur(idTuteur)->list:
+    return Tutorer.query.filter_by(idTuteur=idTuteur).all()
+
+
 
 
 

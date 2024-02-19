@@ -366,7 +366,11 @@ def profil():
         html: page de profile
     """
     form = maj_profile()
-    return render_template("profil.html", form=form)
+    liste_idtutele=tutele_by_idTuteur(current_user.idMusicien)
+    liste_tutele=[]
+    for id in liste_idtutele:
+        liste_tutele.append(get_musicien_by_id(id.idTutele))
+    return render_template("profil.html", form=form,liste_tutele=liste_tutele)
 
 
 class maj_profile(FlaskForm):
@@ -718,3 +722,25 @@ def detail_question():
         listemusicien.append(get_musicien_by_id(rep.idMusicien))
         print(listemusicien)
     return render_template("detail_question.html",musiciens = listemusicien,questions = question)
+
+@app.route('/inscription_tutore',methods=["GET", "POST"])
+def inscription_tutore():
+    f = LoginForm()
+    db.session.rollback()
+    if not f.is_submitted():
+        f.next.data = request.args.get("next")
+    elif f.validate_on_submit():
+        user = f.get_authenticated_user()
+        if user:
+            if(Tutorer.query.filter_by(idTuteur=current_user.idMusicien,idTutele=user.idMusicien).first() is None):
+                print("test1")
+                db.session.add(Tutorer(idTuteur=current_user.idMusicien,idTutele=user.idMusicien))
+                db.session.commit()
+                return redirect(url_for("profil"))
+            else:
+                print("test2")
+                return render_template("inscription_tutore.html",form=f,erreur=True)
+        else:
+            f.password.errors += ("Nom d'utilisateur ou mot de passe incorrect",)
+    return render_template("inscription_tutore.html",form=f,erreur=False)
+

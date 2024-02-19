@@ -56,6 +56,15 @@
             {% endfor %}
         </div>
         <div class="form-group">
+            <label for="type-instrument" class="control-label">Type d'instrument</label>
+            <select id="type-instrument" name="type-instrument" class="form-control" readonly>
+                <option value="{{ type_instrument_id }}">{{ type_instrument_id }}</option>
+                {% for instrument in type_instrument %}
+                <option value="{{ instrument.nomTypeInstrument }}">{{ instrument.nomTypeInstrument }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
             <div>
                 <button type="button" class="btn btn-danger rounded" onclick="enableEdit()">Modifier</button>
                 <button type="submit" class="btn btn-danger rounded" style="display:none;">Enregistrer</button>

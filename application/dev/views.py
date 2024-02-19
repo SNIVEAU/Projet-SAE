@@ -366,7 +366,8 @@ def profil():
         html: page de profile
     """
     form = maj_profile()
-    return render_template("profil.html", form=form)
+    type_instrument = get_type_instruments()
+    return render_template("profil.html", form=form, type_instrument=type_instrument)
 
 
 class maj_profile(FlaskForm):
@@ -385,7 +386,8 @@ class maj_profile(FlaskForm):
     telephone = StringField('Télephone')
     adresseMail = EmailField('Email', validators=[DataRequired(), Email()])
     ageMusicien = IntegerField('Age', validators=[DataRequired(), NumberRange(min=18, max=100)])    
-    isAdmin = BooleanField('Admin')  
+    isAdmin = BooleanField('Admin')
+    type_instrument = StringField('Type Instrument')
 
     def validate(self):
         """Vérifie si le formulaire est valide
@@ -432,6 +434,9 @@ def maj_profil():
         adresseMail = form.adresseMail.data
         age = request.form.get('ageMusicien')
         admin = current_user.admin
+        type_instrument = form.type_instrument.data
+
+
 
         # Mettez à jour l'utilisateur actuel
         current_user.nomMusicien = nom
@@ -440,8 +445,8 @@ def maj_profil():
         current_user.adresseMail = adresseMail
         current_user.ageMusicien = age
         current_user.admin = admin
-
-
+        
+        
         # Enregistrez les modifications dans la base de données
         db.session.commit()
 
@@ -718,3 +723,4 @@ def detail_question():
         listemusicien.append(get_musicien_by_id(rep.idMusicien))
         print(listemusicien)
     return render_template("detail_question.html",musiciens = listemusicien,questions = question)
+

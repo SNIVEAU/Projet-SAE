@@ -141,4 +141,13 @@ def clean_sondage():
     """Supprime tous les sondages."""
     db.session.query(Sondage).delete()
     db.session.commit()
-
+    
+@app.cli.command()
+def crea_type_instrument():
+    """Création des types d'instruments."""
+    db.session.add(TypeInstrument(idTypeInstrument=1, nomTypeInstrument="Guitare"))
+    db.session.add(TypeInstrument(idTypeInstrument=2, nomTypeInstrument="Batterie"))
+    db.session.add(TypeInstrument(idTypeInstrument=3, nomTypeInstrument="Basse"))
+    db.session.add(TypeInstrument(idTypeInstrument=4, nomTypeInstrument="Clavier"))
+    db.session.add(TypeInstrument(idTypeInstrument=5, nomTypeInstrument="Chant"))
+    db.session.commit()

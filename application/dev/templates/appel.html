@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {{ super() }}
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/evenement.css') }}">
+{% endblock %}
+{% block content %}
+<div>
+    <h2>Participations</h2>
+    <table>
+        <tr>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Présent</th>
+        </tr>
+    {% for p in participation %}
+    <tr>
+        <td>{{p.nomMusicien}}  </td>
+        <td>{{p.prenomMusicien}}  </td>
+        <td>
+            <div>
+                <input type="radio" value="True" name="choix" id="oui">
+                <label for="oui">oui</label>
+            </div>
+            <div>
+                <input type="radio" value="False" name="choix" id="non">
+                <label for="non">non</label>
+            </div>
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -26,10 +26,9 @@
                     <input type="text" class="form-control" id="tenue" value="{{ rep.tenue }}" readonly>
                 </div>
                 <button class="btn btn-danger mx-auto d-block" onclick="myFunction()">Copier le Lieu</button>
-                <a href="/appel/{{rep.idRepetition}}"><button class="btn btn-danger mx-auto d-block" > 
-                    Faire L'appel
-                    
-                </button></a>
+                <a href="{{ url_for('appel', idRepetition=rep.idRepetition) }}">Faire l'appel
+                </a>
+                
             </form>
         </div>
     </div>
@@ -41,24 +40,7 @@
             alert("Copied the text: " + copyText);
         }
     </script>
-    </div>    
-    <div>
-        <h2>Participations</h2>
-        <table>
-            <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Id</th>
-            </tr>
-        {% for p in participation %}
-        <tr>
-            <td>{{p.nomMusicien}}  </td>
-            <td>{{p.prenomMusicien}}  </td>
-            <td>{{p.idMusicien}}  </td>
-        </tr>
-        {% endfor %}
-        </table>
-  </div>    
+    </div>     
 </div>
 <script>
     function myFunction() {

@@ -78,7 +78,7 @@ def repetition(idRepetition):
     today = today.strftime("%m/%d/%y")
     print(daterep == today)
     if daterep == today:
-        return render_template("feuilleappel.html",rep=rep,participation=liste_musicien)
+        return render_template("feuilleappel.html",rep=rep,participation=liste_musicien,idRepetition=rep.idRepetition)
     return render_template("repetition.html", rep=rep,participation=liste_musicien)
 
 class LoginForm(FlaskForm):
@@ -724,6 +724,13 @@ def detail_question():
         listemusicien.append(get_musicien_by_id(rep.idMusicien))
         print(listemusicien)
     return render_template("detail_question.html",musiciens = listemusicien,questions = question)
-@app.route('appel/<idRepetition>')
-def appel():
-    
+@app.route('/appel/<idRepetition>')
+def appel(idRepetition):
+    rep = get_repetition_by_idRep(idRepetition)
+    participation = get_musicien_by_repetition(idRepetition)
+    liste_musicien = []
+    for i in participation:
+        liste_musicien.append(get_musicien_by_id(i.idMusicien))
+
+    print(participation)
+    return render_template('appel.html',rep=rep,participation=liste_musicien)

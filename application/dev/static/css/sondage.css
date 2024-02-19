@@ -1,92 +1,78 @@
-table,th {
-  padding: 0.5vw;
-}
-h1{
-  text-align: center;
-  padding-bottom: 3%;
+body {
+  background-color: #f0f0f0;
   font-family: 'Inter', sans-serif;
 }
-h2,h3{
-  font-family: 'Inter', sans-serif;
-  padding-top: 1vw;
 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1, h2, h3 {
+  text-align: center;
+}
+
+h1{
+  padding-bottom: 20px;
+}
+
+h2, h3{
+  padding-top: 30px;
+}
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #ddd;
 }
 
 th {
   background-color: #1C2942;
   color: #fff;
+}
+
+th:first-child {
+  border-radius: 10px 0 0 0;
+}
+
+th:last-child {
+  border-radius: 0 10px 0 0;
+}
+
+tr:hover {
+  background-color: #fbf7f7;
+}
+
+.valid, .annul, .reponse {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 5px;
   text-align: center;
-  font-family: 'Inter', sans-serif;
-  border-bottom: 2px solid #1C2942;
-  border-right: #535353 solid 1px;
+  text-decoration: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-th:first-child{
-  border-radius: 10px 0px 0px 0px; 
-}
-
-th:last-child{
-  border-radius: 0px 10px 0px 0px; 
-  border-right:0px;
-}
-
-td {
-  text-align: center;
-  border: 0.1vw solid #333;
-
-}
-div label{
-  font-family: 'Inter', sans-serif;
-}
-div label:hover{
-  color: #333;
-}
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-family: 'Inter', sans-serif;
-
-}
-td input{
-  background-color: #fff;
-
-}
-td input:hover{
-  background-color: #fff;
-  border-color: #fff;
-}
 .valid {
   background-color: #4CAF50;
   color: white;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  cursor: pointer;
   border: 1px solid #4CAF50;
-  border-radius: 30%;
-  min-width: fit-content;
-  min-height: fit-content;
 }
 
 .annul {
   background-color: #f44336;
   color: white;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  cursor: pointer;
   border: 1px solid #f44336;
-  border-radius: 30%;
-  min-width: fit-content;
-  min-height: fit-content;
 }
 
 .reponse {
   background-color: #4CAF50;
   color: black;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 10%;
-
 }

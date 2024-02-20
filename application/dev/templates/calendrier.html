@@ -78,19 +78,19 @@
 
 <div>
     {% if current_user.admin %}
-    <a href="/crea_sortie" class="bouton_crea_sortie"><button>Créer une sortie</button></a>
-    <a href="/crea_repetition" class="bouton_crea_repetition"><button class="deux">Créer une repetition</button></a>
-    <a href="/crea_sondage_standard" class="bouton_crea_sondage_standard"><button>Créer une question</button></a>
+    <a href="/crea_sortie" class="bouton_crea_sortie"><button class="btn_crea_sortie" type="submit">Créer une sortie</button></a>
+    <a href="/crea_repetition" class="bouton_crea_repetition"><button class="btn_crea_repetition">Créer une repetition</button></a>
+    <a href="/crea_sondage_standard" class="bouton_crea_sondage_standard"><button class="btn_crea_sondage_standard" type="submit">Créer une question</button></a>
     {% endif %}
 </div>
-    <h2>Disponibilité</h2>
 
     <!-- mes 2 select de date -->
     <div class="select_date">
+        <h2>Disponibilité</h2>
         <form action="/ajoute_dispo" method="post">
             <label for="date_debut">Date de début</label>
             <input type="date" id="date_debut" name="date_debut" value="{{date_debut}}">
-            <label for="date_fin">Date de fin</label>
+            <label id ="date_fin" for="date_fin">Date de fin</label>
             <input type="date" id="date_fin" name="date_fin" value="{{date_fin}}" min = {{date}}>
             <button class="valider-button" type="submit">Valider</button>
         </form>
@@ -108,7 +108,7 @@
                 {% for d in dispo %}
                 <tr>
                     <td>{{d.date}}</td>
-                    <td><a href="/supprime_dispo/{{d.date}}"><button>Supprimer</button></a></td>
+                    <td><a href="/supprime_dispo/{{d.date}}"><button class="btn_remove">Supprimer</button></a></td>
                 </tr>
                 {% endfor %}
             </table>
@@ -122,12 +122,12 @@
             {% if dispo_musicien %}
             <table>
                 <tr>
-                    <th>Id</th>
+                    <th>Nom</th>
                     <th>Date</th>
                 </tr>
                 {% for d in dispo_musicien %}
                 <tr>
-                    <td>{{d.idMusicien}}</td>
+                    <td>{{current_user.nomMusicien}}</td>
                     <td>{{d.date}}</td>
                 </tr>
                 {% endfor %}

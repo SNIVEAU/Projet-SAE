@@ -12,8 +12,11 @@
         {{ form.hidden_tag() }}
         <div class="form-group">
             <h2>Mettez les informations de connexions du compte que vous souhaiter lier</h2>
-            {% if erreur %}
-            <span class="text-danger">l'utilisateur est deja sous votre tutelle</span>
+            {% if DejaTutorer %}
+            <span class="text-danger">L'utilisateur est deja sous votre tutelle</span>
+            {% endif %}
+            {% if Vous %}
+            <span class="text-danger">Vous ne pouvez pas vous mettre sous votre tutelle</span>
             {% endif %}
         </div>
         <div class="form-group">

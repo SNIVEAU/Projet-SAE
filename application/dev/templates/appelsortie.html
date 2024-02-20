@@ -3,6 +3,7 @@
     {{ super() }}
     {{ bootstrap.load_css() }}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/evenement.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/appel.css') }}">
 {% endblock %}
 {% block content %}
 <div>
@@ -19,11 +20,11 @@
         <td>{{p.nomMusicien}}  </td>
         <td>{{p.prenomMusicien}}  </td>
         <td>
-            <div>
+            <div class="reponse">
                 <input type="radio" value="True" name="{{p.idMusicien}}" id="oui">
                 <label for="oui">oui</label>
             </div>
-            <div>
+            <div class='reponse'>
                 <input type="radio" value="False" name="{{p.idMusicien}}" id="non">
                 <label for="non">non</label>
             </div>
@@ -31,10 +32,10 @@
 
     </tr>
     {% endfor %}
-    <tr>
         <input type="hidden" value="{{sortie.idSortie}}" name="sortie">
-        <input type="submit" value="Valider l'appel">
-    </tr>
     </table>
+    <div class= "appel">
+    <input type="submit" class ="appel" value="Valider l'appel">
+    </div>
 </div>
 {% endblock %}

@@ -26,7 +26,7 @@
                     <input type="text" class="form-control" id="tenue" value="{{ rep.tenue }}" readonly>
                 </div>
                 <button class="btn btn-danger mx-auto d-block" onclick="myFunction()">Copier le Lieu</button>
-                <a href="{{ url_for('appel', idRepetition=rep.idRepetition) }}">Faire l'appel
+                <a class="appel" href="{{ url_for('appel', idRepetition=rep.idRepetition) }}">Faire l'appel
                 </a>
                 
             </form>

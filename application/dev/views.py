@@ -763,7 +763,6 @@ def save_appel_sortie():
 @app.route("/save_appel_rep",methods=["GET", "POST"])
 def save_appel_rep():
     for i in request.form:
-
         if i !='repetition' and request.form.get(i) == 'True':
             print('test')
             P = PresenceRepetition(

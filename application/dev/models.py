@@ -457,17 +457,17 @@ def get_reponse_by_idMusicien(idMusicien)->list:
 
 class PresenceSortie(db.Model):
     idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
-    idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'))
+    idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'), primary_key=True)
 def get_Prescences():
-    return Presence.query.all()
+    return PresenceSortie.query.all()
 def get_presence_by_idMusicien(idMusicien):
-    return Presence.query.filter_by(idMusicien=idMusicien).all()
+    return PresenceSortie.query.filter_by(idMusicien=idMusicien).all()
 def get_presence_by_idSortie(idSortie):
-    return Presence.query.filter_by(idSortie=idSortie).all()
+    return PresenceSortie.query.filter_by(idSortie=idSortie).all()
 
 class PresenceRepetition(db.Model):
     idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
-    idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'))
+    idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'), primary_key=True)
 def get_PrescencesRepetition():
     return PresenceRepetition.query.all()
 def get_presenceRepetition_by_idMusicien(idMusicien):

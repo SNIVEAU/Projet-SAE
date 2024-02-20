@@ -66,6 +66,12 @@ def sortie(idSortie):
     liste_musicien = []
     for i in get_musicien_by_sortie(idSortie):
         liste_musicien.append(get_musicien_by_id(i.idMusicien))
+    daterep = sortie.dateSortie.strftime("%m/%d/%y")
+    today = date.today()
+    today = today.strftime("%m/%d/%y")
+    print(daterep == today)
+    if daterep == today:
+        return render_template("feuilleappelsortie.html",sortie=sortie,participation=liste_musicien,idSortie=sortie.idSortie)
     return render_template("sortie.html", sortie=sortie,participation=liste_musicien)
 @app.route("/repetition/<idRepetition>")
 def repetition(idRepetition):
@@ -724,7 +730,7 @@ def detail_question():
         listemusicien.append(get_musicien_by_id(rep.idMusicien))
         print(listemusicien)
     return render_template("detail_question.html",musiciens = listemusicien,questions = question)
-@app.route('/appel/<idRepetition>')
+@app.route('/appel/<idRepetition>',methods=["GET", "POST"])
 def appel(idRepetition):
     rep = get_repetition_by_idRep(idRepetition)
     participation = get_musicien_by_repetition(idRepetition)
@@ -734,3 +740,37 @@ def appel(idRepetition):
 
     print(participation)
     return render_template('appel.html',rep=rep,participation=liste_musicien)
+@app.route("/appelsortie/<idSortie>",methods=["GET", "POST"])
+def appelsortie(idSortie):
+    sortie = get_sortie_by_id(idSortie)
+    participation = get_musicien_by_sortie(idSortie)
+    liste_musicien = []
+    for i in participation:
+        liste_musicien.append(get_musicien_by_id(i.idMusicien))
+    return render_template('appelsortie.html',sortie=sortie,participation=liste_musicien)
+@app.route("/save_appel_sortie",methods=["GET", "POST"])
+def save_appel_sortie():
+    print(request.form)
+    for i in request.form:
+        if i !='sortie' and request.form.get(i) == 'True':
+            P = PresenceSortie(
+                idSortie = request.form.get("sortie"),
+                idMusicien = i,
+            )
+            db.session.add(P)
+            db.session.commit()
+    return redirect(url_for('calendrier'))
+@app.route("/save_appel_rep",methods=["GET", "POST"])
+def save_appel_rep():
+    for i in request.form:
+
+        if i !='repetition' and request.form.get(i) == 'True':
+            print('test')
+            P = PresenceRepetition(
+                idRepetition = request.form.get("repetition"),
+                idMusicien = i,
+            )
+            db.session.add(P)
+            db.session.commit()
+
+    return redirect(url_for('calendrier'))

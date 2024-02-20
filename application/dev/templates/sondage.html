@@ -12,7 +12,7 @@
         <th>Date</th>
         <th>Temps restant</th>
         <th>Vote</th>
-        <th>Valider</th>
+        <th>Validation</th>
     </tr>
     {% if len(sondages)==0 %}
 </table>
@@ -51,10 +51,10 @@
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
         <td>
             {% if s.idSortie==None and s.idRepetition==None %}
-            <div><a  class = "reponse" href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idQuestion}}">repondre</a></div> 
+            <div><button class="btn_repondre"><a  class = "reponse" href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idQuestion}}">Répondre</a></button></div> 
 
             {% else %}
-            <input class="valid" type="submit" value="✔️">
+            <button class="valid" type="submit">✔️</button>
             {% endif %}
         </td>
 
@@ -138,7 +138,7 @@
         <td>
             <form method="POST" action="{{url_for('annuler_sondage')}}">
                 <input type="text" name="idsondage" value="{{ps.idSondage}}" hidden>
-                <input type="submit" value="✖️" class="annul">
+                <button type="submit" class="annul">✖️</button>
             </form>
         </td>
     </tr>

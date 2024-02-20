@@ -465,8 +465,8 @@ class TypeInstrument(db.Model):
 def get_type_instruments()->list:
     return TypeInstrument.query.all()
 
-def get_type_instrument_by_id(idTypeInstrument)->TypeInstrument:
-    return TypeInstrument.query.filter_by(idTypeInstrument=idTypeInstrument).first()
+def get_idTypeInstrument_by_nom(nom)->int:
+    return TypeInstrument.query.filter_by(nomTypeInstrument=nom).first().idTypeInstrument
 
 
 class Jouer(db.Model):
@@ -476,19 +476,19 @@ class Jouer(db.Model):
 def get_jouer()->list:
     return Jouer.query.all()
 
-def get_jouer_by_idMusicien(idMusicien)->list:
-    return Jouer.query.filter_by(idMusicien=idMusicien).all()
+def get_jouer_by_musicien(id)->list:
+    return Jouer.query.filter_by(idMusicien=id).all()
 
-def get_jouer_by_idTypeInstrument(idTypeInstrument)->list:
-    return Jouer.query.filter_by(idTypeInstrument=idTypeInstrument).all()
+def get_nom_instrument_by_id(id)->str:
+    return TypeInstrument.query.filter_by(idTypeInstrument=id).first().nomTypeInstrument
 
-def get_jouer_by_id(idMusicien,idTypeInstrument)->Jouer:
-    return Jouer.query.filter_by(idMusicien=idMusicien,idTypeInstrument=idTypeInstrument).first()
 
-def get_idTypeInstrument_by_idMusicien(idMusicien)->list:
-    return Jouer.query.filter_by(idMusicien=idMusicien).all()
+def get_instruments_by_musicien(id)->list:
+    return Jouer.query.filter_by(idMusicien=id).all()
 
-def insert_jouer(idMusicien,idTypeInstrument):
-    j=Jouer(idMusicien=idMusicien,idTypeInstrument=idTypeInstrument)
-    db.session.add(j)
+
+
+def add_jouer(idMusicien,idTypeInstrument):
+    jouer=Jouer(idMusicien=idMusicien,idTypeInstrument=idTypeInstrument)
+    db.session.add(jouer)
     db.session.commit()

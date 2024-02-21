@@ -69,6 +69,12 @@ def sortie(idSortie):
     liste_musicien = []
     for i in get_musicien_by_sortie(idSortie):
         liste_musicien.append(get_musicien_by_id(i.idMusicien))
+    daterep = sortie.dateSortie.strftime("%m/%d/%y")
+    today = date.today()
+    today = today.strftime("%m/%d/%y")
+    print(daterep == today)
+    if daterep == today:
+        return render_template("feuilleappelsortie.html",sortie=sortie,participation=liste_musicien,idSortie=sortie.idSortie)
     return render_template("sortie.html", sortie=sortie,participation=liste_musicien)
 @app.route("/repetition/<idRepetition>")
 def repetition(idRepetition):
@@ -76,6 +82,12 @@ def repetition(idRepetition):
     liste_musicien = []
     for i in get_musicien_by_repetition(idRepetition):
         liste_musicien.append(get_musicien_by_id(i.idMusicien))
+    daterep = rep.dateRepetition.strftime("%m/%d/%y")
+    today = date.today()
+    today = today.strftime("%m/%d/%y")
+    print(daterep == today)
+    if daterep == today:
+        return render_template("feuilleappel.html",rep=rep,participation=liste_musicien,idRepetition=rep.idRepetition)
     return render_template("repetition.html", rep=rep,participation=liste_musicien)
 
 class LoginForm(FlaskForm):
@@ -242,7 +254,8 @@ def ajoute_dispo():
     dispo = get_disponibilite_by_musicien(current_user.idMusicien)
     for d in dispo:
         if d in get_disponibilite_by_musicien(current_user.idMusicien) and d.date >= datedebut and d.date <= datefin:
-            db.session.delete(d)
+            if d.date < datetime.now().date():
+                db.session.delete(d)
     db.session.commit()
     # si date debut deja passer on la met a aujourd'hui
     if datedebut < datetime.now().date():
@@ -653,20 +666,22 @@ def stat():
         layout_reponse = go.Layout(title="Taux de réponse à un sondage")
     
         for musicien in mus:
-            data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
+            y = len(get_sortie_by_musicien(musicien.idMusicien))/len(get_sorties())*100
+
+            data.append(go.Bar(x=[musicien.nomMusicien], y=[y]))
         for sort in get_sorties():
             pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
-            data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
-        deja_parcouru = []
-        for dispo in get_disponibilites():
-            if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
-                deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
-                data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
+            data2.append(go.Bar(x=[sort.lieu+" "+sort.type], y=[pourcent]))
+        jours_de_la_semaine = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]        
+        for jour in jours_de_la_semaine:
+            nb_dispo = len(get_disponibilite_by_day(jour))
+            data_jour_dispo.append(go.Bar(x=[jour], y=[nb_dispo]))
         for musicien in get_musicien():
-            print(musicien.nomMusicien)
-            print(len(get_sondage_by_musicien(musicien.idMusicien)))
+            #print(musicien.nomMusicien)
+            #print(len(get_sondage_by_musicien(musicien.idMusicien)))
             # get_sondage_by_musicien(musicien.idMusicien)
-            data_reponse_sondage.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sondage_by_musicien(musicien.idMusicien))]))
+            y=len(get_sondage_by_musicien(musicien.idMusicien))/len(get_sondages())*100
+            data_reponse_sondage.append(go.Bar(x=[musicien.nomMusicien], y=[y]))
         #  catégorie de personne présente
         #pourcentage de personne présente à une activité
         #vérifier le pourcentage de réponse à un sondage
@@ -755,6 +770,49 @@ def detail_question():
         listemusicien.append(get_musicien_by_id(rep.idMusicien))
         print(listemusicien)
     return render_template("detail_question.html",musiciens = listemusicien,questions = question)
+@app.route('/appel/<idRepetition>',methods=["GET", "POST"])
+def appel(idRepetition):
+    rep = get_repetition_by_idRep(idRepetition)
+    participation = get_musicien_by_repetition(idRepetition)
+    liste_musicien = []
+    for i in participation:
+        liste_musicien.append(get_musicien_by_id(i.idMusicien))
+
+    print(participation)
+    return render_template('appel.html',rep=rep,participation=liste_musicien)
+@app.route("/appelsortie/<idSortie>",methods=["GET", "POST"])
+def appelsortie(idSortie):
+    sortie = get_sortie_by_id(idSortie)
+    participation = get_musicien_by_sortie(idSortie)
+    liste_musicien = []
+    for i in participation:
+        liste_musicien.append(get_musicien_by_id(i.idMusicien))
+    return render_template('appelsortie.html',sortie=sortie,participation=liste_musicien)
+@app.route("/save_appel_sortie",methods=["GET", "POST"])
+def save_appel_sortie():
+    print(request.form)
+    for i in request.form:
+        if i !='sortie' and request.form.get(i) == 'True':
+            P = PresenceSortie(
+                idSortie = request.form.get("sortie"),
+                idMusicien = i,
+            )
+            db.session.add(P)
+            db.session.commit()
+    return redirect(url_for('calendrier'))
+@app.route("/save_appel_rep",methods=["GET", "POST"])
+def save_appel_rep():
+    for i in request.form:
+        if i !='repetition' and request.form.get(i) == 'True':
+            print('test')
+            P = PresenceRepetition(
+                idRepetition = request.form.get("repetition"),
+                idMusicien = i,
+            )
+            db.session.add(P)
+            db.session.commit()
+
+    return redirect(url_for('calendrier'))
 
 @app.route('/inscription_tutore',methods=["GET", "POST"])
 def inscription_tutore():

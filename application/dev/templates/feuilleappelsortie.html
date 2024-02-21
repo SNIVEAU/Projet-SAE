@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {{ super() }}
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/evenement.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Sortie</h1>
+        <div class="form_sortie">
+            <form>
+                <div class="form-group">
+                    <label for="lieu" class="control-label">Lieu de la sortie</label>
+                    <input type="text" class="form-control" id="lieu" value="{{ sortie.lieu }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="description" class="control-label">Description de la sortie</label>
+                    <textarea class="form-control" id="description" rows="3" readonly>{{ sortie.description }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="type" class="control-label">Type de sortie</label>
+                    <input type="text" class="form-control" id="type" value="{{ sortie.type }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="tenue" class="control-label">Tenue de la sortie</label>
+                    <input type="text" class="form-control" id="tenue" value="{{ sortie.tenue }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="date" class="control-label">Date de la sortie</label>
+                    <input type="text" class="form-control" id="date" value="{{ sortie.dateSortie }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="duree" class="control-label">Durée de la sortie (en heures)</label>
+                    <input type="text" class="form-control" id="duree" value="{{ sortie.dureeSortie }} h" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="image" class="control-label">Image de la sortie</label>
+                    {% if sortie.blob_data %}
+                        <img src="data:image/jpeg;base64,{{ sortie.blob_data }}" alt="Image de la sortie">
+                    {% else %}
+                        <p>Pas d'image disponible</p>
+                    {% endif %}
+                </div>
+                <a class = "appel" href="{{ url_for('appelsortie', idSortie=sortie.idSortie) }}">Faire l'appel
+                </a>
+            </form>
+        </div>
+
+    </div>    
+    </div>
+    <script>
+        function myFunction() {
+            // Get the text content of the paragraph
+            var copyText = document.getElementById("Lieu").innerText;
+        
+            // Copy the text to the clipboard
+            navigator.clipboard.writeText(copyText);
+        
+            // Alert the user
+            alert("Copied the text: " + copyText);
+        }
+    </script>
+{% endblock %}

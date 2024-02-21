@@ -1,3 +1,4 @@
+
 body{
     background-color: #EEEEEE;
   }
@@ -6,7 +7,7 @@ body{
   h1{
       color: #b10505;
       font-weight: bold;
-      font-size: 30px;
+      font-size: 2em;
       margin-top: 1em;
       font-family: 'Inter', sans-serif;
   }
@@ -14,7 +15,7 @@ body{
   main h2 {
       color: #000000;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 1em;
       margin-top: 1em;
       font-family: 'Inter', sans-serif;
   }
@@ -22,7 +23,7 @@ body{
   p{
       color: #000000;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 1em;
       margin-top: 2em;
       font-family: 'Inter', sans-serif;
   }
@@ -36,6 +37,14 @@ body{
     height: auto; /* Maintenir la proportion d'origine de l'image */
     max-width: 100%; /* Assurer que l'image ne dépasse pas la largeur de son conteneur parent */
   }
+
+  
+  .TexteDeBienvenue img {
+    width: 50%;
+    height: auto; 
+    max-width: 100%;
+  }
+  
   
   .TextePresentation p{
       justify-content: end;
@@ -126,4 +135,3 @@ body{
   
   .Prochainesorties {
     text-align: center;
-  }

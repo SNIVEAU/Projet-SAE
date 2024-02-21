@@ -68,9 +68,9 @@
         {% endif %}
         <td>
             {% if s.idSortie==None and s.idRepetition==None %}
-            <div><a  class = "reponse" href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idQuestion}}">repondre</a></div> 
+            <div><button class="btn_repondre"><a  class = "reponse" href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idQuestion}}">Répondre</a></button></div> 
             {% else %}
-            <input class="valid" type="submit" value="✔️">
+            <button class="valid" type="submit">✔️</button>
             {% endif %}
         </td>
 
@@ -171,8 +171,10 @@
         <td>
             <form method="POST" action="{{url_for('annuler_sondage')}}">
                 <input type="text" name="idsondage" value="{{ps.idSondage}}" hidden>
+
                 <input type="text" name="idMusicien" value="{{idActuelle}}" hidden>
                 <input type="submit" value="✖️" class="annul">
+
             </form>
         </td>
     </tr>

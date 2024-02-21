@@ -396,6 +396,16 @@ def get_disponibilite_by_musicien(id)->list:
         list : liste des disponibilités du musicien"""
     return disponibilite.query.filter_by(idMusicien=id).all()
 
+def get_disponibilite_by_day(jour)->list:
+    res = []
+    disponibilites = get_disponibilites()
+    for dispo in disponibilites:
+        jour_de_la_semaine = dispo.date.strftime('%A')
+        print(jour_de_la_semaine)
+        if jour_de_la_semaine == jour:
+            res.append(dispo)
+    return res
+
 
 def get_max_id_repetition()->int:
     if Repetition.query.count()==0:

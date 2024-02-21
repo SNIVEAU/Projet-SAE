@@ -189,15 +189,18 @@ def validation_sondage():
         reponse=True
     else:
         reponse=False
+    idMusicien=current_user.idMusicien
+    if(request.form.get("idMusicien")!=None):
+        idMusicien=int(request.form.get("idMusicien"))
     date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     if get_sondage_by_id(id).idRepetition!=None:
         rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
-                            idMusicien=current_user.idMusicien,
+                            idMusicien=idMusicien,
                             dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
                             presence=reponse)
     elif get_sondage_by_id(id).idSortie!=None:
         rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
-                            idMusicien=current_user.idMusicien,
+                            idMusicien=idMusicien,
                             dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
                             presence=reponse)
     db.session.add(rs)
@@ -209,12 +212,15 @@ def annuler_sondage():
     if len(request.form)==0:
         return redirect(url_for("page_sondage"))
     id=int(request.form.get("idsondage"))
+    idMusicien=current_user.idMusicien
+    if(request.form.get("idMusicien")!=None):
+        idMusicien=int(request.form.get("idMusicien"))
     if get_sondage_by_id(id).idRepetition!=None:
-        rs=participer_repetition.query.filter_by(idRepetition=get_sondage_by_id(id).idRepetition,idMusicien=current_user.idMusicien).first()
+        rs=participer_repetition.query.filter_by(idRepetition=get_sondage_by_id(id).idRepetition,idMusicien=idMusicien).first()
     elif get_sondage_by_id(id).idSortie!=None:
-        rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=current_user.idMusicien).first()
+        rs=participer_sortie.query.filter_by(idSortie=get_sondage_by_id(id).idSortie,idMusicien=idMusicien).first()
     else:
-        rs=Reponse.query.filter_by(idQuestion=get_question_by_idSondage(id).idQuestion,idMusicien=current_user.idMusicien).first()
+        rs=Reponse.query.filter_by(idQuestion=get_question_by_idSondage(id).idQuestion,idMusicien=idMusicien).first()
     db.session.delete(rs)
     db.session.commit()
     return redirect(url_for("page_sondage"))
@@ -364,9 +370,13 @@ def profil():
         html: page de profile
     """
     form = maj_profile()
+    liste_idtutele=tutele_by_idTuteur(current_user.idMusicien)
+    liste_tutele=[]
+    for id in liste_idtutele:
+        liste_tutele.append(get_musicien_by_id(id.idTutele))
     all_type_instrument = get_type_instruments()
     mes_instruments = get_instruments_by_musicien(current_user.idMusicien)
-    return render_template("profil.html", form=form, all_type_instrument=all_type_instrument, mes_instruments=mes_instruments)
+    return render_template("profil.html", form=form,liste_tutele=liste_tutele, all_type_instrument=all_type_instrument, mes_instruments=mes_instruments)
 
 
 class maj_profile(FlaskForm):
@@ -664,15 +674,21 @@ def stat():
         return render_template("stat.html",question = get_questions(),musiciens=get_musicien(),plot=fig.to_html(),pourcentage=fig2.to_html(),jour_dispo=fig_jour_dispo.to_html(),reponse=fig_reponse.to_html())
     return render_template("error_pages.html"), 403
 
-@app.route("/sondage/")
+@app.route("/sondage/", methods=["GET", "POST"])
 def page_sondage(erreur=False):
     if current_user.is_authenticated:
-
+        idMusicien=current_user.idMusicien
+        if(request.form.get("idMusicienSondage")!=None):
+            idMusicien=int(request.form.get("idMusicienSondage"))
+        liste_idtutele=tutele_by_idTuteur(current_user.idMusicien)
+        liste_tutele=[]
+        for id in liste_idtutele:
+            liste_tutele.append(get_musicien_by_id(id.idTutele))
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
-        participation=get_sondage_by_musicien(current_user.idMusicien)
-        return render_template("sondage.html",get_participation_by_musicien_and_sortie=get_participation_by_musicien_and_sortie,get_participation_by_musicien_and_repetition=get_participation_by_musicien_and_repetition,get_reponse_by_id=get_reponse_by_id,len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=participation,sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep,get_question_by_id=get_question_by_id,get_sondage_by_question=get_sondage_by_question)
+        participation=get_sondage_by_musicien(int(idMusicien))
+        return render_template("sondage.html",liste_tutele=liste_tutele,idActuelle=idMusicien,get_participation_by_musicien_and_sortie=get_participation_by_musicien_and_sortie,get_participation_by_musicien_and_repetition=get_participation_by_musicien_and_repetition,get_reponse_by_id=get_reponse_by_id,len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=participation,sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep,get_question_by_id=get_question_by_id,get_sondage_by_question=get_sondage_by_question)
     return redirect(url_for("login"))
 
 @app.route('/update_temps<idSondage>')
@@ -734,4 +750,25 @@ def detail_question():
         listemusicien.append(get_musicien_by_id(rep.idMusicien))
         print(listemusicien)
     return render_template("detail_question.html",musiciens = listemusicien,questions = question)
+
+@app.route('/inscription_tutore',methods=["GET", "POST"])
+def inscription_tutore():
+    f = LoginForm()
+    db.session.rollback()
+    if not f.is_submitted():
+        f.next.data = request.args.get("next")
+    elif f.validate_on_submit():
+        user = f.get_authenticated_user()
+        if user:
+            if(Tutorer.query.filter_by(idTuteur=current_user.idMusicien,idTutele=user.idMusicien).first() is None and user.idMusicien!=current_user.idMusicien):
+                db.session.add(Tutorer(idTuteur=current_user.idMusicien,idTutele=user.idMusicien))
+                db.session.commit()
+                return redirect(url_for("profil"))
+            elif(user.idMusicien==current_user.idMusicien):
+                return render_template("inscription_tutore.html",form=f,Vous=True)
+            else:
+                return render_template("inscription_tutore.html",form=f,DejaTutorer=True)
+        else:
+            f.password.errors += ("Nom d'utilisateur ou mot de passe incorrect",)
+    return render_template("inscription_tutore.html",form=f,DejaTutorer=False,Vous=False)
 

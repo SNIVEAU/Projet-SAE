@@ -15,7 +15,7 @@ bootstrap = Bootstrap5(app)
 IMG_FOLDER = os.path.join('static', 'img')
 app.config["UPLOAD_FOLDER"] = IMG_FOLDER
 Flask_Logo = os.path.join(app.config["UPLOAD_FOLDER"], "sortie1.jpg")
-app.config['SQLALCHEMY_DATABASE_URI'] = ('sqlite:///'+mkpath('../myapp.db'))
+app.config['SQLALCHEMY_DATABASE_URI'] = ('sqlite:///'+mkpath('../myapp.sqlite'))
 db = SQLAlchemy(app)
 app.config['SECRET_KEY'] = "7d49295c-541c-4db7-8e5a-230a49389189"
 

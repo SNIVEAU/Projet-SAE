@@ -30,22 +30,27 @@ def home():
     musiciens = Musicien.query.all()
     return render_template("home.html", musiciens=musiciens)
 
-@app.route("/calendrier/")
+@app.route("/calendrier", methods=["GET"])
 def calendrier():
     if current_user.is_authenticated:
+        print("ydgyfseubfuhesbfiesbifjbsejifbjsbvjbdsbfjsbjifbsjbfjdsbf")
+        num_mois=datetime.now().month
+        moisActuelle=datetime.now().month
+        if request.args.get("mois")!=None:
+            if(int(request.args.get("mois"))>0 and int(request.args.get("mois"))<13):
+                num_mois=int(request.args.get("mois"))
         c=calendar.HTMLCalendar(firstweekday=0)
         c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
         c.cssclass_month_head="mois"
         num_day=datetime.now().day
-        num_mois=datetime.now().month
         mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
-        return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),dispo_musicien = get_disponibilites())
+        return render_template("calendrier.html",moisActuelle=moisActuelle,numMois=num_mois,get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,num_mois),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),dispo_musicien = get_disponibilites())
     return redirect(url_for("login"))
 
 
-@app.route('/get_val_dico_mois/<day>')
-def get_val_dico_mois_route(day):
-    result = get_val_dico_mois(day)
+@app.route('/get_val_dico_mois/<day>/<month>')
+def get_val_dico_mois_route(day,month):
+    result = get_val_dico_mois(day,month)
     if result is None:
         return jsonify({})
     dict={}
@@ -250,7 +255,8 @@ def ajoute_dispo():
     dispo = get_disponibilite_by_musicien(current_user.idMusicien)
     for d in dispo:
         if d in get_disponibilite_by_musicien(current_user.idMusicien) and d.date >= datedebut and d.date <= datefin:
-            db.session.delete(d)
+            if d.date < datetime.now().date():
+                db.session.delete(d)
     db.session.commit()
     # si date debut deja passer on la met a aujourd'hui
     if datedebut < datetime.now().date():
@@ -653,18 +659,20 @@ def stat():
         layout_reponse = go.Layout(title="Taux de réponse à un sondage")
     
         for musicien in mus:
-            data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
+            y = len(get_sortie_by_musicien(musicien.idMusicien))/len(get_sorties())*100
+
+            data.append(go.Bar(x=[musicien.nomMusicien], y=[y]))
         for sort in get_sorties():
             pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
-            data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
-        deja_parcouru = []
-        for dispo in get_disponibilites():
-            if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
-                deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
-                data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
+            data2.append(go.Bar(x=[sort.lieu+" "+sort.type], y=[pourcent]))
+        jours_de_la_semaine = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]        
+        for jour in jours_de_la_semaine:
+            nb_dispo = len(get_disponibilite_by_day(jour))
+            data_jour_dispo.append(go.Bar(x=[jour], y=[nb_dispo]))
         for musicien in get_musicien():
             # get_sondage_by_musicien(musicien.idMusicien)
-            data_reponse_sondage.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sondage_by_musicien(musicien.idMusicien))]))
+            y=len(get_sondage_by_musicien(musicien.idMusicien))/len(get_sondages())*100
+            data_reponse_sondage.append(go.Bar(x=[musicien.nomMusicien], y=[y]))
         #  catégorie de personne présente
         #pourcentage de personne présente à une activité
         #vérifier le pourcentage de réponse à un sondage
@@ -774,8 +782,9 @@ def save_appel_sortie():
                 idSortie = request.form.get("sortie"),
                 idMusicien = i,
             )
-            db.session.add(P)
-            db.session.commit()
+            if PresenceSortie.query.filter_by(idSortie=request.form.get("sortie"),idMusicien=i).first() is None:
+                db.session.add(P)
+                db.session.commit()
     return redirect(url_for('calendrier'))
 @app.route("/save_appel_rep",methods=["GET", "POST"])
 def save_appel_rep():

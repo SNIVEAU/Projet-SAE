@@ -60,14 +60,12 @@ def get_val_dico_mois_route(day):
 @app.route("/sortie/<idSortie>")
 def sortie(idSortie):
     sortie = get_sortie_by_id(idSortie)
-    print(get_musicien_by_sortie(idSortie))
     liste_musicien = []
     for i in get_musicien_by_sortie(idSortie):
         liste_musicien.append(get_musicien_by_id(i.idMusicien))
     daterep = sortie.dateSortie.strftime("%m/%d/%y")
     today = date.today()
     today = today.strftime("%m/%d/%y")
-    print(daterep == today)
     if daterep == today:
         return render_template("feuilleappelsortie.html",sortie=sortie,participation=liste_musicien,idSortie=sortie.idSortie)
     return render_template("sortie.html", sortie=sortie,participation=liste_musicien)
@@ -80,7 +78,6 @@ def repetition(idRepetition):
     daterep = rep.dateRepetition.strftime("%m/%d/%y")
     today = date.today()
     today = today.strftime("%m/%d/%y")
-    print(daterep == today)
     if daterep == today:
         return render_template("feuilleappel.html",rep=rep,participation=liste_musicien,idRepetition=rep.idRepetition)
     return render_template("repetition.html", rep=rep,participation=liste_musicien)
@@ -205,14 +202,18 @@ def validation_sondage():
     if(request.form.get("idMusicien")!=None):
         idMusicien=int(request.form.get("idMusicien"))
     date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    idTypeInstrument=request.form.get("type-instrument")
+    print(idTypeInstrument)
     if get_sondage_by_id(id).idRepetition!=None:
         rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
-                            idMusicien=idMusicien,
-                            dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
-                            presence=reponse)
+                                idMusicien=idMusicien,
+                                idTypeInstrument = idTypeInstrument,
+                                dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
+                                presence=reponse)
     elif get_sondage_by_id(id).idSortie!=None:
         rs=participer_sortie(idSortie=get_sondage_by_id(id).idSortie,
                             idMusicien=idMusicien,
+                            idTypeInstrument = idTypeInstrument,
                             dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'),
                             presence=reponse)
     db.session.add(rs)
@@ -256,7 +257,6 @@ def ajoute_dispo():
         datedebut = datetime.now().date()
     # on ajoute les nouvelles dates
     for i in range((datefin - datedebut).days + 1):
-        print(datedebut + timedelta(days=i))
         d = disponibilite(idMusicien=current_user.idMusicien, date=datedebut + timedelta(days=i))
         db.session.add(d)
     db.session.commit()
@@ -373,6 +373,7 @@ def register():
 
 
 
+
 @app.route("/profil/")
 @login_required
 def profil():
@@ -444,8 +445,7 @@ def delete_instrument():
     db.session.commit()
     return redirect(url_for("profil"))
 
-
-
+        
 @app.route("/maj_profil/", methods=["GET", "POST"])
 @login_required
 def maj_profil():
@@ -518,9 +518,7 @@ def save_sortie():
                     dureeSondage=int(request.form.get("duree")))
     date_jour=datetime.strftime(date,"%Y-%m-%d")
     date_jour=datetime.strptime(date_jour,"%Y-%m-%d").date()
-    print(date_jour)
     liste_dispo=get_disponibilite_by_date(date_jour)
-    print(liste_dispo)
     for dispo in liste_dispo:
         musicien=get_musicien_by_id(dispo.idMusicien)
         ps=participer_sortie(idSortie=idSorti,
@@ -560,13 +558,11 @@ def save_repetition():
                     dureeSondage=int(request.form.get("duree")))
     date_jour=datetime.strftime(date,"%Y-%m-%d")
     date_jour=datetime.strptime(date_jour,"%Y-%m-%d").date()
-    print(date_jour)
     liste_dispo=get_disponibilite_by_date(date_jour)
-    print(liste_dispo)
     for dispo in liste_dispo:
         musicien=get_musicien_by_id(dispo.idMusicien)
         pr=participer_repetition(idRepetition=id_repetition,
-                            idMusicien=musicien.idMusicien,
+                                idMusicien=musicien.idMusicien,
                             dateReponse=date,
                             presence=True)
         db.session.add(pr)
@@ -584,7 +580,6 @@ def save_sondage_standard():
     if request.form.get("intitule")=="" or request.form.get("duree")=="" or request.form.get("type_question")=="":
         return crea_sondage_standard()
     else:
-        print(request.form.get("duree"))
         sondage=Sondage(idSondage=get_max_id_sondage()+1,
                         idSortie=None,
                         idRepetition=None,
@@ -622,7 +617,6 @@ def save_reponse_question():
     type=questions[0].split(":")[1]
     date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     reponse_sondage+="type:"+type+"|"
-    print("test")
     if type=="radio":
         reponse_sondage+="reponse"+":"+request.form.get("reponse")
     else:
@@ -630,7 +624,6 @@ def save_reponse_question():
         liste_reponse.pop()
         for reponse in liste_reponse:
             reponse_sondage+=reponse+":"+request.form.get(reponse)+";"
-    print(request.form.get("reponseSpeciale"))
     reponse=Reponse(
                     idQuestion=int(request.form.get("idQuestion")),
                     idMusicien=current_user.idMusicien,
@@ -670,8 +663,6 @@ def stat():
                 deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
                 data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
         for musicien in get_musicien():
-            print(musicien.nomMusicien)
-            print(len(get_sondage_by_musicien(musicien.idMusicien)))
             # get_sondage_by_musicien(musicien.idMusicien)
             data_reponse_sondage.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sondage_by_musicien(musicien.idMusicien))]))
         #  catégorie de personne présente
@@ -694,13 +685,14 @@ def page_sondage(erreur=False):
             idMusicien=int(request.form.get("idMusicienSondage"))
         liste_idtutele=tutele_by_idTuteur(current_user.idMusicien)
         liste_tutele=[]
+        mes_instruments = get_instruments_by_musicien(current_user.idMusicien)
         for id in liste_idtutele:
             liste_tutele.append(get_musicien_by_id(id.idTutele))
         s=get_sondage_non_rep(current_user.idMusicien)
         if s is None:
             s=[]
         participation=get_sondage_by_musicien(int(idMusicien))
-        return render_template("sondage.html",liste_tutele=liste_tutele,idActuelle=idMusicien,get_participation_by_musicien_and_sortie=get_participation_by_musicien_and_sortie,get_participation_by_musicien_and_repetition=get_participation_by_musicien_and_repetition,get_reponse_by_id=get_reponse_by_id,len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=participation,sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep,get_question_by_id=get_question_by_id,get_sondage_by_question=get_sondage_by_question)
+        return render_template("sondage.html",liste_tutele=liste_tutele,idActuelle=idMusicien,get_participation_by_musicien_and_sortie=get_participation_by_musicien_and_sortie,get_participation_by_musicien_and_repetition=get_participation_by_musicien_and_repetition,get_reponse_by_id=get_reponse_by_id,len=len,get_question_by_idSondage=get_question_by_idSondage,sondages=s,get_sortie_by_id=get_sortie_by_id,get_sondage_by_sortie=get_sondage_by_sortie,participation=participation,sondage_rep=get_sondage_by_musicien(current_user.idMusicien),erreur=erreur,p_r=participer_repetition,p_s=participer_sortie,isinstance=isinstance,get_sondage_by_repetition=get_sondage_by_repetition,get_repetition_by_id=get_repetition_by_idRep,get_question_by_id=get_question_by_id,get_sondage_by_question=get_sondage_by_question,mes_instruments = mes_instruments, instrument_utiliser_sortie = get_idTypeInstrument_by_idMusicien_and_idSortie, instrument_utiliser_repetition = get_idTypeInstrument_by_idMusicien_and_idRepetition)
     return redirect(url_for("login"))
 
 @app.route('/update_temps<idSondage>')
@@ -727,7 +719,6 @@ def verif_reponse(idQuestion):
     for i in range(len(reponseMusicien)):
         reponseMusicien[i]=reponseMusicien[i].split(":")
     reponseSpecial=get_reponse_by_id(idQuestion,current_user.idMusicien).reponseSpeciale
-    print(reponseSpecial)
 
 
     return render_template("page_verif_reponse.html",question=question,type=type,reponseMusicien=reponseMusicien,reponseSpecial=reponseSpecial)
@@ -747,7 +738,6 @@ def verife_reponse(idQuestion,idMusicien):
     for i in range(len(reponseMusicien)):
         reponseMusicien[i]=reponseMusicien[i].split(":")
     reponseSpecial=get_reponse_by_id(idQuestion,idMusicien).reponseSpeciale
-    print(reponseSpecial)
 
 
     return render_template("page_verif_reponse.html",question=question,type=type,reponseMusicien=reponseMusicien,reponseSpecial=reponseSpecial)
@@ -758,9 +748,7 @@ def detail_question():
     question=get_question_by_id(idQuestion)
     listemusicien = []
     for rep in get_Reponse_by_idQuestion(idQuestion):
-        print(rep.idMusicien)
         listemusicien.append(get_musicien_by_id(rep.idMusicien))
-        print(listemusicien)
     return render_template("detail_question.html",musiciens = listemusicien,questions = question)
 @app.route('/appel/<idRepetition>',methods=["GET", "POST"])
 def appel(idRepetition):
@@ -769,8 +757,6 @@ def appel(idRepetition):
     liste_musicien = []
     for i in participation:
         liste_musicien.append(get_musicien_by_id(i.idMusicien))
-
-    print(participation)
     return render_template('appel.html',rep=rep,participation=liste_musicien)
 @app.route("/appelsortie/<idSortie>",methods=["GET", "POST"])
 def appelsortie(idSortie):
@@ -782,7 +768,6 @@ def appelsortie(idSortie):
     return render_template('appelsortie.html',sortie=sortie,participation=liste_musicien)
 @app.route("/save_appel_sortie",methods=["GET", "POST"])
 def save_appel_sortie():
-    print(request.form)
     for i in request.form:
         if i !='sortie' and request.form.get(i) == 'True':
             P = PresenceSortie(
@@ -796,7 +781,6 @@ def save_appel_sortie():
 def save_appel_rep():
     for i in request.form:
         if i !='repetition' and request.form.get(i) == 'True':
-            print('test')
             P = PresenceRepetition(
                 idRepetition = request.form.get("repetition"),
                 idMusicien = i,
@@ -805,7 +789,6 @@ def save_appel_rep():
             db.session.commit()
 
     return redirect(url_for('calendrier'))
-=======
 
 @app.route('/inscription_tutore',methods=["GET", "POST"])
 def inscription_tutore():

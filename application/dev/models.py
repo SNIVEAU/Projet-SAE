@@ -456,7 +456,73 @@ def get_reponse_by_idMusicien(idMusicien)->list:
     return Reponse.query.filter_by(idMusicien=idMusicien).all()
 
 
+class PresenceSortie(db.Model):
+    idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'), primary_key=True)
+def get_Prescences():
+    return PresenceSortie.query.all()
+def get_presence_by_idMusicien(idMusicien):
+    return PresenceSortie.query.filter_by(idMusicien=idMusicien).all()
+def get_presence_by_idSortie(idSortie):
+    return PresenceSortie.query.filter_by(idSortie=idSortie).all()
 
-
-
+class PresenceRepetition(db.Model):
+    idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'), primary_key=True)
+def get_PrescencesRepetition():
+    return PresenceRepetition.query.all()
+def get_presenceRepetition_by_idMusicien(idMusicien):
+    return PresenceRepetition.query.filter_by(idMusicien=idMusicien).all()
+def get_presenceRepetition_by_idRepetition(idRepetition):
+    return PresenceRepetition.query.filter_by(idRepetition=idRepetition).all()
+class Tutorer(db.Model):
+    idTuteur = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idTutele = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
     
+def get_tutorer()->list:
+    return Tutorer.query.all()
+
+def tuteur_by_idTutele(idTutele)->int:
+    return Tutorer.query.filter_by(idTutele=idTutele).first()
+
+def tutele_by_idTuteur(idTuteur)->list:
+    return Tutorer.query.filter_by(idTuteur=idTuteur).all()
+
+
+
+
+
+class TypeInstrument(db.Model):
+    idTypeInstrument = db.Column(db.Integer, primary_key=True)
+    nomTypeInstrument = db.Column(db.String(50))
+    
+def get_type_instruments()->list:
+    return TypeInstrument.query.all()
+
+def get_idTypeInstrument_by_nom(nom)->int:
+    return TypeInstrument.query.filter_by(nomTypeInstrument=nom).first().idTypeInstrument
+
+
+class Jouer(db.Model):
+    idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
+    idTypeInstrument = db.Column(db.Integer, db.ForeignKey('type_instrument.idTypeInstrument'), primary_key=True)
+    
+def get_jouer()->list:
+    return Jouer.query.all()
+
+def get_jouer_by_musicien(id)->list:
+    return Jouer.query.filter_by(idMusicien=id).all()
+
+def get_nom_instrument_by_id(id)->str:
+    return TypeInstrument.query.filter_by(idTypeInstrument=id).first().nomTypeInstrument
+
+
+def get_instruments_by_musicien(id)->list:
+    return Jouer.query.filter_by(idMusicien=id).all()
+
+
+
+def add_jouer(idMusicien,idTypeInstrument):
+    jouer=Jouer(idMusicien=idMusicien,idTypeInstrument=idTypeInstrument)
+    db.session.add(jouer)
+    db.session.commit()

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block styles %}
+    {{ super() }}
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/evenement.css') }}">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1>Répétition</h1>
+        <div class="form_repetition">
+            <form>
+                <div class="form-group">
+                    <label for="dateRepetition" class="control-label">Date de la répétition</label>
+                    <input type="text" class="form-control" id="dateRepetition" value="{{ rep.dateRepetition }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="dureeRepetition" class="control-label">Durée de la répétition (en heures)</label>
+                    <input type="text" class="form-control" id="dureeRepetition" value="{{ rep.dureeRepetition }} h" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="lieu" class="control-label">Lieu de la répétition</label>
+                    <input type="text" class="form-control" id="lieu" value="{{ rep.lieu }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="tenue" class="control-label">Tenue de la répétition</label>
+                    <input type="text" class="form-control" id="tenue" value="{{ rep.tenue }}" readonly>
+                </div>
+                <button class="btn btn-danger mx-auto d-block" onclick="myFunction()">Copier le Lieu</button>
+                <a class="appel" href="{{ url_for('appel', idRepetition=rep.idRepetition) }}">Faire l'appel
+                </a>
+                
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function myFunction() {
+            var copyText = document.getElementById("lieu").value;
+            navigator.clipboard.writeText(copyText);
+            alert("Copied the text: " + copyText);
+        }
+    </script>
+    </div>     
+</div>
+<script>
+    function myFunction() {
+        // Get the text content of the paragraph
+        var copyText = document.getElementById("Lieu").innerText;
+    
+        // Copy the text to the clipboard
+        navigator.clipboard.writeText(copyText);
+    
+        // Alert the user
+        alert("Copied the text: " + copyText);
+    }
+    
+</script>
+{% endblock %}

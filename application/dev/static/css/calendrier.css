@@ -610,4 +610,9 @@ td:last-child {
 .btn_remove:active {
   box-shadow: none;
   transform: translateY(0);
+=======
+
+h2,h3 {
+  padding-top: 1vw;
 }
+

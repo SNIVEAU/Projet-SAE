@@ -1,3 +1,4 @@
+
 /* Ajoutez ces styles dans votre fichier stat.css */
 @import "compass/css3";
 
@@ -113,3 +114,57 @@ button {
 }
 
 
+.nommusicien {
+    font-size: 150%;
+    padding-left: 10vh;
+}
+
+h1 {
+    font-size: 200%;
+    padding-right: 60%;
+    padding-bottom: 10vh;
+    padding-top: 2vh;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.hidden {
+    display: none;
+}
+
+.form-group {
+    padding-left: 10vh;
+}
+
+#selectgraph {
+    border: 1px solid black;
+}
+
+div label {
+    padding-bottom: 5vh;
+}
+footer{
+    width: 100%;
+}
+form{
+text-align: center;
+
+}
+input{
+    margin: 1vw;
+  background-color: #333;
+  color: white;
+  border-radius: 0.5vw;
+  padding: 0.5vw;
+  font-size: 1vw;
+  cursor: pointer;
+}
+select{
+    margin: 1vw;
+  background-color: #333;
+  color: white;
+  border-radius: 0.5vw;
+  padding: 0.5vw;
+  font-size: 1vw;
+  cursor: pointer;
+}

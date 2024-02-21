@@ -12,7 +12,10 @@
         <th>Date</th>
         <th>Temps restant</th>
         <th>Vote</th>
-        <th>Validation</th>
+        {% if liste_tutele %}
+        <th>Repondre en tant que ...</th>
+        {% endif %}
+        <th>Valider</th>
     </tr>
     {% if len(sondages)==0 %}
 </table>
@@ -49,7 +52,20 @@
             {% endif %}
         </td>
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
+        {% if liste_tutele %}
         <td>
+            <select name="idMusicien">
+                <option value="{{current_user.idMusicien}}">{{current_user.nomMusicien}} {{current_user.prenomMusicien}}</option>
+                {% for m in liste_tutele %}
+                {% if ((s.idSortie==None and s.idRepetition!=None) and get_participation_by_musicien_and_repetition(m.idMusicien,s.idRepetition)) or ((s.idRepetition==None and s.idSortie!=None) and get_participation_by_musicien_and_sortie(m.idMusicien,s.idSortie)) %}
+                <option value="{{m.idMusicien}}" disabled>{{m.nomMusicien}} {{m.prenomMusicien}}</option>
+                {% else %}
+                <option value="{{m.idMusicien}}">{{m.nomMusicien}} {{m.prenomMusicien}}</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        <td>
+        {% endif %}
             {% if s.idSortie==None and s.idRepetition==None %}
             <div><button class="btn_repondre"><a  class = "reponse" href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idQuestion}}">Répondre</a></button></div> 
 
@@ -78,7 +94,24 @@
     {% endfor %}
     </table>
     {% endif %}
+
+{% if liste_tutele %}
+<h2>Sondage répondu par :</h2>
+<form action="{{url_for('page_sondage')}}" method="post">
+<select name="idMusicienSondage" onchange="changementMusicien()">
+    <option value="{{current_user.idMusicien}}">{{current_user.nomMusicien}} {{current_user.prenomMusicien}}</option>
+    {% for m in liste_tutele %}
+    <option value="{{m.idMusicien}}">{{m.nomMusicien}} {{m.prenomMusicien}}</option>
+    {% endfor %}
+</select>
+<input type="submit" value="Changer">
+</form>
+
+</div>
+{% else %}
 <h2>Sondage répondu</h2>
+{% endif %}
+
 <table>
     <tr>
         <th>Sujet sondage</th>
@@ -110,13 +143,13 @@
             {% endif %}
         </td>
         {% if ps.idSortie!=None %}
-            {% if get_participation_by_musicien_and_sortie(current_user.idMusicien,ps.idSortie)[0].presence %}
+            {% if get_participation_by_musicien_and_sortie(idActuelle,ps.idSortie)[0].presence %}
                 <td>oui</td>
             {% else %}
                 <td>non</td>
             {% endif %}
         {% elif ps.idRepetition!=None %}
-            {% if get_participation_by_musicien_and_repetition(current_user.idMusicien,ps.idRepetition)[0].presence %}
+            {% if get_participation_by_musicien_and_repetition(idActuelle,ps.idRepetition)[0].presence %}
                 <td>oui</td>
             {% else %}
                 <td>non</td>
@@ -128,23 +161,40 @@
         {% endif %}
         <td>
             {% if ps.idSortie!=None %}
-                {{ get_participation_by_musicien_and_sortie(current_user.idMusicien,ps.idSortie)[0].dateReponse }}
+                {{ get_participation_by_musicien_and_sortie(idActuelle,ps.idSortie)[0].dateReponse }}
             {% elif ps.idRepetition!=None%}
-                {{ get_participation_by_musicien_and_repetition(current_user.idMusicien,ps.idRepetition)[0].dateReponse }}
+                {{ get_participation_by_musicien_and_repetition(idActuelle,ps.idRepetition)[0].dateReponse }}
             {% else %}
-                {{ get_reponse_by_id(get_question_by_idSondage(ps.idSondage).idQuestion,current_user.idMusicien).dateReponse}}
+                {{ get_reponse_by_id(get_question_by_idSondage(ps.idSondage).idQuestion,idActuelle).dateReponse}}
             {% endif %}
         </td>
         <td>
             <form method="POST" action="{{url_for('annuler_sondage')}}">
                 <input type="text" name="idsondage" value="{{ps.idSondage}}" hidden>
-                <button type="submit" class="annul">✖️</button>
+
+                <input type="text" name="idMusicien" value="{{idActuelle}}" hidden>
+                <input type="submit" value="✖️" class="annul">
+
             </form>
         </td>
     </tr>
     {% endfor %}
 </table>
 {% endif %}
+<script>
+    function changementMusicien() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/');
+        xhr.
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    document.getElementById('temps'+idSondage).innerHTML = response.content;
+                }
+            };
+            xhr.send(JSON.stringify({idMusicien:document.getElementsByName('idMusicienSondage')[0].value}));
+        }
+</script>
 
 
 {% endblock %}

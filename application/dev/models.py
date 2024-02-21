@@ -66,6 +66,7 @@ class Repetition(db.Model):
     lieu = db.Column(db.String(50))
     tenue = db.Column(db.String(50))
 
+
     def __repr__(self) -> str:
         """Retourne la date, la durée et l'id de la répétition
         Return:
@@ -278,8 +279,10 @@ class participer_repetition(db.Model):
     """Classe participer_repetition"""
     idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
     idRepetition = db.Column(db.Integer, db.ForeignKey('repetition.idRepetition'), primary_key=True)
+    idTypeInstrument = db.Column(db.Integer, db.ForeignKey('type_instrument.idTypeInstrument'))
     dateReponse = db.Column(db.DateTime)
     presence = db.Column(db.Boolean)
+
     
     def __repr__(self) -> str:
         """Retourne l'id du musicien et l'id de la répétition
@@ -326,8 +329,10 @@ class participer_sortie(db.Model):
     """Classe participer_sortie"""
     idMusicien = db.Column(db.Integer, db.ForeignKey('musicien.idMusicien'), primary_key=True)
     idSortie = db.Column(db.Integer, db.ForeignKey('sortie.idSortie'), primary_key=True)
+    idTypeInstrument = db.Column(db.Integer, db.ForeignKey('type_instrument.idTypeInstrument'))
     dateReponse = db.Column(db.DateTime)
     presence = db.Column(db.Boolean)
+
 
     def get_sortie(self)->Sortie:
         """Retourne la sortie associée à la participation
@@ -340,7 +345,26 @@ class participer_sortie(db.Model):
         Return:
             str : id du musicien et id de la sortie"""
         return str(self.idMusicien)+" "+str(self.idSortie)
-    
+
+def get_idTypeInstrument_by_idMusicien_and_idSortie(idMusicien,idSortie)->int:
+    """Retourne l'id de l'instrument du musicien dont l'id est passé en paramètre participant à la sortie dont l'id est passé en paramètre
+    Args:
+        idMusicien (int): id du musicien
+        idSortie (int): id de la sortie
+    Return:
+        int : id de l'instrument du musicien participant à la sortie dont l'id est passé en paramètre"""
+    return participer_sortie.query.filter_by(idMusicien=idMusicien,idSortie=idSortie).first().idTypeInstrument
+
+
+def get_idTypeInstrument_by_idMusicien_and_idRepetition(idMusicien,idRepetition)->int:
+    """Retourne l'id de l'instrument du musicien dont l'id est passé en paramètre participant à la répétition dont l'id est passé en paramètre
+    Args:
+        idMusicien (int): id du musicien
+        idRepetition (int): id de la répétition
+    Return:
+        int : id de l'instrument du musicien participant à la répétition dont l'id est passé en paramètre"""
+    return participer_repetition.query.filter_by(idMusicien=idMusicien,idRepetition=idRepetition).first().idTypeInstrument
+
 def get_participation_by_musicien_and_sortie(idMusicien,idSortie)->list:
     """Retourne la liste des participations du musicien dont l'id est passé en paramètre à la sortie dont l'id est passé en paramètre
     Args:

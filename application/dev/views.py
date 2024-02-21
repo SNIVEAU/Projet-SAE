@@ -660,20 +660,22 @@ def stat():
         layout_reponse = go.Layout(title="Taux de réponse à un sondage")
     
         for musicien in mus:
-            data.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sortie_by_musicien(musicien.idMusicien))]))
+            y = len(get_sortie_by_musicien(musicien.idMusicien))/len(get_sorties())*100
+
+            data.append(go.Bar(x=[musicien.nomMusicien], y=[y]))
         for sort in get_sorties():
             pourcent = len(get_musicien_by_sortie(sort.idSortie)) / len(get_musicien())*100
-            data2.append(go.Bar(x=[sort.dateSortie], y=[pourcent]))
-        deja_parcouru = []
-        for dispo in get_disponibilites():
-            if get_musicien_by_id(dispo.idMusicien).nomMusicien not in deja_parcouru:
-                deja_parcouru.append(get_musicien_by_id(dispo.idMusicien).nomMusicien)
-                data_jour_dispo.append(go.Bar(x=[get_musicien_by_id(dispo.idMusicien).nomMusicien], y=[len(get_disponibilite_by_musicien(dispo.idMusicien))]))
+            data2.append(go.Bar(x=[sort.lieu+" "+sort.type], y=[pourcent]))
+        jours_de_la_semaine = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]        
+        for jour in jours_de_la_semaine:
+            nb_dispo = len(get_disponibilite_by_day(jour))
+            data_jour_dispo.append(go.Bar(x=[jour], y=[nb_dispo]))
         for musicien in get_musicien():
-            print(musicien.nomMusicien)
-            print(len(get_sondage_by_musicien(musicien.idMusicien)))
+            #print(musicien.nomMusicien)
+            #print(len(get_sondage_by_musicien(musicien.idMusicien)))
             # get_sondage_by_musicien(musicien.idMusicien)
-            data_reponse_sondage.append(go.Bar(x=[musicien.nomMusicien], y=[len(get_sondage_by_musicien(musicien.idMusicien))]))
+            y=len(get_sondage_by_musicien(musicien.idMusicien))/len(get_sondages())*100
+            data_reponse_sondage.append(go.Bar(x=[musicien.nomMusicien], y=[y]))
         #  catégorie de personne présente
         #pourcentage de personne présente à une activité
         #vérifier le pourcentage de réponse à un sondage

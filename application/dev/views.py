@@ -797,8 +797,9 @@ def save_appel_sortie():
                 idSortie = request.form.get("sortie"),
                 idMusicien = i,
             )
-            db.session.add(P)
-            db.session.commit()
+            if PresenceSortie.query.filter_by(idSortie=request.form.get("sortie"),idMusicien=i).first() is None:
+                db.session.add(P)
+                db.session.commit()
     return redirect(url_for('calendrier'))
 @app.route("/save_appel_rep",methods=["GET", "POST"])
 def save_appel_rep():

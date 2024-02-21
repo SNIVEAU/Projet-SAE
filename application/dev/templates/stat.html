@@ -9,7 +9,7 @@
 
 <h1> Statistiques des musiciens </h1>
 <div class="form-group">
-    <label for="selectgraph" class="control-label">Sélectionner le graphique souhaité</label>
+    <label for="selectgraph" class="control-label">Veuillez sélectionner le graphique souhaité</label>
     <select id="selectgraph" name="selectgraph" class="form-control" required>
         <option value="plot">Nombre de participation par musicien</option>
         <option value="pourcentage">Pourcentage de personne présente pour chaque activité</option>
@@ -17,46 +17,46 @@
         <option value="reponse">Taux de réponse à un sondage par musicien</option>
     </select>
 </div>
-    <div id="plot">
-        <!-- Contenu pour "Nombre de participation par musicien" -->
-        {{ plot | safe }}
-    </div>
-
-    <div id="pourcentage" class="hidden">
-        <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
-        {{ pourcentage | safe }}
-    </div>
-    <div id="jour_dispo" class="hidden">
-        <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
-        {{ jour_dispo | safe }}
-    </div>
-    <div id="reponse" class="hidden">
-        <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
-        {{ reponse | safe }}
-    </div>
-</div class="form-group">
-    <form action="{{url_for('detail_question') }}" method="POST" class="form_question">
-
-    <select name="reponse" id="reponse_sondage">
-        {%for q in question%}
-            <option value="{{q.idQuestion}}">{{q.intitule}}</option>
-
-        {%endfor%}
-    </select>
-    <input type="submit" value="SELECTIONNER">
-</form>
+<div id="plot">
+    <!-- Contenu pour "Nombre de participation par musicien" -->
+    {{ plot | safe }}
 </div>
-    <script>
-        // Écouter les changements dans le menu déroulant
-        document.getElementById("selectgraph").addEventListener("change", function () {
-            var selectedValue = this.value;
-            // Masquer toutes les divs
-            document.getElementById("plot").classList.add("hidden");
-            document.getElementById("pourcentage").classList.add("hidden");
-            document.getElementById("jour_dispo").classList.add("hidden");
-            document.getElementById("reponse").classList.add("hidden");
-            // Afficher la div en fonction de l'option sélectionnée
-            document.getElementById(selectedValue).classList.remove("hidden");
-        });
-    </script>
-    {% endblock %}
+
+<div id="pourcentage" class="hidden">
+    <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
+    {{ pourcentage | safe }}
+</div>
+<div id="jour_dispo" class="hidden">
+    <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
+    {{ jour_dispo | safe }}
+</div>
+<div id="reponse" class="hidden">
+    <!-- Contenu pour "Pourcentage de personne présente pour chaque activité" -->
+    {{ reponse | safe }}
+</div>
+<div class="form-group">
+    <p>Veuillez sélectionner une question parmi celles disponibles :</p>
+    <form action="{{url_for('detail_question') }}" method="POST" class="form_question">
+        <select class="rep" name="reponse" id="reponse_sondage">
+            {% for q in question %}
+                <option value="{{q.idQuestion}}">{{q.intitule}}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">SELECTIONNER</button>
+    </form>
+</div>
+<script>
+    // Écouter les changements dans le menu déroulant
+    document.getElementById("selectgraph").addEventListener("change", function () {
+        var selectedValue = this.value;
+        // Masquer toutes les divs
+        document.getElementById("plot").classList.add("hidden");
+        document.getElementById("pourcentage").classList.add("hidden");
+        document.getElementById("jour_dispo").classList.add("hidden");
+        document.getElementById("reponse").classList.add("hidden");
+        // Afficher la div en fonction de l'option sélectionnée
+        document.getElementById(selectedValue).classList.remove("hidden");
+    });
+    
+</script>
+{% endblock %}

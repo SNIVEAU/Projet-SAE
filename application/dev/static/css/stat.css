@@ -1,54 +1,115 @@
-.nommusicien {
-    font-size: 150%;
-    padding-left: 10vh;
+/* Ajoutez ces styles dans votre fichier stat.css */
+@import "compass/css3";
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
 }
 
 h1 {
-    font-size: 200%;
-    padding-right: 60%;
-    padding-bottom: 10vh;
-    padding-top: 2vh;
-    font-family: 'Inter', sans-serif;
-
-}
-
-.hidden {
-    display: none;
+    font-size: 2.5rem;
+    padding: 2vh 0 4vh 10vh;
 }
 
 .form-group {
     padding-left: 10vh;
+    padding-bottom: 2vh;
 }
 
-#selectgraph {
-    border: 1px solid black;
+label {
+    padding-bottom: 1vh;
 }
 
-div label {
-    padding-bottom: 5vh;
+select, input[type="submit"] {
+    margin: 1vh;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 0.5vw;
+    padding: 0.5vw 1vw;
+    font-size: 1rem;
+    cursor: pointer;
 }
-footer{
-    width: 100%;
+
+/* Container pour les graphiques */
+#plot, #pourcentage, #jour_dispo, #reponse {
+    margin: 0 10vh;
+    padding: 2vh;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
 }
-form{
-text-align: center;
+
+/* Cacher les divs par défaut */
+#pourcentage, #jour_dispo, #reponse {
+    display: none;
+}
+
+/* Afficher les divs en fonction de l'option sélectionnée */
+#selectgraph ~ div:not(.hidden) {
+    display: block;
+}
+
+p{
+    margin-top: 1em;
 
 }
-input{
-    margin: 1vw;
-  background-color: #333;
-  color: white;
-  border-radius: 0.5vw;
-  padding: 0.5vw;
-  font-size: 1vw;
-  cursor: pointer;
+
+button {
+    appearance: none;
+    background-color: transparent;
+    border: 2px solid #1A1A1A;
+    border-radius: 10px;
+    box-sizing: border-box;
+    color: #3B3B3B;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+    min-height: 45px;
+    min-width: 0px;
+    text-decoration: none;
+    transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    will-change: transform;
+  }
+  
+  button:disabled {
+    pointer-events: none;
+  }
+  
+  button:hover {
+    color: #fff;
+    background-color: #1A1A1A;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+    transform: translateY(-2px);
+  }
+  
+  button:active {
+    box-shadow: none;
+    transform: translateY(0);
+  }
+
+/* Media Query pour les petits écrans */
+@media (max-width: 768px) {
+    h1 {
+        padding-right: 5%;
+    }
+
+    .form-group {
+        padding-left: 5%;
+    }
+
+    #plot, #pourcentage, #jour_dispo, #reponse {
+        margin: 0 5%;
+    }
 }
-select{
-    margin: 1vw;
-  background-color: #333;
-  color: white;
-  border-radius: 0.5vw;
-  padding: 0.5vw;
-  font-size: 1vw;
-  cursor: pointer;
-}
+
+

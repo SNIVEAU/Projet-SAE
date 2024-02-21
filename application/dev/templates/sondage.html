@@ -64,11 +64,11 @@
                 {% endif %}
                 {% endfor %}
             </select>
-        <td>
+        </td>
         {% endif %}
+        <td>
             {% if s.idSortie==None and s.idRepetition==None %}
             <div><button class="btn_repondre"><a  class = "reponse" href="/page_reponse_question/{{get_question_by_idSondage(s.idSondage).idQuestion}}">Répondre</a></button></div> 
-
             {% else %}
             <button class="valid" type="submit">✔️</button>
             {% endif %}

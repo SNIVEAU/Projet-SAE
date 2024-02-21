@@ -30,22 +30,27 @@ def home():
     musiciens = Musicien.query.all()
     return render_template("home.html", musiciens=musiciens)
 
-@app.route("/calendrier/")
+@app.route("/calendrier", methods=["GET"])
 def calendrier():
     if current_user.is_authenticated:
+        print("ydgyfseubfuhesbfiesbifjbsejifbjsbvjbdsbfjsbjifbsjbfjdsbf")
+        num_mois=datetime.now().month
+        moisActuelle=datetime.now().month
+        if request.args.get("mois")!=None:
+            if(int(request.args.get("mois"))>0 and int(request.args.get("mois"))<13):
+                num_mois=int(request.args.get("mois"))
         c=calendar.HTMLCalendar(firstweekday=0)
         c.cssclasses_weekday_head=["jour", "jour", "jour", "jour", "jour", "jour", "jour"]
         c.cssclass_month_head="mois"
         num_day=datetime.now().day
-        num_mois=datetime.now().month
         mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
-        return render_template("calendrier.html",get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,datetime.now().month),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),dispo_musicien = get_disponibilites())
+        return render_template("calendrier.html",moisActuelle=moisActuelle,numMois=num_mois,get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,num_mois),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),dispo_musicien = get_disponibilites())
     return redirect(url_for("login"))
 
 
-@app.route('/get_val_dico_mois/<day>')
-def get_val_dico_mois_route(day):
-    result = get_val_dico_mois(day)
+@app.route('/get_val_dico_mois/<day>/<month>')
+def get_val_dico_mois_route(day,month):
+    result = get_val_dico_mois(day,month)
     if result is None:
         return jsonify({})
     dict={}

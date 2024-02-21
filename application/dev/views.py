@@ -249,7 +249,8 @@ def ajoute_dispo():
     dispo = get_disponibilite_by_musicien(current_user.idMusicien)
     for d in dispo:
         if d in get_disponibilite_by_musicien(current_user.idMusicien) and d.date >= datedebut and d.date <= datefin:
-            db.session.delete(d)
+            if d.date < datetime.now().date():
+                db.session.delete(d)
     db.session.commit()
     # si date debut deja passer on la met a aujourd'hui
     if datedebut < datetime.now().date():

@@ -794,8 +794,9 @@ def save_appel_rep():
                 idRepetition = request.form.get("repetition"),
                 idMusicien = i,
             )
-            db.session.add(P)
-            db.session.commit()
+            if PresenceRepetition.query.filter_by(idRepetition=request.form.get("repetition"),idMusicien=i).first() is None:
+                db.session.add(P)
+                db.session.commit()
 
     return redirect(url_for('calendrier'))
 

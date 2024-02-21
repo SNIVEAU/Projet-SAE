@@ -4,6 +4,14 @@
 <link rel="stylesheet" href="{{url_for('static',filename='css/calendrier.css')}}">
 {% endblock %}
 {% block content %}
+<form action="/calendrier" method="get">
+    <input type="text" name="mois" value="{{numMois-1}}" hidden>
+    <button type="submit">avant</button>
+</form> 
+<form action="/calendrier" method="get">
+    <input type="text" name="mois" value="{{numMois+1}}" hidden>
+    <button type="submit">apres</button>
+</form> 
 <h1>Calendrier</h1>
 {{calendrier | safe}}
 <p class="test"></p>
@@ -41,7 +49,17 @@
     test1.innerHTML == datas
     var fin=true
     var i=0
-    while(fin){
+    if("{{moisActuelle}}">"{{numMois}}"){
+        while(fin){
+            datas[i].style.backgroundColor = "grey";
+            if(datas[i].innerHTML == ""+datas[i].length){
+                fin=false;
+            }
+            i++;
+        }
+    }
+    else if ("{{moisActuelle}}"=="{{numMois}}"){
+        while(fin ){
         datas[i].style.backgroundColor = "grey";
         if(datas[i].innerHTML == "{{num_day}}"){
             datas[i].style.backgroundColor = "lightblue";
@@ -49,10 +67,11 @@
         }
         i++;
     }
+    }
     for(var j=0; j<datas.length; j++){
         (function(j) {
             var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/get_val_dico_mois/' + datas[j].innerHTML);
+            xhr.open('GET', '/get_val_dico_mois/' + datas[j].innerHTML +"/{{numMois}}");
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     var eve = JSON.parse(xhr.responseText);

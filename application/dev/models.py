@@ -151,8 +151,8 @@ def get_eve_by_mois(mois)->list:
         eve_trier[cle]=eve[cle]
     return eve_trier
 
-def get_val_dico_mois(num_jour)->Sortie:
-    dict=get_eve_by_mois(datetime.now().month)
+def get_val_dico_mois(num_jour,num_mois)->Sortie:
+    dict=get_eve_by_mois(int(num_mois))
     if str(num_jour) not in dict.keys():
         return None
     return dict[str(num_jour)]

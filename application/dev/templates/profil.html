@@ -17,12 +17,12 @@
                 <div class="col-sm-6">
                     <label for="nomMusicien" class="control-label">Nom</label>
                     <input type="text" id="nomMusicien" name="nomMusicien" class="form-control"
-                        value="{{ current_user.nomMusicien }}" readonly>
+                        value="{{ current_user.nomMusicien }}" disabled>
                 </div>
                 <div class="col-sm-6">
                     <label for="prenomMusicien" class="control-label">Prénom</label>
                     <input type="text" id="prenomMusicien" name="prenomMusicien" class="form-control"
-                        value="{{ current_user.prenomMusicien }}" readonly>
+                        value="{{ current_user.prenomMusicien }}" disabled>
                 </div>
             </div>
             {% for error in form.nomMusicien.errors %}
@@ -32,47 +32,99 @@
         <div class="form-group">
             <label for="telephone" class="control-label">Télephone</label>
             <input type="text" id="telephone" name="telephone" class="form-control" value="{{ current_user.telephone }}"
-                readonly>
+                disabled>
         </div>
 
         <div class="form-group">
             <label for="adresseMail" class="control-label">Email</label>
             <input type="text" id="adresseMail" name="adresseMail" class="form-control"
-                value="{{ current_user.adresseMail }}" readonly>
+                value="{{ current_user.adresseMail }}" disabled>
             {% for error in form.adresseMail.errors %}
             <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
         <div class="form-group">
             <label for="password" class="control-label">Mot de passe</label>
-            <input type="password" id="password" name="password" class="form-control" placeholder="**********" readonly>
+            <input type="password" id="password" name="password" class="form-control" placeholder="**********" disabled>
         </div>
         <div class="form-group">
             <label for="ageMusicien" class="control-label">Âge</label>
             <input type="text" id="ageMusicien" name="ageMusicien" class="form-control"
-                value="{{ current_user.ageMusicien }}" readonly>
+                value="{{ current_user.ageMusicien }}" disabled>
             {% for error in form.ageMusicien.errors %}
             <span class="text-danger">{{ error }}</span>
             {% endfor %}
         </div>
+        <div class="form-group">
+            <label for="type-instrument" class="control-label">Type d'instrument</label>
+            <select id="type-instrument" name="type-instrument" class="form-control" disabled>
+                {% for instrument in all_type_instrument %}
+                <option value="{{ instrument.nomTypeInstrument }}">{{ instrument.nomTypeInstrument }}</option>
+                {% endfor %}
+            </select>
+            {% for error in form.type_instrument.errors %}
+            <span class="text-danger">{{ error }}</span>
+            {% endfor %}
+        </div>
+
         <div class="form-group">
             <div>
                 <button type="button" class="btn btn-danger rounded" onclick="enableEdit()">Modifier</button>
                 <button type="submit" class="btn btn-danger rounded" style="display:none;">Enregistrer</button>
             </div>
         </div>
+    </form>
+
+    <!--tableau des instrument-->
+    <div class="form-group">
+        <h2>Mes instruments</h2>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Supprimer</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for instrument in mes_instruments %}
+                <tr>
+                    <td>{{ instrument.idTypeInstrument}}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete_instrument') }}">
+                            <input type="hidden" id="idInstrument" name="idInstrument" value="{{ instrument.idTypeInstrument }}">
+                            <button type="submit" class="btn btn-danger rounded">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}  
+            </tbody>  
+        </table>
+    </div>
+    <div>
+        <h2>Mes tuteles</h2>
+        {% for tutele in liste_tutele %}
+        <p>{{ tutele.nomMusicien }} {{ tutele.prenomMusicien }}</p>
+        {% endfor %}
+    </div>
+    <div class="form-group">
+            <a class="btn btn-danger rounded" href="{{url_for('inscription_tutore')}}">Tutorer quelqu'un</a>
+    </div>
 </div>
 
 <script>
     function enableEdit() {
         var inputs = document.getElementsByTagName("input");
         for (var i = 0; i < inputs.length; i++) {
-            inputs[i].removeAttribute("readonly");
+            inputs[i].removeAttribute("disabled");
         }
         document.getElementById("password").setAttribute("placeholder", "");
         document.querySelector('button[type="button"]').style.display = "none";
         document.querySelector('button[type="submit"]').style.display = "block";
+        document.getElementById("type-instrument").removeAttribute("disabled");     
     }
 </script>
+
+
 
 {% endblock %}

@@ -805,7 +805,6 @@ def save_appel_rep():
             db.session.commit()
 
     return redirect(url_for('calendrier'))
-=======
 
 @app.route('/inscription_tutore',methods=["GET", "POST"])
 def inscription_tutore():

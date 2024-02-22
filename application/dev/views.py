@@ -33,7 +33,6 @@ def home():
 @app.route("/calendrier", methods=["GET"])
 def calendrier():
     if current_user.is_authenticated:
-        print("ydgyfseubfuhesbfiesbifjbsejifbjsbvjbdsbfjsbjifbsjbfjdsbf")
         num_mois=datetime.now().month
         moisActuelle=datetime.now().month
         if request.args.get("mois")!=None:
@@ -208,7 +207,6 @@ def validation_sondage():
         idMusicien=int(request.form.get("idMusicien"))
     date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     idTypeInstrument=request.form.get("type-instrument")
-    print(idTypeInstrument)
     if get_sondage_by_id(id).idRepetition!=None:
         rs=participer_repetition(idRepetition=get_sondage_by_id(id).idRepetition,
                                 idMusicien=idMusicien,
@@ -761,43 +759,46 @@ def detail_question():
 @app.route('/appel/<idRepetition>',methods=["GET", "POST"])
 def appel(idRepetition):
     rep = get_repetition_by_idRep(idRepetition)
-    participation = get_musicien_by_repetition(idRepetition)
-    liste_musicien = []
-    for i in participation:
-        liste_musicien.append(get_musicien_by_id(i.idMusicien))
-    return render_template('appel.html',rep=rep,participation=liste_musicien)
+    participation = get_sortie_by_musicien(idRepetition)
+    liste_instrument = get_musicien_instruments_repetition(idRepetition)
+    liste_musicien = get_musicien_by_repetition(idRepetition)
+    print(liste_instrument)
+    return render_template('appel.html',rep=rep,participation=participation,liste_instrument=liste_instrument,liste_musicien=liste_musicien)
 @app.route("/appelsortie/<idSortie>",methods=["GET", "POST"])
 def appelsortie(idSortie):
     sortie = get_sortie_by_id(idSortie)
-    participation = get_musicien_by_sortie(idSortie)
-    liste_musicien = []
-    for i in participation:
-        liste_musicien.append(get_musicien_by_id(i.idMusicien))
-    return render_template('appelsortie.html',sortie=sortie,participation=liste_musicien)
+    participation = get_sortie_by_musicien(idSortie)
+    liste_instrument = get_musicien_instruments(idSortie)
+    liste_musicien = get_musicien_by_sortie(idSortie)
+    return render_template('appelsortie.html',sortie=sortie,participation=participation,liste_instrument=liste_instrument,liste_musicien=liste_musicien)
 @app.route("/save_appel_sortie",methods=["GET", "POST"])
 def save_appel_sortie():
+    print(request.form)
     for i in request.form:
-        if i !='sortie' and request.form.get(i) == 'True':
-            P = PresenceSortie(
-                idSortie = request.form.get("sortie"),
-                idMusicien = i,
-            )
-            if PresenceSortie.query.filter_by(idSortie=request.form.get("sortie"),idMusicien=i).first() is None:
-                db.session.add(P)
-                db.session.commit()
+        if i !='sortie' and i == 'True':
+            for idmusicien in request.form.getlist('True'):
+
+                P = PresenceSortie(
+                    idSortie = request.form.get("sortie"),
+                    idMusicien = idmusicien,
+                )
+                if PresenceSortie.query.filter_by(idSortie=request.form.get("sortie"),idMusicien=i).first() is None:
+                    db.session.add(P)
+                    db.session.commit()
     return redirect(url_for('calendrier'))
 @app.route("/save_appel_rep",methods=["GET", "POST"])
 def save_appel_rep():
     for i in request.form:
-        if i !='repetition' and request.form.get(i) == 'True':
-            P = PresenceRepetition(
-                idRepetition = request.form.get("repetition"),
-                idMusicien = i,
-            )
-            if PresenceRepetition.query.filter_by(idRepetition=request.form.get("repetition"),idMusicien=i).first() is None:
-                db.session.add(P)
-                db.session.commit()
-
+        print(i)
+        if i !='repetition' and i == 'True':
+            for idmusicien in request.form.getlist('True'):
+                P = PresenceRepetition(
+                    idRepetition = request.form.get("repetition"),
+                    idMusicien = idmusicien,
+                )
+                if PresenceRepetition.query.filter_by(idRepetition=request.form.get("repetition"),idMusicien=i).first() is None:
+                    db.session.add(P)
+                    db.session.commit()
     return redirect(url_for('calendrier'))
 
 @app.route('/inscription_tutore',methods=["GET", "POST"])

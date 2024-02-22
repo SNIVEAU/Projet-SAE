@@ -1,52 +1,104 @@
 {% extends 'base.html' %}
+
 {% block styles %}
-{{ super() }}
-<link rel="stylesheet" href="{{url_for('static',filename='css/crea_eve.css')}}">
+    {{ super() }}
+    {{ bootstrap.load_css() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/crea_eve.css') }}">
 {% endblock %}
+
 {% block content %}
-<h1>Créer une question</h1>
-<h3>Remplissez les champs ci-dessous avec les informations necessaire</h3>
-{% if erreur %}
-<h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
-{% endif %}
-<form action="{{url_for('save_sondage_standard')}}" method="post" class="form_question">
-<input type="text" name="intitule" placeholder="Intitule" size="100">
-<select name="type_question" id="type_question">
-    <option value="text">texte</option>
-    <option value="radio">choix unique</option>
-</select>
-<ul class="question">
-</ul>
-<p>ajouter une réponse</p>
-<input type="button" value="+" class="plus" onclick="ajouterQuestion()">
-<input type="button" value="-" class="moins" onclick="supprimerQuestion()">
-<input type="submit" value="créer la question" class="submit_sortie">
+    <div class="container">
+        <h1>Créer une question</h1>
+        <h3>Remplissez les champs ci-dessous avec les informations nécessaires</h3>
+        {% if erreur %}
+            <h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
+        {% endif %}
+        <form action="{{ url_for('save_repetition') }}" method="post" class="form_repetition">
+            <div class="form-group">
+                <label for="lieu" class="control-label text-center">Intitule</label>
+                <input type="text" name="intitule" class="form-control" placeholder="Intitule" size="100">
+            </div>
+            <div class="form-group">
+                <label for="type_question" class="control-label text-center">Type de question</label>
+                <select name="type_question" id="type_question" class="form-control">
+                    <option value="text">Texte</option>
+                    <option value="radio">Choix unique</option>
+                </select>
+            </div>
+            <div class = "form-group">
+                <label for "question" class="control-label text-center">Question</label>
+                <input type="text" name="question" class="form-control" placeholder="Question" size="100">
+            </div>
+            <div class="form-group" id="reponses_section">
+                <label for="reponse" class="control-label text-center">Réponse</label>
+                <ul class="question" id="reponses_list">
+                    <li>
+                        <div class="reponse-container">
+                            <input type="button" value="+" class="plus" onclick="ajouterQuestion()">
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <input type="button" value="+" class="plus" onclick="ajouterQuestion()">
+            <input type="button" value="-" class="moins" onclick="supprimerQuestion()">
 
-<h4>durée de la question ( en jour )</h4>
-<input type="number" name="duree" class="nombre" placeholder="durée en jour" min=0>
-<input type="number" name="nbreponse" class="nombreReponse" placeholder="nombre de réponse" min=0 hidden>
+            <div class="form-group">
+                <label for="duree" class="control-label text-center">Durée de la question (en jours)</label>
+                <input type="number" name="duree" class="form-control nombre" placeholder="Durée en jours" min="0">
+            </div>
+            <button type="submit" class="submit_sortie mx-auto d-block">Créer la question</button>
+            <div class="form-group">
+                <input type="number" name="nbreponse" class="form-control nombreReponse" placeholder="Nombre de réponses" min="0" hidden>
+            </div>
+        </form>
 
-</form>
+        <script>
+            var liste = document.getElementsByClassName("question");
+            var boutonPlus = document.getElementsByClassName("plus");
+            var boutonMoins = document.getElementsByClassName("moins");
+            var nombreReponse = document.getElementsByClassName("nombreReponse")[0];
+            var typeQuestionSelect = document.getElementById("type_question");
 
+            function ajouterQuestion() {
+            if (typeQuestionSelect.value === "radio") {
+                var enfant = liste[0].appendChild(document.createElement("li"));
+                var nombre = liste[0].childElementCount;
+                if (typeQuestionSelect.value === "radio") {
+                    enfant.innerHTML = "<input type='text' name='reponse" + nombre + "' placeholder='Réponse' class='réponse'>";
+                    nombreReponse.value = nombre;
+                }
+        }
+    }
 
-<script>
-var liste = document.getElementsByClassName("question");
-var boutonPlus = document.getElementsByClassName("plus");
-var boutonMoins = document.getElementsByClassName("moins");
-var nombreReponse = document.getElementsByClassName("nombreReponse")[0];
+            function supprimerQuestion() {
+            liste[0].removeChild(liste[0].lastChild);
+            nombreReponse.value = liste[0].childElementCount;
+    }
 
-function ajouterQuestion(){
-    var enfant = liste[0].appendChild(document.createElement("li"));
-    var nombre = liste[0].childElementCount;
-    enfant.innerHTML = "<input type='text' name='reponse"+nombre+"' placeholder='réponse' class='réponse'>";
-    nombreReponse.value =  nombre;
-}
+            
+            var typeQuestionSelect = document.getElementById("type_question");
+            var reponsesSection = document.getElementById("reponses_section");
+            var liste = document.getElementsByClassName("question");
+            var nombreReponse = document.getElementsByClassName("nombreReponse")[0];
 
-function supprimerQuestion(){
-    liste[0].removeChild(liste[0].lastChild);
-    nombreReponse.value =  liste[0].childElementCount;
-}
+            function toggleReponses() {
+            // Supprimer les réponses existantes
+            while (liste[0].firstChild) {
+            liste[0].removeChild(liste[0].firstChild);
+        }
+            nombreReponse.value = 0;
 
+            if (typeQuestionSelect.value === "radio") {
+            // Ajouter une réponse initiale
+                ajouterQuestion();
+                reponsesSection.style.display = "block";
+            } else {
+                reponsesSection.style.display = "none";
+            }
+    }
 
-</script>
+            toggleReponses();
+        
+        </script>
+    </div>
 {% endblock %}

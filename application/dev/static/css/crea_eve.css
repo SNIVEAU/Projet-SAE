@@ -51,3 +51,32 @@ h1, h3{
     margin-top: 2%;
     
 }
+
+
+    .reponse-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .réponse {
+        flex-grow: 1;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 10px;
+        list-style-type: none;
+    }
+
+    .plus,
+    .moins {
+        padding: 8px;
+        cursor: pointer;
+        background-color: #D9534F;
+        color: white;
+        border: none;
+        border-radius: 4px;
+    }
+

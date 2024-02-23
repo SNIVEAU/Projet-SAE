@@ -7,7 +7,6 @@
 {% endblock %}
 {% block content %}
 <div>
-    <h2>Participations</h2>
     <form action="{{ url_for('save_appel_sortie') }}" method="post">
    
     {% for key in liste_instrument %}
@@ -16,7 +15,7 @@
             <th>Nom</th>
             <th>Présent</th>
         </tr>
-        <p class = 'nomInstrument'>{{key}}</p>
+        <h2 class = 'nomInstrument'>{{key}}</h2>
         {% for value in liste_instrument[key] %}
             <tr>
                 <td>{{value[0]}}</td>
@@ -27,8 +26,6 @@
     {% endfor %}
         <input type="hidden" value="{{sortie.idSortie}}" name="sortie">
    
-    <div class= "appel">
-    <input type="submit" class ="appel" value="Valider l'appel">
-    </div>
+    <input type="submit" class ="btn btn-danger mx-auto d-block" value="Valider l'appel">
 </div>
 {% endblock %}

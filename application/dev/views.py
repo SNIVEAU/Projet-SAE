@@ -65,7 +65,7 @@ def get_val_dico_mois_route(day,month):
 def sortie(idSortie):
     sortie = get_sortie_by_id(idSortie)
     liste_musicien = []
-    for i in get_musicien_by_sortie(idSortie):
+    for i in get_presence_by_idSortie(idSortie):
         liste_musicien.append(get_musicien_by_id(i.idMusicien))
     daterep = sortie.dateSortie.strftime("%m/%d/%y")
     today = date.today()
@@ -77,7 +77,7 @@ def sortie(idSortie):
 def repetition(idRepetition):
     rep = get_repetition_by_idRep(idRepetition)
     liste_musicien = []
-    for i in get_musicien_by_repetition(idRepetition):
+    for i in get_presenceRepetition_by_idRepetition(idRepetition):
         liste_musicien.append(get_musicien_by_id(i.idMusicien))
     daterep = rep.dateRepetition.strftime("%m/%d/%y")
     today = date.today()

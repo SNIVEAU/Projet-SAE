@@ -4,15 +4,18 @@
 <link rel="stylesheet" href="{{url_for('static',filename='css/calendrier.css')}}">
 {% endblock %}
 {% block content %}
+<div class="calendrier">
 <form action="/calendrier" method="get">
     <input type="text" name="mois" value="{{numMois-1}}" hidden>
-    <button type="submit">avant</button>
-</form> 
+    <button class='btn btn-danger mx-auto d-block' type="submit">Mois précédent</button>
+</form>
+<h1>Calendrier</h1>
+
 <form action="/calendrier" method="get">
     <input type="text" name="mois" value="{{numMois+1}}" hidden>
-    <button type="submit">apres</button>
+    <button class='btn btn-danger mx-auto d-block' type="submit">Mois suivant</button>
 </form> 
-<h1>Calendrier</h1>
+</div>
 {{calendrier | safe}}
 <p class="test"></p>
 <script>

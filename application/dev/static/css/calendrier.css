@@ -610,9 +610,16 @@ td:last-child {
 .btn_remove:active {
   box-shadow: none;
   transform: translateY(0);
-=======
+}
+.calendrier{
+  display: flex;
+  padding-left: 23%;
+  padding-top: 3%;
 
-h2,h3 {
-  padding-top: 1vw;
+}
+.calendrier h1{
+  text-align: center;
+  padding-right: 10%;
+  padding-left: 10%;
 }
 

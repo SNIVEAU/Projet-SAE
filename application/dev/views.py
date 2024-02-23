@@ -866,3 +866,11 @@ def inscription_tutore():
             f.password.errors += ("Nom d'utilisateur ou mot de passe incorrect",)
     return render_template("inscription_tutore.html",form=f,DejaTutorer=False,Vous=False)
 
+@app.route('/delete_tutelle',methods=["GET", "POST"])
+def delete_tutelle():
+    idTutele = request.form.get("idMusicien")
+    idTuteur = current_user.idMusicien
+    db.session.delete(Tutorer.query.filter_by(idTuteur=idTuteur,idTutele=idTutele).first())
+    db.session.commit()
+    return redirect(url_for('profil'))
+

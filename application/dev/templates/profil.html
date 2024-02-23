@@ -103,9 +103,27 @@
     </div>
     <div>
         <h2>Mes tutelles</h2>
-        {% for tutelle in liste_tutele %}
-        <p>{{ tutelle.nomMusicien }} {{ tutelle.prenomMusicien }}</p>
-        {% endfor %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for tutelle in liste_tutele %}
+            <tr>
+                <td>{{ tutelle.nomMusicien }} {{ tutelle.prenomMusicien }}</td>
+                <td>
+                <form action="/delete_tutelle" method="POST">
+                    <input type="hidden" name="idMusicien" value="{{ tutelle.idMusicien }}">
+                    <button type="submit" class="btn btn-danger rounded">Supprimer</button>
+                </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>  
+    </table>
     </div>
     <div class="form-group">
             <a class="btn btn-danger rounded" href="{{url_for('inscription_tutore')}}">Tutorer quelqu'un</a>

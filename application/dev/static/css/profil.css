@@ -27,3 +27,9 @@ h2 {
     justify-content: center;
 }
 
+.tutelle-group{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+

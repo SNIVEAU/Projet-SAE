@@ -12,6 +12,7 @@
         <th>Date</th>
         <th>Temps restant</th>
         <th>Vote</th>
+        <th>Mon instrument</th>
         {% if liste_tutele %}
         <th>Repondre en tant que ...</th>
         {% endif %}
@@ -24,7 +25,7 @@
 {% for s in sondages %}
 <form method="POST" action="{{ url_for('validation_sondage')}}">
     <tr>
-        <td>{{ s.message }}</td>
+        <td>{{ s.message }}</td>        
         <td>
             {% if s.idSortie!=None %}
             {{ get_sortie_by_id(s.idSortie).dateSortie }}
@@ -51,6 +52,16 @@
             </div>
             {% endif %}
         </td>
+        <td>
+            <from method="POST" action="{{url_for('page_sondage')}}">
+                <select id="type-instrument" name="type-instrument" > 
+                    {% for instrument in mes_instruments %}
+                    <option value="{{ instrument.idTypeInstrument}}">{{ instrument.idTypeInstrument }}</option>
+                    {% endfor %}
+                </select>
+            </from>
+        </td>   
+
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
         {% if liste_tutele %}
         <td>
@@ -89,7 +100,7 @@
             xhr.send();
         }
     
-        setInterval(function(){updateContent({{s.idSondage}})}, 1000);
+        setInterval(function(){updateContent({{s.idSondage}});}, 1000);
     </script>
     {% endfor %}
     </table>
@@ -118,6 +129,7 @@
         <th>Date</th>
         <th>Choix vote</th>
         <th>Date vote</th>
+        <th>Mon instrument</th>
         <th>Annuler</th>
     </tr>
     {% if len(participation)==0 %}
@@ -168,6 +180,17 @@
                 {{ get_reponse_by_id(get_question_by_idSondage(ps.idSondage).idQuestion,idActuelle).dateReponse}}
             {% endif %}
         </td>
+        <td>
+            {% if ps.idSortie!=None %}
+                {{ get_participation_by_musicien_and_sortie(idActuelle,ps.idSortie)[0].idTypeInstrument }}
+            {% elif ps.idRepetition!=None%}
+                {{ get_participation_by_musicien_and_repetition(idActuelle,ps.idRepetition)[0].idTypeInstrument }}
+            {% else %}
+                <p>aucun</p>    
+            {% endif %} 
+        </td>   
+
+
         <td>
             <form method="POST" action="{{url_for('annuler_sondage')}}">
                 <input type="text" name="idsondage" value="{{ps.idSondage}}" hidden>

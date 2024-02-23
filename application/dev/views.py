@@ -44,7 +44,12 @@ def calendrier():
         c.cssclass_month_head="mois"
         num_day=datetime.now().day
         mois=MOIS[num_mois-1]+" "+str(datetime.now().year)
-        return render_template("calendrier.html",moisActuelle=moisActuelle,numMois=num_mois,get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,num_mois),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),dispo_musicien = get_disponibilites())
+        dispo = get_disponibilites()
+        dispo_musicien ={}
+        for i in dispo:
+            dispo_musicien[i.idMusicien] = get_musicien_by_id(i.idMusicien).nomMusicien +" "+ get_musicien_by_id(i.idMusicien).prenomMusicien
+        return render_template("calendrier.html",moisActuelle=moisActuelle,numMois=num_mois,get_sortie_by_id=get_sortie_by_id,calendrier=c.formatmonth(datetime.now().year,num_mois),num_day=num_day, mois=mois,dispo = get_disponibilite_by_musicien(current_user.idMusicien),
+                               dispo_musicien = dispo, nom = dispo_musicien)
     return redirect(url_for("login"))
 
 

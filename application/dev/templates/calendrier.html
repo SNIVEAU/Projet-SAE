@@ -144,12 +144,12 @@
             {% if dispo_musicien %}
             <table>
                 <tr>
-                    <th>Id</th>
+                    <th>Nom</th>
                     <th>Date</th>
                 </tr>
                 {% for d in dispo_musicien %}
                 <tr>
-                    <td>{{d.idMusicien}}</td>
+                    <td>{{nom[d.idMusicien]}}</td>
                     <td>{{d.date}}</td>
                 </tr>
                 {% endfor %}

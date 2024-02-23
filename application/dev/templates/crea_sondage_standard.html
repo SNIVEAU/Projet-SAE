@@ -13,7 +13,7 @@
         {% if erreur %}
             <h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
         {% endif %}
-        <form action="{{ url_for('save_repetition') }}" method="post" class="form_repetition">
+        <form action="{{ url_for('save_sondage_standard') }}" method="post" class="form_repetition">
             <div class="form-group">
                 <label for="lieu" class="control-label text-center">Intitule</label>
                 <input type="text" name="intitule" class="form-control" placeholder="Intitule" size="100">
@@ -32,16 +32,12 @@
             <div class="form-group" id="reponses_section">
                 <label for="reponse" class="control-label text-center">Réponse</label>
                 <ul class="question" id="reponses_list">
-                    <li>
-                        <div class="reponse-container">
-                            <input type="button" value="+" class="plus" onclick="ajouterQuestion()">
-                        </div>
-                    </li>
                 </ul>
             </div>
-            <input type="button" value="+" class="plus" onclick="ajouterQuestion()">
-            <input type="button" value="-" class="moins" onclick="supprimerQuestion()">
-
+            <div class="block-button">
+                <input type="button" value="+" class="plus" onclick="ajouterQuestion()">
+                <input type="button" value="-" class="moins" onclick="supprimerQuestion()">
+            </div>
             <div class="form-group">
                 <label for="duree" class="control-label text-center">Durée de la question (en jours)</label>
                 <input type="number" name="duree" class="form-control nombre" placeholder="Durée en jours" min="0">
@@ -57,48 +53,20 @@
             var boutonPlus = document.getElementsByClassName("plus");
             var boutonMoins = document.getElementsByClassName("moins");
             var nombreReponse = document.getElementsByClassName("nombreReponse")[0];
-            var typeQuestionSelect = document.getElementById("type_question");
-
-            function ajouterQuestion() {
-            if (typeQuestionSelect.value === "radio") {
+            
+            function ajouterQuestion(){
                 var enfant = liste[0].appendChild(document.createElement("li"));
                 var nombre = liste[0].childElementCount;
-                if (typeQuestionSelect.value === "radio") {
-                    enfant.innerHTML = "<input type='text' name='reponse" + nombre + "' placeholder='Réponse' class='réponse'>";
-                    nombreReponse.value = nombre;
-                }
-        }
-    }
-
-            function supprimerQuestion() {
-            liste[0].removeChild(liste[0].lastChild);
-            nombreReponse.value = liste[0].childElementCount;
-    }
-
-            
-            var typeQuestionSelect = document.getElementById("type_question");
-            var reponsesSection = document.getElementById("reponses_section");
-            var liste = document.getElementsByClassName("question");
-            var nombreReponse = document.getElementsByClassName("nombreReponse")[0];
-
-            function toggleReponses() {
-            // Supprimer les réponses existantes
-            while (liste[0].firstChild) {
-            liste[0].removeChild(liste[0].firstChild);
-        }
-            nombreReponse.value = 0;
-
-            if (typeQuestionSelect.value === "radio") {
-            // Ajouter une réponse initiale
-                ajouterQuestion();
-                reponsesSection.style.display = "block";
-            } else {
-                reponsesSection.style.display = "none";
+                enfant.innerHTML = "<input type='text' name='reponse"+nombre+"' placeholder='réponse' class='réponse'>";
+                nombreReponse.value =  nombre;
             }
-    }
-
-            toggleReponses();
-        
+            
+            function supprimerQuestion(){
+                liste[0].removeChild(liste[0].lastChild);
+                nombreReponse.value =  liste[0].childElementCount;
+            }
+            
+            
         </script>
     </div>
 {% endblock %}

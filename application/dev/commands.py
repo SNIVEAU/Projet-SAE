@@ -282,7 +282,7 @@ def insertdata():
     creainstrument()
     insertmusicien("data/musicien.yaml")
     insertsortie("data/sortie.yaml")
-    insert_disponibilite("data\disponiblités.yaml")
+    insert_disponibilite("data/disponiblités.yaml")
     insert_sondage("data/sondage.yaml")
     insert_participe_sortie("data/participer_sortie.yaml")
     insertjouer()

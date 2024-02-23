@@ -80,3 +80,9 @@ h1, h3{
         border-radius: 4px;
     }
 
+    .block-button{
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+    }
+

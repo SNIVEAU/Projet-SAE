@@ -53,6 +53,9 @@
             {% endif %}
         </td>
         <td>
+            {% if s.idSortie==None and s.idRepetition==None %}
+            <div>aucune</div> 
+            {% else %}
             <from method="POST" action="{{url_for('page_sondage')}}">
                 <select id="type-instrument" name="type-instrument" > 
                     {% for instrument in mes_instruments %}
@@ -60,11 +63,15 @@
                     {% endfor %}
                 </select>
             </from>
+            {% endif %}
         </td>   
 
         <input name="idsondage" type="text" value="{{s.idSondage}}" hidden>
         {% if liste_tutele %}
         <td>
+            {% if s.idSortie==None and s.idRepetition==None %}
+            <p>aucune</p>
+            {% else %}
             <select name="idMusicien">
                 <option value="{{current_user.idMusicien}}">{{current_user.nomMusicien}} {{current_user.prenomMusicien}}</option>
                 {% for m in liste_tutele %}
@@ -75,6 +82,7 @@
                 {% endif %}
                 {% endfor %}
             </select>
+            {% endif %}
         </td>
         {% endif %}
         <td>

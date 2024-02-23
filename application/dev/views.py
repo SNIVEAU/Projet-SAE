@@ -649,7 +649,11 @@ def page_reponse_question(idQuestion):
     type=questions[0].split(":")[1]
     liste_reponse=questions[1].split(";")
     liste_reponse.pop()
-    return render_template("page_reponse_question.html",question=question,listeReponse=liste_reponse,type=type)
+    idMusicien=current_user.idMusicien
+    if(request.form.get("idMusicien")!=None):
+        idMusicien=int(request.form.get("idMusicien"))
+    print(idMusicien)
+    return render_template("page_reponse_question.html",question=question,listeReponse=liste_reponse,type=type,idMusicien=idMusicien)
     
 @app.route("/save_reponse_question/", methods=["GET", "POST"])
 def save_reponse_question():
@@ -657,6 +661,9 @@ def save_reponse_question():
     questions=get_question_by_id(int(request.form.get("idQuestion"))).reponsesQuestion.split("|")
     type=questions[0].split(":")[1]
     date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    idMusicien=current_user.idMusicien
+    if(request.form.get("idMusicien")!=None):
+        idMusicien=int(request.form.get("idMusicien"))
     reponse_sondage+="type:"+type+"|"
     if type=="radio":
         reponse_sondage+="reponse"+":"+request.form.get("reponse")
@@ -667,7 +674,7 @@ def save_reponse_question():
             reponse_sondage+=reponse+":"+request.form.get(reponse)+";"
     reponse=Reponse(
                     idQuestion=int(request.form.get("idQuestion")),
-                    idMusicien=current_user.idMusicien,
+                    idMusicien=idMusicien,
                     reponseQuestion=reponse_sondage,
                     reponseSpeciale=request.form.get("reponseSpeciale"),
                     dateReponse=datetime.strptime(date, '%Y-%m-%d %H:%M:%S'))

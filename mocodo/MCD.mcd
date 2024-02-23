@@ -2,14 +2,15 @@
 RELIER1,0N REPETITION,11 SONDAGE
 :
 REPETITION:idRepetition,dateRepetition,dureeRepetition,lieu,tenue
-:
 PRESENCE_REPETITION,ON MUSICIEN,ON REPETITION
+:
 DEMI_JOURNNE:date
 
 :
 :
 PARTICIPATION_REPETITION,0N REPETITION,0N MUSICIEN:idTypeInstrument,dataReponse,presence
 :
+TUTORER, 1N MUSICIEN,ON MUSICIEN
 
 SONDAGE:idSondage,idSortie,idRepetition,dateSondage,dureeSondage,message
 RELIER2,0N QUESTION,11 SONDAGE

@@ -1,12 +1,17 @@
-- idMusicien : 1
-  idSortie : 1
+
+- idMusicien : 4
+  idSortie : 3
   dateReponse : None
-  prescence : False
-- idMusicien : 0
-  idSortie : 1
-  dateReponse : None
-  prescence : False
-- idMusicien : 1
+  idTypeInstrument : 'Batterie'
+  prescence : True
+- idMusicien : 5
   idSortie : 2
+  idTypeInstrument : 'Batterie'
+
+  dateReponse : None
+  prescence : True
+- idMusicien : 4
+  idSortie : 1
+  idTypeInstrument : 'Batterie'
   dateReponse : None
   prescence : True

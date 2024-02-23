@@ -27,3 +27,23 @@
   telephone : "0707070707"
   admin : true
   image : None
+
+- idMusicien : 4
+  nomMusicien : "Bouvier"
+  prenomMusicien : "Olivier"
+  password : "bouvier"
+  ageMusicien : 19
+  adresseMail : "bouvier@gmail.com"
+  telephone : "0600000000"
+  admin : false
+  image : None
+
+- idMusicien : 5
+  nomMusicien : "Barbier"
+  prenomMusicien : "Alexandre"
+  password : "barbier"
+  ageMusicien : 29
+  adresseMail : "Alexandre@gmail.com"
+  telephone : "0600000000"
+  admin : false
+  image : None

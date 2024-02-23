@@ -21,6 +21,7 @@ def resetdb():
     db.drop_all()
     db.create_all()
 
+
 @app.cli.command()
 @click.argument('filename')
 def crea_musicien(filename:str) -> None:
@@ -141,9 +142,8 @@ def clean_sondage():
     """Supprime tous les sondages."""
     db.session.query(Sondage).delete()
     db.session.commit()
-    
-@app.cli.command()
-def crea_type_instrument():
+
+def creainstrument():
     """Création des types d'instruments."""
     db.session.add(TypeInstrument(idTypeInstrument=1, nomTypeInstrument="Guitare"))
     db.session.add(TypeInstrument(idTypeInstrument=2, nomTypeInstrument="Batterie"))
@@ -151,3 +151,139 @@ def crea_type_instrument():
     db.session.add(TypeInstrument(idTypeInstrument=4, nomTypeInstrument="Clavier"))
     db.session.add(TypeInstrument(idTypeInstrument=5, nomTypeInstrument="Chant"))
     db.session.commit()
+def insertmusicien(filename:str) -> None:
+    """ permet l'injection de données (de musicien) dans la base de données"""
+    fy=yaml.safe_load(open(filename))
+    for musicien in fy:
+        print(musicien)
+        m = sha256()
+        m.update(musicien["password"].encode())
+        hashed_password = m.hexdigest(),
+        m=Musicien(idMusicien=int(musicien["idMusicien"]),
+                   nomMusicien=musicien["nomMusicien"],
+                   prenomMusicien=musicien["prenomMusicien"],
+                   
+                   password=str(hashed_password[0]),
+                   ageMusicien=int(musicien["ageMusicien"]),
+                   adresseMail=musicien["adresseMail"],
+                   telephone=musicien["telephone"],
+                   admin=musicien["admin"],
+                   img=None)
+        db.session.add(m)
+        db.session.commit()
+
+
+@app.cli.command()
+def crea_type_instrument():
+    """Création des types d'instruments."""
+    creainstrument()
+
+
+    
+
+def insertsortie(filename:str) -> None:
+    """ permet l'injection de données ( de sortie ) dans la base de données"""
+    fy=yaml.safe_load(open(filename))
+    for sortie in fy:
+        date = datetime.strptime(sortie["dateSortie"], '%Y-%m-%d %H:%M:%S')
+        srt=Sortie(idSortie=int(sortie["idSortie"]),
+                   dateSortie=date,
+                   dureeSortie=int(sortie["dureeSortie"]),
+                   lieu=sortie["lieu"],
+                   type=sortie["type"],
+                   tenue=sortie["tenue"])
+        db.session.add(srt)
+        db.session.commit()
+
+def insert_disponibilite(filename:str) -> None:
+    """ permet l'injection de données ( de disponibilité ) dans la base de données"""
+    fy=yaml.safe_load(open(filename))
+    for disp in fy:
+        datedispo=datetime.strptime(disp["date"], '%Y-%m-%d %H:%M:%S')
+        d=disponibilite(idMusicien=int(disp["idMusicien"]),
+                        date=datedispo)
+        db.session.add(d)
+        db.session.commit()
+
+
+def insert_sondage(filename:str) -> None:
+    """ permet l'injection de données ( de sondage ) dans la base de données"""
+    fy=yaml.safe_load(open(filename))
+    for sondage in fy:
+        date=datetime.strptime(sondage["dateSondage"], '%Y-%m-%d %H:%M:%S')
+        s=Sondage(idSondage=int(sondage["idSondage"]),
+                  idSortie=int(sondage["idSortie"]),
+                  message=sondage["message"],
+                  dateSondage=date,
+                  dureeSondage=int(sondage["dureeSondage"]))
+        db.session.add(s)
+        db.session.commit()
+
+
+def insert_participe_sortie(filename:str) -> None:
+    """ permet l'injection de données ( de participation à une sortie ) dans la base de données"""
+    fy=yaml.safe_load(open(filename))
+    for participation_sortie in fy:
+        srt = participer_sortie(idMusicien=participation_sortie["idMusicien"],
+                                    idTypeInstrument=participation_sortie["idTypeInstrument"],
+                                   idSortie=participation_sortie["idSortie"])
+        db.session.add(srt)
+    db.session.commit()
+
+
+def insert_sortie(filename:str) -> None:
+    def image_to_blob(chemin_image):
+        with open(chemin_image, 'rb') as fichier_image:
+            donnees_binaires = base64.b64encode(fichier_image.read())
+        return donnees_binaires
+    blob_data = image_to_blob("/home/iut45/Etudiants/o22204836/Documents/but2/SAE/Projet-SAE/application/dev/static/images/sortie1.jpg")
+    # print(blob_data)
+    
+    print(str(blob_data))
+    """ permet l'injection de données ( de sortie ) dans la base de données"""
+    fy=yaml.safe_load(open(filename))
+    for sortie in fy:
+        date = datetime.strptime(sortie["dateSortie"], '%Y-%m-%d %H:%M:%S')
+        srt=Sortie(idSortie=int(sortie["idSortie"]),
+                   dateSortie=date,
+                   dureeSortie=int(sortie["dureeSortie"]),
+                   lieu=sortie["lieu"],
+                   type=sortie["type"],
+                   tenue=sortie["tenue"],
+                   blob_data=str(blob_data))
+        db.session.add(srt)
+        db.session.commit()
+def insertjouer():
+    """ permet l'injection de données ( de participation à une sortie ) dans la base de données"""
+    fy=yaml.safe_load(open("data/jouer.yaml"))
+    for jouer in fy:
+        print(jouer)
+        j = Jouer(idMusicien=jouer["idMusicien"],
+                  idTypeInstrument=jouer["idTypeInstrument"])
+        db.session.add(j)
+    db.session.commit()
+def inserttutorer():
+    """ permet l'injection de données ( de participation à une sortie ) dans la base de données"""
+    fy=yaml.safe_load(open("data/tutorer.yaml"))
+    for tutorer in fy:
+        print(tutorer)
+        print(tutorer["idTuteur"])
+        t = Tutorer(idTuteur=tutorer["idTuteur"],
+                    idTutele=tutorer["idTutele"])
+        db.session.add(t)
+    db.session.commit()
+
+@app.cli.command()
+def insertdata():
+    """Insertion de données."""
+    db.drop_all()
+    db.create_all()
+
+    creainstrument()
+    insertmusicien("data/musicien.yaml")
+    insertsortie("data/sortie.yaml")
+    insert_disponibilite("data\disponiblités.yaml")
+    insert_sondage("data/sondage.yaml")
+    insert_participe_sortie("data/participer_sortie.yaml")
+    insertjouer()
+    inserttutorer()

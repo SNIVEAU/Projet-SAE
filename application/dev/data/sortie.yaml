@@ -1,15 +1,17 @@
 - idSortie : 1
-  dateSortie : "2023-12-30 00:00:00"
+  dateSortie : "2024-02-23 00:00:00"
   dureeSortie : 4
   description : "Concert de test"
   lieu : "Paris"
   type : "Concert"
-  tenue : "Décontractée"
+  tenue : "Decontractee"
+  idImg : None
 
 - idSortie : 2
-  dateSortie : "2023-12-28 00:00:00"
+  dateSortie : "2024-03-08 00:00:00"
   dureeSortie : 4
   description : "Concert de test2"
-  lieu : "Paris"
-  type : "Concert"
-  tenue : "Décontractée"
+  lieu : "Orleans"
+  type : "Démonstration"
+  tenue : "Decontractee"
+  idImg : None

@@ -6,26 +6,25 @@
 {% block content %}
 <h1>Créer une question</h1>
 <h3>Remplissez les champs ci-dessous avec les informations necessaire</h3>
-{% if erreur %}
-<h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
-{% endif %}
+    {% if erreur %}
+        <h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
+    {% endif %}
 <form action="{{url_for('save_sondage_standard')}}" method="post" class="form_question">
-<input type="text" name="intitule" placeholder="Intitule" size="100">
-<select name="type_question" id="type_question">
-    <option value="text">texte</option>
-    <option value="radio">choix unique</option>
-</select>
-<ul class="question">
-</ul>
-<p>ajouter une réponse</p>
-<input type="button" value="+" class="plus" onclick="ajouterQuestion()">
-<input type="button" value="-" class="moins" onclick="supprimerQuestion()">
-<input type="submit" value="créer la question" class="submit_sortie">
+    <input type="text" name="intitule" placeholder="Intitule" size="100">
+    <select name="type_question" id="type_question">
+        <option value="text">texte</option>
+        <option value="radio">choix unique</option>
+    </select>
+    <ul class="question">
+    </ul>
+    <p>ajouter une réponse</p>
+        <input type="button" value="+" class="plus" onclick="ajouterQuestion()">
+        <input type="button" value="-" class="moins" onclick="supprimerQuestion()">
+        <input type="submit" value="créer la question" class="submit_sortie">
 
-<h4>durée de la question ( en jour )</h4>
-<input type="number" name="duree" class="nombre" placeholder="durée en jour" min=0>
-<input type="number" name="nbreponse" class="nombreReponse" placeholder="nombre de réponse" min=0 hidden>
-
+    <h4>durée de la question ( en jour )</h4>
+        <input type="number" name="duree" class="nombre" placeholder="durée en jour" min=0>
+        <input type="number" name="nbreponse" class="nombreReponse" placeholder="nombre de réponse" min=0 hidden>
 </form>
 
 

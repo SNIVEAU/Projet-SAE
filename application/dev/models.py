@@ -65,6 +65,7 @@ class Repetition(db.Model):
     dureeRepetition = db.Column(db.Integer)
     lieu = db.Column(db.String(50))
     tenue = db.Column(db.String(50))
+    idImg = db.Column(db.Integer, db.ForeignKey('image.idImg'))
 
     def __repr__(self) -> str:
         """Retourne la date, la durée et l'id de la répétition
@@ -95,7 +96,8 @@ class Sortie(db.Model):
     lieu = db.Column(db.String(50))
     type= db.Column(db.String(50))
     tenue = db.Column(db.String(50))
-    blob_data = (db.String(500000))  # Ajout de l'attribut blob_data
+    idImg = db.Column(db.Integer, db.ForeignKey('image.idImg'))
+
     def __repr__(self) -> str:
         """Retourne la date, la durée et l'id de la sortie
         Return:
@@ -536,3 +538,21 @@ def add_jouer(idMusicien,idTypeInstrument):
     jouer=Jouer(idMusicien=idMusicien,idTypeInstrument=idTypeInstrument)
     db.session.add(jouer)
     db.session.commit()
+
+class Image(db.Model):
+
+    idImg = db.Column(db.Integer, primary_key=True)
+    alt = db.Column(db.String(42))
+    nomImg = db.Column(db.String(42))
+    img = db.Column(db.LargeBinary)
+
+def get_max_id_image()->int:
+    if Image.query.count()==0:
+        return 0
+    return Image.query.order_by(Image.idImg.desc()).first().idImg
+
+def get_all_images()->list:
+    return Image.query.all()
+
+def get_image_by_id(id)->Image:
+    return Image.query.filter_by(idImg=id).first()

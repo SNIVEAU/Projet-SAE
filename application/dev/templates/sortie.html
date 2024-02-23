@@ -35,8 +35,8 @@
                 </div>
                 <div class="form-group">
                     <label for="image" class="control-label">Image de la sortie</label>
-                    {% if sortie.blob_data %}
-                        <img src="data:image/jpeg;base64,{{ sortie.blob_data }}" alt="Image de la sortie">
+                    {% if sortie.idImg %}
+                        <img src="{{cheminImage}}" class="image-sortie" alt="image de la sortie {{sortie.idSortie}}">
                     {% else %}
                         <p>Pas d'image disponible</p>
                     {% endif %}

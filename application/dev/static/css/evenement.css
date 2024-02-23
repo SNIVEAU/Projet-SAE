@@ -101,3 +101,10 @@ div td{
     text-decoration: none;
     margin: 1%;
 }
+
+.image-sortie{
+    width: 100vh;
+    height: auto;
+    border-radius: 5px;
+    margin-top: 10px;
+}

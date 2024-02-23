@@ -11,7 +11,7 @@
     <form class="form-horizontal" role="form" method="POST" action="{{ url_for('inscription_tutore') }}">
         {{ form.hidden_tag() }}
         <div class="form-group">
-            <h2>Mettez les informations de connexions du compte que vous souhaiter lier</h2>
+            <h2>Mettez les informations de connexion du compte que vous souhaitez lier</h2>
             {% if DejaTutorer %}
             <span class="text-danger">L'utilisateur est deja sous votre tutelle</span>
             {% endif %}
@@ -40,7 +40,7 @@
         {% endfor %}
         <div class="form-group">
             <div>
-                <button type="submit" class="btn btn-danger rounded">M'etre sous ma tutelle</button>
+                <button type="submit" class="btn btn-danger rounded">Mettre sous ma tutelle</button>
             </div>
         </div>
     </form>

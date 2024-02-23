@@ -35,11 +35,7 @@
                 </div>
                 <div class="form-group">
                     <label for="image" class="control-label">Image de la sortie</label>
-                    {% if sortie.idImg %}
-                        <img src="{{cheminImage}}" class="image-sortie" alt="image de la sortie {{sortie.idSortie}}">
-                    {% else %}
-                        <p>Pas d'image disponible</p>
-                    {% endif %}
+                    <img src="{{cheminImage}}" class="image-sortie" alt="image de la sortie {{sortie.idSortie}}">
                 </div>
             </form>
         </div>

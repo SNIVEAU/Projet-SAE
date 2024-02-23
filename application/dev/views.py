@@ -73,7 +73,8 @@ def sortie(idSortie):
     today = today.strftime("%m/%d/%y")
     print(daterep == today)
     image=get_image_by_id(sortie.idImg)
-    if(image.img)==None:
+
+    if(image==None or image.img==None):
         cheminImage="/"+os.path.join(app.config['UPLOAD_FOLDER'])+"/base.jpg"
     else:
         decodeit = open('static/images/sortie'+str(idSortie)+'.jpg', 'wb') 
@@ -81,7 +82,7 @@ def sortie(idSortie):
         decodeit.close()
         cheminImage="/"+os.path.join(app.config['UPLOAD_FOLDER'])+"/sortie"+str(idSortie)+".jpg"
     if daterep == today:
-        return render_template("feuilleappelsortie.html",sortie=sortie,participation=liste_musicien,idSortie=sortie.idSortie)
+        return render_template("feuilleappelsortie.html",sortie=sortie,participation=liste_musicien,idSortie=sortie.idSortie,cheminImage=cheminImage)
     return render_template("sortie.html", sortie=sortie,participation=liste_musicien,cheminImage=cheminImage)
 
 @app.route("/repetition/<idRepetition>")

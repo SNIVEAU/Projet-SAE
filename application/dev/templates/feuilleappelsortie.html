@@ -37,11 +37,7 @@
                 </div>
                 <div class="form-group">
                     <label for="image" class="control-label">Image de la sortie</label>
-                    {% if sortie.blob_data %}
-                        <img src="data:image/jpeg;base64,{{ sortie.blob_data }}" alt="Image de la sortie">
-                    {% else %}
-                        <p>Pas d'image disponible</p>
-                    {% endif %}
+                    <img src="{{cheminImage}}" class="image-sortie" alt="image de la sortie {{sortie.idSortie}}">
                 </div>
                 <button class="btn btn-danger mx-auto d-block"><a class = "lien" href="{{ url_for('appelsortie', idSortie=sortie.idSortie) }}">Faire l'appel
                 </a>

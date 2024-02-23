@@ -3,6 +3,8 @@
     {{ super() }}
     {{ bootstrap.load_css() }}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/evenement.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/appel.css') }}">
+
 {% endblock %}
 {% block content %}
     <div class="container">
@@ -26,11 +28,26 @@
                     <input type="text" class="form-control" id="tenue" value="{{ rep.tenue }}" readonly>
                 </div>
                 <button class="btn btn-danger mx-auto d-block" onclick="myFunction()">Copier le Lieu</button>
-                <a class="appel" href="{{ url_for('appel', idRepetition=rep.idRepetition) }}">Faire l'appel
+                <button class="btn btn-danger mx-auto d-block"><a class="lien" href="{{ url_for('appel', idRepetition=rep.idRepetition) }}">Faire l'appel
                 </a>
-                
+                </button>
             </form>
         </div>
+    </div>
+    <div class="Prescence">
+        <h2>Présence</h2>
+        <table>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+            </tr>
+            {% for i in participation %}
+                <tr>
+                    <td>{{ i.prenomMusicien }}</td>
+                    <td>{{ i.nomMusicien }}</td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 
     <script>

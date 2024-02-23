@@ -29,7 +29,21 @@
             </form>
         </div>
     </div>
-
+    <div class="Prescence">
+        <h2>Présence</h2>
+        <table>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+            </tr>
+            {% for i in participation %}
+                <tr>
+                    <td>{{ i.prenomMusicien }}</td>
+                    <td>{{ i.nomMusicien }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
     <script>
         function myFunction() {
             var copyText = document.getElementById("lieu").value;
@@ -38,23 +52,6 @@
         }
     </script>
     </div>    
-    <div>
-        <h2>Participations</h2>
-        <table>
-            <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Id</th>
-            </tr>
-        {% for p in participation %}
-        <tr>
-            <td>{{p.nomMusicien}}  </td>
-            <td>{{p.prenomMusicien}}  </td>
-            <td>{{p.idMusicien}}  </td>
-        </tr>
-        {% endfor %}
-        </table>
-  </div>    
 </div>
 <script>
     function myFunction() {

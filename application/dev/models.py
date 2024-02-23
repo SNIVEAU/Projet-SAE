@@ -346,6 +346,38 @@ class participer_sortie(db.Model):
         Return:
             str : id du musicien et id de la sortie"""
         return str(self.idMusicien)+" "+str(self.idSortie)
+def get_musicien_instruments(idSortie):
+    particpation = participer_sortie.query.filter_by(idSortie=idSortie).all()
+    dico = {}
+    for p in particpation:
+        print(dico)
+        nomInstrument = p.idTypeInstrument
+        if nomInstrument not in dico.keys():
+            musicien = get_musicien_by_id(p.idMusicien)
+            dico[nomInstrument] = ([])
+            dico[nomInstrument].append([musicien.prenomMusicien+" "+musicien.nomMusicien,p.idMusicien])
+
+
+        else:
+            musicien = get_musicien_by_id(p.idMusicien)
+            dico[nomInstrument].append([musicien.prenomMusicien+" "+musicien.nomMusicien,p.idMusicien])    
+    return dico
+def get_musicien_instruments_repetition(idRepetition):
+    particpation = participer_repetition.query.filter_by(idRepetition=idRepetition).all()
+    dico = {}
+    for p in particpation:
+        print(dico)
+        nomInstrument = p.idTypeInstrument
+        if nomInstrument not in dico.keys():
+            musicien = get_musicien_by_id(p.idMusicien)
+            dico[nomInstrument] = ([])
+            dico[nomInstrument].append([musicien.prenomMusicien+" "+musicien.nomMusicien,p.idMusicien])
+
+
+        else:
+            musicien = get_musicien_by_id(p.idMusicien)
+            dico[nomInstrument].append([musicien.prenomMusicien+" "+musicien.nomMusicien,p.idMusicien])    
+    return dico
 
 def get_idTypeInstrument_by_idMusicien_and_idSortie(idMusicien,idSortie)->int:
     """Retourne l'id de l'instrument du musicien dont l'id est passé en paramètre participant à la sortie dont l'id est passé en paramètre

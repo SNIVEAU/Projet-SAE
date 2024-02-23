@@ -7,35 +7,25 @@
 {% endblock %}
 {% block content %}
 <div>
-    <h2>Participations</h2>
     <form action="{{ url_for('save_appel_sortie') }}" method="post">
+   
+    {% for key in liste_instrument %}
     <table>
         <tr>
             <th>Nom</th>
-            <th>Prénom</th>
             <th>Présent</th>
         </tr>
-    {% for p in participation %}
-    <tr>
-        <td>{{p.nomMusicien}}  </td>
-        <td>{{p.prenomMusicien}}  </td>
-        <td>
-            <div class="reponse">
-                <input type="radio" value="True" name="{{p.idMusicien}}" id="oui">
-                <label for="oui">oui</label>
-            </div>
-            <div class='reponse'>
-                <input type="radio" value="False" name="{{p.idMusicien}}" id="non">
-                <label for="non">non</label>
-            </div>
-        </td>
-
-    </tr>
+        <h2 class = 'nomInstrument'>{{key}}</h2>
+        {% for value in liste_instrument[key] %}
+            <tr>
+                <td>{{value[0]}}</td>
+                <td><input type="checkbox" name="True" value="{{value[1]}}"></td>
+            </tr>        
+        {% endfor %}
+    </table>
     {% endfor %}
         <input type="hidden" value="{{sortie.idSortie}}" name="sortie">
-    </table>
-    <div class= "appel">
-    <input type="submit" class ="appel" value="Valider l'appel">
-    </div>
+   
+    <input type="submit" class ="btn btn-danger mx-auto d-block" value="Valider l'appel">
 </div>
 {% endblock %}

@@ -1,18 +1,43 @@
+
 RELIER1,0N REPETITION,11 SONDAGE
 :
-REPETITION:idRepetition,dateRepetition,dureeRepetition
-PARTICIPER2,0N REPETITION, 0N MUSICIEN : materiel
+REPETITION:idRepetition,dateRepetition,dureeRepetition,lieu,tenue
+:
+PRESENCE_REPETITION,ON MUSICIEN,ON REPETITION
 DEMI_JOURNNE:date
 
-SONDAGE:idSondage,dateSondage,dureeSondage
+:
+:
+PARTICIPATION_REPETITION,0N REPETITION,0N MUSICIEN:idTypeInstrument,dataReponse,presence
+:
+
+SONDAGE:idSondage,idSortie,idRepetition,dateSondage,dureeSondage,message
 RELIER2,0N QUESTION,11 SONDAGE
-QUESTION:idQuestion,intitule,questions
-REPONDU,0N QUESTION,0N MUSICIEN
-MUSICIEN:idMusicien,nom,prenom,password,age,adresseMail,telephone,admin,imgMusicien
+QUESTION:idQuestion,intitule,reponseQuestion,datefin
+REPONDU,0N QUESTION,0N MUSICIEN:reponseQuestion,reponseSpeciale,dateReponse
+MUSICIEN:idMusicien,nom,prenom,password,age,adresseMail,telephone,admin
 DISPONIBILITE, 0N DEMI_JOURNNE,0N MUSICIEN
+
+:
+:
+:
+PARTICIPATION_SORTIE,0N SORTIE,0N MUSICIEN:idTypeInstrument,dataReponse,presence
+:
+JOUER,ON MUSICIEN,ON TYPE_INSTRUMENT
 
 RELIER,0N SORTIE,11 SONDAGE
 :
-SORTIE:idSortie,dateSortie,dureeSortie,lieu,type,tenue
-PARTICIPER1,0N SORTIE,0N MUSICIEN:materiel
+SORTIE:idSortie,dateSortie,dureeSortie,lieu,type,tenue,idImg
+:
+PRESENCE_SORTIE,ON MUSICIEN,ON SORTIE
+TYPE_INSTRUMENT:idTypeInstrument,nomTypeInstrument
+
+:
+:
+CORRESPONDRE,ON IMAGE,ON SORTIE
+
+:
+:
+IMAGE:idImg,alt,nomImg,img
+:
 :

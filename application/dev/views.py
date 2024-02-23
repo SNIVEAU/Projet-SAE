@@ -9,6 +9,7 @@ from hashlib import sha256
 import plotly.graph_objs as go
 import calendar
 import email_validator
+import base64 
 
 MOIS=['Janvier','Fevrier','Mars','Avril','Mai','Juin','Juillet','Aout','Septembre','Octobre','Novembre','Decembre']
 
@@ -70,9 +71,19 @@ def sortie(idSortie):
     daterep = sortie.dateSortie.strftime("%m/%d/%y")
     today = date.today()
     today = today.strftime("%m/%d/%y")
+    print(daterep == today)
+    image=get_image_by_id(sortie.idImg)
+    if(image.img)==None:
+        cheminImage="/"+os.path.join(app.config['UPLOAD_FOLDER'])+"/base.jpg"
+    else:
+        decodeit = open('static/images/sortie'+str(idSortie)+'.jpg', 'wb') 
+        decodeit.write(base64.b64decode((image.img))) 
+        decodeit.close()
+        cheminImage="/"+os.path.join(app.config['UPLOAD_FOLDER'])+"/sortie"+str(idSortie)+".jpg"
     if daterep == today:
         return render_template("feuilleappelsortie.html",sortie=sortie,participation=liste_musicien,idSortie=sortie.idSortie)
-    return render_template("sortie.html", sortie=sortie,participation=liste_musicien)
+    return render_template("sortie.html", sortie=sortie,participation=liste_musicien,cheminImage=cheminImage)
+
 @app.route("/repetition/<idRepetition>")
 def repetition(idRepetition):
     rep = get_repetition_by_idRep(idRepetition)
@@ -506,12 +517,32 @@ def save_sortie():
 
     date=datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
     idSorti=get_max_id_sortie()+1
+    idImg=get_max_id_image()+1
+
+    file=request.files['image']
+    if file.filename != '':
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], "sortie"+str(idSorti)+".jpg"))
+        with open(os.path.join(app.config['UPLOAD_FOLDER'])+"/sortie"+str(idSorti)+".jpg", "rb") as image2string: 
+            converted_string = base64.b64encode(image2string.read()) 
+    else:
+        with open(os.path.join(app.config['UPLOAD_FOLDER'])+"/base.jpg", "rb") as image2string: 
+            converted_string = base64.b64encode(image2string.read()) 
+    img=Image(
+        idImg=idImg,
+        alt="image sortie",
+        img=converted_string,
+        nomImg="sortie"+str(idSorti)
+        )
+    db.session.add(img)
+    db.session.commit()
+
     s=Sortie(idSortie=idSorti,
                 dateSortie=date,
                 dureeSortie=int(request.form.get("duree")),
                 lieu=request.form.get("lieu"),
                 type=request.form.get("type"),  
-                tenue=request.form.get("tenue")
+                tenue=request.form.get("tenue"),
+                idImg=idImg
                )
 
     sondage=Sondage(idSondage=get_max_id_sondage()+1,

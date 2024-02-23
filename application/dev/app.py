@@ -4,6 +4,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap5
 import os.path
 from flask_login import LoginManager
+from werkzeug.utils import secure_filename
 
 
 def mkpath(p):
@@ -12,7 +13,7 @@ def mkpath(p):
 app = Flask(__name__)
 app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 bootstrap = Bootstrap5(app)
-IMG_FOLDER = os.path.join('static', 'img')
+IMG_FOLDER = os.path.join('static', 'images')
 app.config["UPLOAD_FOLDER"] = IMG_FOLDER
 Flask_Logo = os.path.join(app.config["UPLOAD_FOLDER"], "sortie1.jpg")
 app.config['SQLALCHEMY_DATABASE_URI'] = ('sqlite:///'+mkpath('../myapp.sqlite'))

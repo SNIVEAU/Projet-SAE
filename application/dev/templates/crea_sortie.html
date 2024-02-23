@@ -13,7 +13,7 @@
         {% if erreur %}
             <h3 class="erreur_sortie">Un des champs n'a pas été rempli</h3>
         {% endif %}
-        <form action="{{ url_for('save_sortie') }}" method="post" class="form_sortie">
+        <form action="{{ url_for('save_sortie') }}" method="post" class="form_sortie" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="lieu" class="control-label">Lieu de la sortie</label>
                 <input type="text" name="lieu" class="form-control" placeholder="Lieu de la sortie">
@@ -42,6 +42,8 @@
                 <label for="duree" class="control-label">Durée du sondage (en jour)</label>
                 <input type="number" name="dureeSondage" class="form-control" placeholder="Durée en jour" min="0">
             </div>
+            <h4>ajouter une image</h4>
+            <input type="file" name="image" class="image" accept="image/*"><br>
 
 
             <input type="submit" value="Créer la sortie" class="btn btn-danger">

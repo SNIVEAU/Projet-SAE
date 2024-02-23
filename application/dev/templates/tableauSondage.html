@@ -1,0 +1,65 @@
+<table>
+    <tr>
+        <th>Sujet sondage</th>
+        <th>Date</th>
+        <th>Choix vote</th>
+        <th>Date vote</th>
+        <th>Annuler</th>
+    </tr>
+    {% if len(participation)==0 %}
+    </table>
+    <p>Pas de sondage repondu</p>
+    {% else %}
+    {% for ps in participation %}
+    <tr>
+        <td>
+            {% if ps.idRepetition!=None or ps.idSortie!=None %}
+                {{ ps.message }}
+            {% else %}
+                {{ get_question_by_idSondage(ps.idSondage).intitule }}
+            {% endif %}
+        </td>
+        <td>
+            {% if ps.idSortie!=None %}
+                {{ get_sortie_by_id(ps.idSortie).dateSortie }}
+            {% elif ps.idRepetition!=None%}
+                {{ get_repetition_by_id(ps.idRepetition).dateRepetition }}
+            {% else %}
+                {{ get_question_by_idSondage(ps.idSondage).get_date_fin()}}
+            {% endif %}
+        </td>
+        {% if ps.idSortie!=None %}
+            {% if get_participation_by_musicien_and_sortie(current_user.idMusicien,ps.idSortie)[0].presence %}
+                <td>oui</td>
+            {% else %}
+                <td>non</td>
+            {% endif %}
+        {% elif ps.idRepetition!=None %}
+            {% if get_participation_by_musicien_and_repetition(current_user.idMusicien,ps.idRepetition)[0].presence %}
+                <td>oui</td>
+            {% else %}
+                <td>non</td>
+            {% endif %}
+        {% else %}
+            <td>
+                <a href="/Sondage/verif_reponse/{{get_question_by_idSondage(ps.idSondage).idQuestion}}">voir</a>
+            </td>
+        {% endif %}
+        <td>
+            {% if ps.idSortie!=None %}
+                {{ get_participation_by_musicien_and_sortie(current_user.idMusicien,ps.idSortie)[0].dateReponse }}
+            {% elif ps.idRepetition!=None%}
+                {{ get_participation_by_musicien_and_repetition(current_user.idMusicien,ps.idRepetition)[0].dateReponse }}
+            {% else %}
+                {{ get_reponse_by_id(get_question_by_idSondage(ps.idSondage).idQuestion,current_user.idMusicien).dateReponse}}
+            {% endif %}
+        </td>
+        <td>
+            <form method="POST" action="{{url_for('annuler_sondage')}}">
+                <input type="text" name="idsondage" value="{{ps.idSondage}}" hidden>
+                <input type="submit" value="✖️" class="annul">
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

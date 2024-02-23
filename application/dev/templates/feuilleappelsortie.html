@@ -3,6 +3,8 @@
     {{ super() }}
     {{ bootstrap.load_css() }}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/evenement.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/appel.css') }}">
+
 {% endblock %}
 {% block content %}
     <div class="container">
@@ -41,11 +43,26 @@
                         <p>Pas d'image disponible</p>
                     {% endif %}
                 </div>
-                <a class = "appel" href="{{ url_for('appelsortie', idSortie=sortie.idSortie) }}">Faire l'appel
+                <button class="btn btn-danger mx-auto d-block"><a class = "lien" href="{{ url_for('appelsortie', idSortie=sortie.idSortie) }}">Faire l'appel
                 </a>
+            </button>
             </form>
         </div>
-
+        <div class="Prescence">
+            <h2>Présence</h2>
+            <table>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                </tr>
+                {% for i in participation %}
+                    <tr>
+                        <td>{{ i.prenomMusicien }}</td>
+                        <td>{{ i.nomMusicien }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
     </div>    
     </div>
     <script>

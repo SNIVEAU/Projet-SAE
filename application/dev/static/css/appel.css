@@ -1,7 +1,15 @@
 .appel{
-    
+    margin: 5%;
     text-align: center
 }
 .reponse{
     display: flex;
 } 
+.nomInstrument{
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+}
+.lien{
+    text-decoration: none;
+    color: white;
+}
